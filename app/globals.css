@@ -1,0 +1,89 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+body {
+  color: #1e293b;
+  background:
+    radial-gradient(
+      860px circle at -10% -10%,
+      rgba(125, 211, 252, 0.36),
+      transparent 62%
+    ),
+    radial-gradient(
+      920px circle at 110% 10%,
+      rgba(110, 231, 183, 0.28),
+      transparent 58%
+    ),
+    linear-gradient(180deg, #f8fcff 0%, #f4f9ff 58%, #eef6ff 100%);
+}
+
+section[id] {
+  scroll-margin-top: 7.5rem;
+}
+
+@layer components {
+  .glass-panel {
+    @apply rounded-3xl border border-white/80 bg-white/80 shadow-soft backdrop-blur-xl;
+  }
+}
+
+.fluid-blob {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(66px);
+  opacity: 0.58;
+  animation: fluid-move 20s ease-in-out infinite;
+}
+
+.fluid-blob-a {
+  top: -6rem;
+  left: -12rem;
+  width: 27rem;
+  height: 27rem;
+  background: rgba(56, 189, 248, 0.32);
+}
+
+.fluid-blob-b {
+  top: 18%;
+  right: -9rem;
+  width: 25rem;
+  height: 25rem;
+  background: rgba(52, 211, 153, 0.3);
+  animation-delay: -7s;
+}
+
+.fluid-blob-c {
+  bottom: -8rem;
+  left: 35%;
+  width: 23rem;
+  height: 23rem;
+  background: rgba(129, 140, 248, 0.22);
+  animation-delay: -13s;
+}
+
+@keyframes fluid-move {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  33% {
+    transform: translate3d(34px, -30px, 0) scale(1.08);
+  }
+  66% {
+    transform: translate3d(-18px, 24px, 0) scale(0.94);
+  }
+}
