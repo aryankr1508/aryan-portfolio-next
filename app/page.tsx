@@ -28,9 +28,11 @@ import ContactForm from "@/components/contact-form";
 import HeroThreeScene from "@/components/hero-three-scene";
 import Reveal from "@/components/reveal";
 import SectionAmbient from "@/components/section-ambient";
+import SectionGraphScene from "@/components/section-graph-scene";
 import SectionTitle from "@/components/section-title";
 import SplineScene from "@/components/spline-scene";
 import UnicornEmbed from "@/components/unicorn-embed";
+import type { GraphMetric } from "@/lib/portfolio-data";
 import {
   aboutHighlights,
   contactAddress,
@@ -56,12 +58,26 @@ const socialIconMap: Record<string, LucideIcon> = {
 };
 
 const containerClass = "mx-auto w-[min(1180px,calc(100%-2rem))]";
+const graphPalette = ["#0f766e", "#0ea5e9", "#f97316", "#14b8a6", "#0369a1", "#334155"];
+
+const metricWidth = (value: number, max: number) =>
+  `${Math.max(8, Math.min(100, (value / max) * 100))}%`;
 
 export default function HomePage() {
   const [activeSection, setActiveSection] = useState("home");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [skillsFocus, setSkillsFocus] = useState<string | null>(null);
   const splineScene = process.env.NEXT_PUBLIC_SPLINE_SCENE_URL;
   const unicornProjectId = process.env.NEXT_PUBLIC_UNICORN_PROJECT_ID;
+
+  const skillDepthMetrics: GraphMetric[] = skillGroups.map((group, index) => ({
+    label: group.title,
+    value: group.items.length,
+    suffix: " tools",
+    description: group.description,
+    color: graphPalette[index % graphPalette.length]
+  }));
+  const skillMetricMax = Math.max(...skillDepthMetrics.map((metric) => metric.value), 1);
 
   const { scrollYProgress, scrollY } = useScroll();
   const progressScale = useSpring(scrollYProgress, {
@@ -256,8 +272,8 @@ export default function HomePage() {
                   </div>
                 </motion.div>
 
-                <Reveal className="space-y-5">
-                  <div className="surface-panel p-5">
+                <Reveal className="space-y-5 lg:self-end lg:pb-2">
+                  <div className="rounded-3xl border border-white/60 bg-white/30 p-5 backdrop-blur-md">
                     <p className="eyebrow">Social</p>
                     <div className="mt-3 flex flex-wrap gap-2">
                       {socialLinks.map((social, index) => {
@@ -273,7 +289,7 @@ export default function HomePage() {
                             viewport={{ once: true, amount: 0.6 }}
                             transition={{ duration: 0.35, delay: 0.06 + index * 0.04 }}
                             whileHover={{ y: -3, scale: 1.02 }}
-                            className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 transition hover:border-slate-500 hover:text-slate-900"
+                            className="inline-flex items-center gap-2 rounded-full border border-slate-200/80 bg-white/70 px-3 py-2 text-sm font-semibold text-slate-700 transition hover:border-slate-500 hover:bg-white/90 hover:text-slate-900"
                           >
                             <Icon size={14} />
                             {social.label}
@@ -418,38 +434,95 @@ export default function HomePage() {
               </div>
 
               <Reveal className="section-shell p-6 sm:p-8">
-                <div className="space-y-3">
-                  <p className="eyebrow">Freelance Services</p>
-                  <h3 className="font-display text-3xl font-semibold leading-tight text-slate-900">
-                    Available for high-impact contract work
-                  </h3>
-                </div>
-                <div className="mt-6 grid gap-4 md:grid-cols-2">
-                  {freelanceServices.map((service) => (
-                    <motion.article
-                      key={service.title}
-                      whileHover={{ y: -3 }}
-                      transition={{ duration: 0.2 }}
-                      className="rounded-3xl border border-slate-200 bg-white/80 p-5"
-                    >
-                      <h4 className="font-display text-xl font-semibold text-slate-900">
-                        {service.title}
-                      </h4>
-                      <p className="mt-2 text-sm leading-relaxed text-slate-600">
-                        {service.description}
+                <div className="grid gap-7 xl:grid-cols-[1.08fr_0.92fr]">
+                  <div>
+                    <div className="space-y-3">
+                      <p className="eyebrow">Freelance Services</p>
+                      <h3 className="font-display text-3xl font-semibold leading-tight text-slate-900">
+                        Available for high-impact contract work
+                      </h3>
+                    </div>
+                    <div className="mt-6 grid gap-4 md:grid-cols-2">
+                      {freelanceServices.map((service) => (
+                        <motion.article
+                          key={service.title}
+                          whileHover={{ y: -3 }}
+                          transition={{ duration: 0.2 }}
+                          className="rounded-3xl border border-slate-200 bg-white/80 p-5"
+                        >
+                          <h4 className="font-display text-xl font-semibold text-slate-900">
+                            {service.title}
+                          </h4>
+                          <p className="mt-2 text-sm leading-relaxed text-slate-600">
+                            {service.description}
+                          </p>
+                          <div className="mt-4 flex flex-wrap gap-2">
+                            {service.stack.map((item) => (
+                              <span
+                                key={item}
+                                className="rounded-full bg-orange-100 px-3 py-1.5 text-xs font-semibold text-orange-700"
+                              >
+                                {item}
+                              </span>
+                            ))}
+                          </div>
+                        </motion.article>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="space-y-4 rounded-3xl border border-white/60 bg-white/35 p-4 sm:p-5">
+                    <div className="space-y-2">
+                      <p className="eyebrow">Stack Signal</p>
+                      <p className="text-sm leading-relaxed text-slate-600">
+                        Graph and bars below are generated from the same `skillGroups` content
+                        shown above.
                       </p>
-                      <div className="mt-4 flex flex-wrap gap-2">
-                        {service.stack.map((item) => (
-                          <span
-                            key={item}
-                            className="rounded-full bg-orange-100 px-3 py-1.5 text-xs font-semibold text-orange-700"
-                          >
-                            {item}
-                          </span>
-                        ))}
-                      </div>
-                    </motion.article>
-                  ))}
+                    </div>
+
+                    <SectionGraphScene
+                      data={skillDepthMetrics}
+                      highlightedLabel={skillsFocus}
+                      onHoverChange={setSkillsFocus}
+                      className="h-[290px] sm:h-[320px]"
+                    />
+
+                    <div className="space-y-2">
+                      {skillDepthMetrics.map((metric, index) => (
+                        <button
+                          key={metric.label}
+                          type="button"
+                          onMouseEnter={() => setSkillsFocus(metric.label)}
+                          onMouseLeave={() => setSkillsFocus(null)}
+                          onFocus={() => setSkillsFocus(metric.label)}
+                          onBlur={() => setSkillsFocus(null)}
+                          className={`w-full rounded-xl border px-3 py-2 text-left transition ${
+                            skillsFocus === metric.label
+                              ? "border-slate-300 bg-white/75"
+                              : "border-white/50 bg-white/35 hover:bg-white/60"
+                          }`}
+                        >
+                          <div className="flex items-center justify-between gap-2">
+                            <p className="text-sm font-semibold text-slate-800">{metric.label}</p>
+                            <p className="text-xs font-semibold text-slate-600">
+                              {metric.value}
+                              {metric.suffix ?? ""}
+                            </p>
+                          </div>
+                          <div className="mt-1.5 h-1.5 rounded-full bg-slate-200/85">
+                            <motion.div
+                              initial={{ width: 0 }}
+                              whileInView={{ width: metricWidth(metric.value, skillMetricMax) }}
+                              viewport={{ once: true, amount: 0.6 }}
+                              transition={{ duration: 0.5, delay: 0.04 + index * 0.03 }}
+                              className="h-full rounded-full"
+                              style={{ backgroundColor: metric.color }}
+                            />
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               </Reveal>
             </div>
@@ -496,14 +569,13 @@ export default function HomePage() {
                     Professional Experience
                   </h3>
                   <div className="mt-6 space-y-4">
-                    {experienceItems.map((item, index) => (
+                    {experienceItems.map((item) => (
                       <CollapsibleCard
                         key={`${item.title}-${item.duration}`}
                         title={item.title}
                         subtitle={item.subtitle}
                         duration={item.duration}
                         details={item.details}
-                        defaultOpen={index === 0}
                       />
                     ))}
                   </div>
@@ -554,14 +626,13 @@ export default function HomePage() {
 
               <Reveal className="surface-panel p-7 sm:p-8">
                 <div className="space-y-4">
-                  {internships.map((internship, index) => (
+                  {internships.map((internship) => (
                     <CollapsibleCard
                       key={`${internship.company}-${internship.duration}`}
                       title={internship.company}
                       subtitle={internship.role}
                       duration={internship.duration}
                       details={internship.details}
-                      defaultOpen={index === 0}
                       accent="emerald"
                       link={{ label: "Visit Company", url: internship.website }}
                     />

@@ -49,6 +49,14 @@ export type FreelanceService = {
   stack: string[];
 };
 
+export type GraphMetric = {
+  label: string;
+  value: number;
+  suffix?: string;
+  description: string;
+  color: string;
+};
+
 export const personalInfo = {
   name: "Aryan Kumar",
   role: "Software Engineer | Full Stack and Cloud Developer",
@@ -242,20 +250,6 @@ export const projects: Project[] = [
     repoUrl: "https://github.com/aryankr1508/Placement-Roadmap-Chatbot.git"
   },
   {
-    slug: "food-scanner",
-    title: "Food Scanner",
-    subtitle: "Nutrition Analyzer from Image Input",
-    period: "Product Build",
-    location: "India",
-    description:
-      "A web app that scans uploaded food images and returns a detailed nutrient profile for each item.",
-    impact:
-      "Made nutrition insights more accessible with simple image-based interaction.",
-    technologies: ["JavaScript", "Image Processing", "Web APIs"],
-    liveUrl: "https://foodscanner.netlify.app/",
-    repoUrl: "https://github.com/aryankr1508/Food-Scanner/tree/master/Food-Scanner-main"
-  },
-  {
     slug: "telemed",
     title: "TeleMed",
     subtitle: "Medicine Delivery Application",
@@ -268,20 +262,6 @@ export const projects: Project[] = [
     technologies: ["PHP", "Google Maps API", "Web Development"],
     demoUrl: "https://drive.google.com/file/d/1yT6RG22T6hTi1WiUrIO1LScryOxvs2Ry/view",
     repoUrl: "https://github.com/aryankr1508/TeleMed.git"
-  },
-  {
-    slug: "soyoc-website",
-    title: "SOYOC Website",
-    subtitle: "Startup Website Development",
-    period: "Product Build",
-    location: "India",
-    description:
-      "Built and improved a startup website in collaboration with a teammate using HTML, CSS, JavaScript, and PHP.",
-    impact:
-      "Delivered a usable online presence for the startup with ongoing UX improvements.",
-    technologies: ["HTML", "CSS", "JavaScript", "PHP"],
-    liveUrl: "https://soyoc.netlify.app/",
-    repoUrl: "https://github.com/aryankr1508/SOYOC"
   },
   {
     slug: "alexa-skills",
