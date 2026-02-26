@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Manrope, Sora } from "next/font/google";
+import SmoothScroll from "@/components/smooth-scroll";
 import "./globals.css";
 
 const manrope = Manrope({
@@ -15,7 +16,7 @@ const sora = Sora({
 export const metadata: Metadata = {
   title: "Aryan Kumar | Portfolio",
   description:
-    "Full stack and cloud developer portfolio with projects, skills, internships, and contact.",
+    "Interactive portfolio with full stack, cloud, and data engineering projects using motion-rich modern UI.",
   icons: {
     icon: "/favicon.png"
   }
@@ -27,11 +28,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="scroll-smooth">
-      <body
-        className={`${manrope.variable} ${sora.variable} font-body antialiased`}
-      >
-        {children}
+    <html lang="en">
+      <body className={`${manrope.variable} ${sora.variable} font-body antialiased`}>
+        <SmoothScroll>{children}</SmoothScroll>
       </body>
     </html>
   );

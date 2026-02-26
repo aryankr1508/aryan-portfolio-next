@@ -30,9 +30,9 @@ export default function CollapsibleCard({
   return (
     <details
       open={defaultOpen}
-      className="group rounded-2xl border border-slate-200 bg-white/85 transition hover:border-slate-300"
+      className="group rounded-3xl border border-white/80 bg-white/68 transition hover:border-slate-300"
     >
-      <summary className="flex cursor-pointer list-none items-start justify-between gap-4 p-5">
+      <summary className="flex cursor-pointer list-none items-start justify-between gap-4 p-6">
         <div className="space-y-2">
           <p className={`text-xs uppercase tracking-[0.14em] ${durationColor}`}>
             {duration}
@@ -40,12 +40,12 @@ export default function CollapsibleCard({
           <h4 className="font-display text-xl font-semibold text-slate-900">{title}</h4>
           <p className="text-sm font-medium text-slate-500">{subtitle}</p>
         </div>
-        <span className="mt-1 rounded-full border border-slate-200 p-2 text-slate-500 transition group-open:rotate-180">
+        <span className="mt-1 rounded-full border border-slate-200 bg-white p-2 text-slate-500 transition group-open:rotate-180">
           <ChevronDown size={16} />
         </span>
       </summary>
 
-      <div className="space-y-4 px-5 pb-5">
+      <div className="space-y-4 px-6 pb-6">
         <ul className="space-y-2">
           {details.map((detail) => (
             <li key={detail} className="flex items-start gap-3 text-slate-600">
@@ -60,7 +60,7 @@ export default function CollapsibleCard({
             href={link.url}
             target="_blank"
             rel="noreferrer"
-            className="inline-flex items-center gap-1.5 rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-slate-500 hover:text-slate-900"
+            className="button-ghost"
           >
             {link.label}
             <ExternalLink size={15} />

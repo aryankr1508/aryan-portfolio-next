@@ -25,13 +25,13 @@ export default async function ProjectDetailsPage({ params }: ProjectPageProps) {
       <div className="mx-auto w-[min(960px,calc(100%-2rem))] space-y-8">
         <Link
           href="/#projects"
-          className="inline-flex items-center gap-2 rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-slate-500 hover:text-slate-900"
+          className="button-ghost"
         >
           <ArrowLeft size={15} />
           Back to Projects
         </Link>
 
-        <section className="glass-panel p-7 sm:p-8">
+        <section className="surface-panel p-7 sm:p-8">
           <SectionTitle
             eyebrow="Project"
             title={project.title}
@@ -39,10 +39,10 @@ export default async function ProjectDetailsPage({ params }: ProjectPageProps) {
           />
 
           <div className="mt-6 flex flex-wrap gap-2 text-xs uppercase tracking-[0.15em] text-slate-500">
-            <span className="rounded-full bg-slate-100 px-3 py-1.5">
+            <span className="rounded-full bg-teal-100 px-3 py-1.5 text-teal-700">
               {project.period}
             </span>
-            <span className="rounded-full bg-slate-100 px-3 py-1.5">
+            <span className="rounded-full bg-orange-100 px-3 py-1.5 text-orange-700">
               {project.location}
             </span>
           </div>
@@ -74,7 +74,7 @@ export default async function ProjectDetailsPage({ params }: ProjectPageProps) {
                 {project.technologies.map((tech) => (
                   <span
                     key={tech}
-                    className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700"
+                    className="chip"
                   >
                     {tech}
                   </span>
@@ -88,7 +88,7 @@ export default async function ProjectDetailsPage({ params }: ProjectPageProps) {
                   href={project.liveUrl}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center gap-1.5 rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-700"
+                  className="button-primary"
                 >
                   Live Project
                   <ExternalLink size={15} />
@@ -100,7 +100,7 @@ export default async function ProjectDetailsPage({ params }: ProjectPageProps) {
                   href={project.demoUrl}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center gap-1.5 rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-slate-500 hover:text-slate-900"
+                  className="button-accent"
                 >
                   Demo
                   <ExternalLink size={15} />
@@ -112,7 +112,7 @@ export default async function ProjectDetailsPage({ params }: ProjectPageProps) {
                   href={project.repoUrl}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center gap-1.5 rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-slate-500 hover:text-slate-900"
+                  className="button-ghost"
                 >
                   Source Code
                   <Github size={15} />

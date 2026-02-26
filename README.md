@@ -1,6 +1,6 @@
 # Aryan Portfolio (Next.js + Tailwind)
 
-This project is a full migration of the original static portfolio into a dynamic, responsive Next.js website with Tailwind CSS and fluid motion.
+This project is a modern Next.js portfolio with a redesigned UI, rich motion, smooth scrolling, and interactive 3D sections.
 
 ## Stack
 
@@ -8,6 +8,10 @@ This project is a full migration of the original static portfolio into a dynamic
 - Tailwind CSS
 - TypeScript
 - Framer Motion
+- Lenis (smooth scrolling)
+- Three.js + React Three Fiber + Drei
+- Spline (`@splinetool/react-spline`)
+- Unicorn Studio embed integration
 
 ## Run Locally
 
@@ -21,10 +25,23 @@ Then open `http://localhost:3000`.
 ## Contact Form Email Setup (Gmail)
 
 1. Copy `.env.example` to `.env.local`.
-2. Set `SMTP_PASS` to a Gmail App Password for `aryankumar15082002@gmail.com`.
+2. Set `SMTP_USER` and `SMTP_PASS` for your email account.
 3. Keep `CONTACT_TO_EMAIL=aryankumar15082002@gmail.com` (or change if needed).
 
 Without SMTP credentials, the form UI will work but email sending will fail with a config error.
+
+## 3D and Interactive Setup
+
+Add these to `.env.local`:
+
+```bash
+NEXT_PUBLIC_SPLINE_SCENE_URL=
+NEXT_PUBLIC_UNICORN_PROJECT_ID=
+```
+
+- `NEXT_PUBLIC_SPLINE_SCENE_URL`: your published `.splinecode` scene URL (used inside the existing About section visual card).
+- `NEXT_PUBLIC_UNICORN_PROJECT_ID`: Unicorn Studio project id (used inside the existing Projects section).
+- If either value is empty, the site falls back gracefully without broken placeholders.
 
 ## Build
 

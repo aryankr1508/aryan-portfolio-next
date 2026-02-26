@@ -75,7 +75,7 @@ export default function ContactForm() {
             setData((previous) => ({ ...previous, email: event.target.value }))
           }
           placeholder="you@example.com"
-          className="h-11 w-full rounded-xl border border-slate-300 bg-white px-3 text-slate-700 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
+          className="h-11 w-full rounded-xl border border-slate-300 bg-white/85 px-3 text-slate-700 outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-100"
         />
       </div>
 
@@ -93,7 +93,7 @@ export default function ContactForm() {
             setData((previous) => ({ ...previous, phone: event.target.value }))
           }
           placeholder="+91 9876543210"
-          className="h-11 w-full rounded-xl border border-slate-300 bg-white px-3 text-slate-700 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
+          className="h-11 w-full rounded-xl border border-slate-300 bg-white/85 px-3 text-slate-700 outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-100"
         />
       </div>
 
@@ -111,14 +111,14 @@ export default function ContactForm() {
             setData((previous) => ({ ...previous, message: event.target.value }))
           }
           placeholder="Tell me about your project, timeline, and goals."
-          className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-slate-700 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
+          className="w-full rounded-xl border border-slate-300 bg-white/85 px-3 py-2 text-slate-700 outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-100"
         />
       </div>
 
       <button
         type="submit"
         disabled={isSubmitting}
-        className="inline-flex h-11 items-center gap-2 rounded-full bg-slate-900 px-5 text-sm font-semibold text-white transition hover:bg-slate-700 disabled:cursor-not-allowed disabled:bg-slate-400"
+        className="button-primary h-11 disabled:cursor-not-allowed disabled:opacity-55"
       >
         {buttonLabel}
         <Send size={14} />
