@@ -3,31 +3,42 @@
 import {
   ArrowRight,
   ArrowUpRight,
+  Code2,
+  ChevronsLeft,
+  ChevronsRight,
   BriefcaseBusiness,
   Download,
   ExternalLink,
   Facebook,
+  FileText,
+  FolderKanban,
   Github,
+  House,
   Instagram,
   Linkedin,
   Mail,
   MapPin,
   Menu,
+  Moon,
   Phone,
+  Send,
   Sparkles,
+  Sun,
   Twitter,
+  UserRound,
   X
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { motion, useScroll, useSpring, useTransform } from "framer-motion";
+import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
+import type { Application } from "@splinetool/runtime";
 import { useEffect, useState } from "react";
 import CollapsibleCard from "@/components/collapsible-card";
 import ContactForm from "@/components/contact-form";
 import HeroThreeScene from "@/components/hero-three-scene";
 import Reveal from "@/components/reveal";
-import SectionAmbient from "@/components/section-ambient";
 import SectionGraphScene from "@/components/section-graph-scene";
 import SectionTitle from "@/components/section-title";
 import SplineScene from "@/components/spline-scene";
@@ -57,16 +68,39 @@ const socialIconMap: Record<string, LucideIcon> = {
   Facebook: Facebook
 };
 
+const navIconMap: Record<string, LucideIcon> = {
+  home: House,
+  about: UserRound,
+  skills: Code2,
+  resume: FileText,
+  internships: BriefcaseBusiness,
+  projects: FolderKanban,
+  contact: Send
+};
+
 const containerClass = "mx-auto w-[min(1180px,calc(100%-2rem))]";
 const graphPalette = ["#0f766e", "#0ea5e9", "#f97316", "#14b8a6", "#0369a1", "#334155"];
+const HeroSpline = dynamic(() => import("@splinetool/react-spline"), { ssr: false, loading: () => null });
 
 const metricWidth = (value: number, max: number) =>
   `${Math.max(8, Math.min(100, (value / max) * 100))}%`;
 
 export default function HomePage() {
   const [activeSection, setActiveSection] = useState("home");
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(() => {
+    if (typeof window === "undefined") return true;
+    const saved = window.localStorage.getItem("sidebar-collapsed");
+    if (saved === null) return true;
+    return saved === "true";
+  });
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [skillsFocus, setSkillsFocus] = useState<string | null>(null);
+  const [theme, setTheme] = useState<"dark" | "light">(() => {
+    if (typeof window === "undefined") return "dark";
+    return window.localStorage.getItem("theme") === "light" ? "light" : "dark";
+  });
+  const heroSplineScene =
+    process.env.NEXT_PUBLIC_HERO_SPLINE_SCENE_URL ?? process.env.NEXT_PUBLIC_SPLINE_SCENE_URL ?? "";
   const splineScene = process.env.NEXT_PUBLIC_SPLINE_SCENE_URL;
   const unicornProjectId = process.env.NEXT_PUBLIC_UNICORN_PROJECT_ID;
 
@@ -88,46 +122,120 @@ export default function HomePage() {
   const heroY = useTransform(scrollY, [0, 620], [0, 72]);
 
   useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+    window.localStorage.setItem("theme", theme);
+  }, [theme]);
+
+  useEffect(() => {
+    window.localStorage.setItem("sidebar-collapsed", String(isSidebarCollapsed));
+  }, [isSidebarCollapsed]);
+
+  useEffect(() => {
     const sections = navItems
       .map((item) => document.getElementById(item.id))
       .filter((section): section is HTMLElement => Boolean(section));
 
     if (!sections.length) return;
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visible = entries
-          .filter((entry) => entry.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+    let frameId = 0;
 
-        if (visible[0]?.target?.id) {
-          setActiveSection(visible[0].target.id);
+    const updateActiveSection = () => {
+      const probeLine = Math.max(120, window.innerHeight * 0.3);
+      let current = sections[0].id;
+
+      for (const section of sections) {
+        const rect = section.getBoundingClientRect();
+
+        if (rect.top <= probeLine && rect.bottom >= probeLine) {
+          current = section.id;
+          break;
         }
-      },
-      {
-        threshold: [0.2, 0.4, 0.56],
-        rootMargin: "-18% 0px -55% 0px"
-      }
-    );
 
-    sections.forEach((section) => observer.observe(section));
-    return () => observer.disconnect();
+        if (rect.top <= probeLine) {
+          current = section.id;
+        }
+      }
+
+      setActiveSection((previous) => (previous === current ? previous : current));
+    };
+
+    const onViewportChange = () => {
+      window.cancelAnimationFrame(frameId);
+      frameId = window.requestAnimationFrame(updateActiveSection);
+    };
+
+    updateActiveSection();
+
+    window.addEventListener("scroll", onViewportChange, { passive: true });
+    window.addEventListener("resize", onViewportChange);
+
+    return () => {
+      window.cancelAnimationFrame(frameId);
+      window.removeEventListener("scroll", onViewportChange);
+      window.removeEventListener("resize", onViewportChange);
+    };
   }, []);
 
   const scrollToSection = (id: string) => {
     const section = document.getElementById(id);
     if (!section) return;
-    section.scrollIntoView({ behavior: "smooth", block: "start" });
+
+    const sectionOffset = window.innerWidth >= 1024 ? -28 : -96;
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const scrollTo = (
+      window as Window & {
+        __portfolioScrollTo?: (
+          target: number | string | HTMLElement,
+          options?: { offset?: number; immediate?: boolean }
+        ) => void;
+      }
+    ).__portfolioScrollTo;
+
+    if (!prefersReducedMotion && scrollTo) {
+      scrollTo(section, { offset: sectionOffset });
+    } else {
+      const top = section.getBoundingClientRect().top + window.scrollY + sectionOffset;
+      window.scrollTo({ top, behavior: prefersReducedMotion ? "auto" : "smooth" });
+    }
+
+    setActiveSection(id);
     setIsMobileMenuOpen(false);
   };
+
+  const toggleTheme = () => {
+    setTheme((current) => (current === "dark" ? "light" : "dark"));
+  };
+  const isDark = theme === "dark";
 
   return (
     <>
       <motion.div
-        className="fixed inset-x-0 top-0 z-[80] h-1 origin-left bg-gradient-to-r from-teal-700 via-cyan-500 to-orange-500"
+        className="fixed inset-x-0 bottom-0 z-[80] h-1 origin-left bg-gradient-to-r from-teal-700 via-cyan-500 to-orange-500"
         style={{ scaleX: progressScale }}
       />
 
+      <div aria-hidden className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
+        {heroSplineScene ? (
+          <HeroSpline
+            scene={heroSplineScene}
+            renderOnDemand={false}
+            onLoad={(app: Application) => {
+              app.setGlobalEvents(true);
+            }}
+            className="pointer-events-auto h-full w-full opacity-[0.82]"
+          />
+        ) : (
+          <HeroThreeScene mode="background" className="opacity-[0.58]" />
+        )}
+      </div>
+      <div
+        aria-hidden
+        className={`pointer-events-none fixed inset-0 -z-20 ${
+          isDark
+            ? "bg-[radial-gradient(circle_at_20%_15%,rgba(34,211,238,0.2),transparent_46%),radial-gradient(circle_at_80%_25%,rgba(37,99,235,0.18),transparent_50%),linear-gradient(to_bottom,rgba(2,6,23,0.22),rgba(2,6,23,0.58))]"
+            : "bg-[radial-gradient(circle_at_20%_15%,rgba(20,184,166,0.18),transparent_48%),radial-gradient(circle_at_80%_25%,rgba(14,165,233,0.14),transparent_52%),linear-gradient(to_bottom,rgba(248,250,252,0.56),rgba(241,245,249,0.72))]"
+        }`}
+      />
       <div aria-hidden className="grid-fog" />
       <div aria-hidden className="grain-overlay" />
 
@@ -137,89 +245,338 @@ export default function HomePage() {
         <div className="drift-blob drift-blob-c" />
       </div>
 
-      <header className="fixed inset-x-0 top-4 z-50">
+      <div className="relative z-20">
+        <aside className="pointer-events-auto fixed left-3 top-2 z-50 hidden h-[calc(100dvh-1rem)] max-h-[calc(100dvh-1rem)] lg:block xl:left-5">
+          <div className="relative h-full">
+            <div
+              className={`game-sidebar-shell relative flex h-full min-h-0 flex-col overflow-hidden rounded-[2rem] border p-[clamp(0.45rem,1.1vh,0.75rem)] shadow-[0_30px_100px_rgba(2,6,23,0.42)] backdrop-blur-xl transition-[width] duration-300 ${
+                isSidebarCollapsed ? "w-[4.1rem]" : "w-56"
+              } ${isDark ? "border-cyan-300/30 bg-slate-950/76" : "border-white/85 bg-white/74"}`}
+            >
+              <div
+                aria-hidden
+                className={`pointer-events-none absolute inset-0 ${
+                  isDark
+                    ? "bg-[radial-gradient(circle_at_15%_8%,rgba(34,211,238,0.25),transparent_42%),radial-gradient(circle_at_85%_90%,rgba(56,189,248,0.2),transparent_48%)]"
+                    : "bg-[radial-gradient(circle_at_15%_8%,rgba(20,184,166,0.14),transparent_44%),radial-gradient(circle_at_85%_90%,rgba(14,165,233,0.14),transparent_48%)]"
+                }`}
+              />
+
+              <button
+                type="button"
+                onClick={() => scrollToSection("home")}
+                className={`relative z-10 mb-[clamp(0.35rem,1vh,0.9rem)] flex w-full shrink-0 items-center overflow-hidden rounded-2xl border transition ${
+                  isSidebarCollapsed
+                    ? "justify-center px-0 py-[clamp(0.32rem,0.85vh,0.55rem)]"
+                    : "gap-2 px-2 py-[clamp(0.32rem,0.85vh,0.55rem)] text-left"
+                } ${isDark ? "border-cyan-300/20 bg-slate-900/70 hover:border-cyan-200/50" : "border-slate-300/80 bg-white/85 hover:border-teal-400/45"}`}
+                title={isSidebarCollapsed ? "Home" : undefined}
+              >
+                <span className="inline-flex h-[clamp(1.75rem,3vh,2.4rem)] w-[clamp(1.75rem,3vh,2.4rem)] shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-cyan-400 via-sky-400 to-blue-500 text-sm font-bold text-slate-950">
+                  AK
+                </span>
+                {!isSidebarCollapsed ? (
+                  <span
+                    className={`whitespace-nowrap text-sm font-semibold ${
+                      isDark ? "text-cyan-50" : "text-slate-800"
+                    }`}
+                  >
+                    Aryan Kumar
+                  </span>
+                ) : null}
+              </button>
+
+              <nav className="relative z-10 min-h-0 flex-1 overflow-hidden">
+                <div className="flex flex-col gap-[clamp(0.12rem,0.42vh,0.35rem)]">
+                {navItems.map((item) => {
+                  const Icon = navIconMap[item.id] ?? House;
+                  const isActive = activeSection === item.id;
+
+                  return (
+                    <button
+                      key={item.id}
+                      type="button"
+                      onClick={() => scrollToSection(item.id)}
+                      className={`pointer-events-auto relative flex w-full items-center overflow-hidden rounded-xl transition ${
+                        isSidebarCollapsed
+                          ? "justify-center px-0 py-[clamp(0.28rem,0.8vh,0.52rem)]"
+                          : "gap-2 px-2 py-[clamp(0.28rem,0.8vh,0.52rem)] text-left"
+                      } ${
+                        isActive
+                          ? isDark
+                            ? "text-white"
+                            : "text-slate-900"
+                          : isDark
+                            ? "text-slate-300 hover:text-white"
+                            : "text-slate-600 hover:text-slate-900"
+                      }`}
+                      title={isSidebarCollapsed ? item.label : undefined}
+                      aria-label={item.label}
+                    >
+                      {isActive ? (
+                        <motion.span
+                          layoutId="sidebar-active-pill"
+                          className={`absolute inset-0 rounded-xl ${
+                            isDark
+                              ? "bg-gradient-to-r from-cyan-500/35 to-blue-500/30"
+                              : "bg-gradient-to-r from-teal-400/30 to-sky-400/25"
+                          }`}
+                          transition={{ type: "spring", stiffness: 320, damping: 26 }}
+                        />
+                      ) : null}
+
+                      <span
+                        className={`relative z-10 inline-flex h-[clamp(1.7rem,3vh,2.4rem)] w-[clamp(1.7rem,3vh,2.4rem)] shrink-0 items-center justify-center rounded-xl border text-sm ${
+                          isActive
+                            ? isDark
+                              ? "border-cyan-200/70 bg-cyan-500/35 text-cyan-50 ring-1 ring-cyan-200/55 shadow-[0_0_22px_rgba(34,211,238,0.25)]"
+                              : "border-teal-300/80 bg-teal-400/25 text-teal-700 ring-1 ring-teal-300/70 shadow-[0_0_18px_rgba(20,184,166,0.18)]"
+                            : isDark
+                              ? "border-slate-600/70 bg-slate-900/70 text-slate-300"
+                              : "border-slate-300/80 bg-white/85 text-slate-600"
+                        }`}
+                      >
+                        <Icon size={17} />
+                      </span>
+                      {!isSidebarCollapsed ? (
+                        <span className="relative z-10 whitespace-nowrap text-sm font-semibold">
+                          {item.label}
+                        </span>
+                      ) : null}
+                    </button>
+                  );
+                })}
+                </div>
+              </nav>
+
+              <div
+                className={`relative z-10 mt-[clamp(0.35rem,0.95vh,0.9rem)] shrink-0 border-t pt-[clamp(0.35rem,0.95vh,0.9rem)] ${
+                  isDark ? "border-cyan-300/18" : "border-slate-300/75"
+                }`}
+              >
+                <button
+                  type="button"
+                  onClick={toggleTheme}
+                  className={`pointer-events-auto flex w-full items-center rounded-xl border transition ${
+                    isSidebarCollapsed
+                      ? "justify-center px-0 py-1.5"
+                      : "gap-2 px-2 py-1.5"
+                  } ${
+                    isDark
+                      ? "border-slate-600/70 bg-slate-900/70 text-slate-200 hover:border-cyan-300/45 hover:text-white"
+                      : "border-slate-300/80 bg-white/85 text-slate-700 hover:border-teal-400/45 hover:text-slate-900"
+                  }`}
+                  aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+                  title={isSidebarCollapsed ? (theme === "dark" ? "Light Mode" : "Dark Mode") : undefined}
+                >
+                  <span
+                    className={`inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border ${
+                      isDark ? "border-slate-600/70 bg-slate-950/85" : "border-slate-300/80 bg-white"
+                    }`}
+                  >
+                    {theme === "dark" ? <Sun size={12} /> : <Moon size={12} />}
+                  </span>
+                  {!isSidebarCollapsed ? (
+                    <span className="whitespace-nowrap text-[11px] font-semibold tracking-[0.02em]">
+                      {theme === "dark" ? "Light Mode" : "Dark Mode"}
+                    </span>
+                  ) : null}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsSidebarCollapsed((previous) => !previous)}
+                  className={`pointer-events-auto mt-2 flex w-full items-center rounded-xl border transition ${
+                    isSidebarCollapsed ? "justify-center px-0 py-1.5" : "gap-2 px-2 py-1.5"
+                  } ${
+                    isDark
+                      ? "border-cyan-300/28 bg-slate-950/80 text-cyan-100 hover:border-cyan-200/65 hover:text-white"
+                      : "border-slate-300/80 bg-white/90 text-slate-700 hover:border-teal-400/55 hover:text-slate-900"
+                  }`}
+                  aria-label={isSidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+                  title={isSidebarCollapsed ? "Expand sidebar" : undefined}
+                >
+                  <span
+                    className={`inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border ${
+                      isDark ? "border-cyan-300/25 bg-slate-950/85" : "border-slate-300/80 bg-white"
+                    }`}
+                  >
+                    {isSidebarCollapsed ? <ChevronsRight size={11} /> : <ChevronsLeft size={11} />}
+                  </span>
+                  {!isSidebarCollapsed ? (
+                    <span className="whitespace-nowrap text-[11px] font-semibold tracking-[0.02em]">
+                      Collapse
+                    </span>
+                  ) : null}
+                </button>
+              </div>
+            </div>
+          </div>
+        </aside>
+
+      <header className="fixed inset-x-0 top-4 z-50 lg:hidden">
         <div className={`${containerClass} relative`}>
-          <div className="surface-panel flex items-center justify-between px-5 py-3 sm:px-6">
+          <div className="surface-panel flex items-center justify-between px-4 py-3 sm:px-5">
             <button
               type="button"
-              onClick={() => scrollToSection("home")}
-              className="font-display text-base font-semibold text-slate-900 transition hover:text-teal-700"
+              onClick={() => setIsMobileMenuOpen(true)}
+              className={`inline-flex h-10 w-10 items-center justify-center rounded-full border transition ${
+                isDark
+                  ? "border-cyan-300/35 bg-slate-900/80 text-cyan-100 hover:border-cyan-200/60 hover:text-white"
+                  : "border-slate-300/85 bg-white/90 text-slate-700 hover:border-teal-400/55 hover:text-slate-900"
+              }`}
+              aria-label="Open sidebar menu"
+              aria-expanded={isMobileMenuOpen}
+              aria-controls="mobile-sidebar"
             >
-              Aryan Kumar
+              <Menu size={18} />
             </button>
 
-            <nav className="hidden items-center gap-1 lg:flex">
-              {navItems.map((item) => (
-                <button
-                  key={item.id}
-                  type="button"
-                  onClick={() => scrollToSection(item.id)}
-                  className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
-                    activeSection === item.id
-                      ? "bg-teal-700 text-white"
-                      : "text-slate-600 hover:bg-white hover:text-slate-900"
-                  }`}
-                >
-                  {item.label}
-                </button>
-              ))}
-            </nav>
-
             <button
               type="button"
-              onClick={() => setIsMobileMenuOpen((previous) => !previous)}
-              className="rounded-full border border-slate-300 bg-white p-2 text-slate-700 transition hover:bg-slate-100 lg:hidden"
-              aria-label="Toggle menu"
+              onClick={toggleTheme}
+              className={`inline-flex items-center gap-2 rounded-full border px-3 py-2 text-sm font-semibold transition ${
+                isDark
+                  ? "border-cyan-300/35 bg-slate-900/80 text-cyan-100 hover:border-cyan-200/60 hover:text-white"
+                  : "border-slate-300/85 bg-white/90 text-slate-700 hover:border-teal-400/55 hover:text-slate-900"
+              }`}
+              aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
             >
-              {isMobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
+              {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
+              <span className="hidden sm:inline">{theme === "dark" ? "Light" : "Dark"}</span>
             </button>
           </div>
+        </div>
+      </header>
 
-          {isMobileMenuOpen ? (
-            <div className="surface-panel mt-3 p-3 lg:hidden">
-              <div className="grid grid-cols-2 gap-2">
-                {navItems.map((item) => (
+      {isMobileMenuOpen ? (
+        <div className="fixed inset-0 z-[60] lg:hidden">
+          <button
+            type="button"
+            aria-label="Close sidebar menu"
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="absolute inset-0 bg-slate-950/45 backdrop-blur-[2px]"
+          />
+
+          <aside
+            id="mobile-sidebar"
+            className={`absolute left-0 top-0 h-full w-[min(19rem,84vw)] border-r p-4 shadow-[0_24px_80px_rgba(2,6,23,0.45)] backdrop-blur-xl ${
+              isDark ? "border-cyan-300/25 bg-slate-950/90" : "border-white/80 bg-white/88"
+            }`}
+          >
+            <div className="flex items-center justify-between">
+              <button
+                type="button"
+                onClick={() => scrollToSection("home")}
+                className={`font-display text-base font-semibold ${
+                  isDark ? "text-cyan-50" : "text-slate-900"
+                }`}
+              >
+                Aryan Kumar
+              </button>
+              <button
+                type="button"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className={`inline-flex h-9 w-9 items-center justify-center rounded-full border transition ${
+                  isDark
+                    ? "border-cyan-300/35 bg-slate-900/80 text-cyan-100 hover:border-cyan-200/60 hover:text-white"
+                    : "border-slate-300/85 bg-white/90 text-slate-700 hover:border-teal-400/55 hover:text-slate-900"
+                }`}
+                aria-label="Close sidebar menu"
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            <nav className="mt-5 space-y-2 overflow-y-auto">
+              {navItems.map((item) => {
+                const Icon = navIconMap[item.id] ?? House;
+                const isActive = activeSection === item.id;
+
+                return (
                   <button
                     key={item.id}
                     type="button"
                     onClick={() => scrollToSection(item.id)}
-                    className={`rounded-xl px-3 py-2 text-left text-sm font-semibold transition ${
-                      activeSection === item.id
-                        ? "bg-teal-700 text-white"
-                        : "bg-white text-slate-700 hover:bg-slate-100"
+                    className={`inline-flex w-full items-center gap-3 rounded-xl border px-3 py-2.5 text-left text-sm font-semibold transition ${
+                      isActive
+                        ? isDark
+                          ? "border-cyan-300/60 bg-cyan-500/20 text-white"
+                          : "border-teal-400/40 bg-teal-500/15 text-slate-900"
+                        : isDark
+                          ? "border-slate-700/70 bg-slate-900/70 text-slate-200 hover:border-cyan-300/45 hover:text-white"
+                          : "border-slate-300/80 bg-white/90 text-slate-700 hover:border-teal-400/45 hover:text-slate-900"
                     }`}
                   >
+                    <Icon size={15} />
                     {item.label}
                   </button>
-                ))}
-              </div>
-            </div>
-          ) : null}
+                );
+              })}
+            </nav>
+          </aside>
         </div>
-      </header>
+      ) : null}
 
-      <main className="pb-20 pt-28">
-        <section id="home" className="py-14 sm:py-20">
-          <div className={containerClass}>
-            <div className="relative overflow-hidden rounded-[2rem] border border-white/80 bg-white/50 px-5 py-6 shadow-soft sm:px-8 sm:py-10 lg:px-10">
-              <div className="pointer-events-none absolute inset-0">
-                <HeroThreeScene mode="background" className="opacity-[0.62]" />
-                <div className="absolute inset-0 bg-gradient-to-r from-[#f8f7f1]/96 via-[#f8f7f1]/82 to-[#f8f7f1]/66 lg:from-[#f8f7f1]/95 lg:via-[#f8f7f1]/84 lg:to-[#f8f7f1]/44" />
-              </div>
+      <main
+        className={`pb-20 pt-28 transition-[padding] duration-300 lg:pt-16 ${
+          isSidebarCollapsed ? "lg:pl-28" : "lg:pl-72"
+        }`}
+      >
+        <section id="home" className="pointer-events-none py-14 sm:py-20">
+          <div className={`${containerClass} pointer-events-none`}>
+            <div
+              className={`pointer-events-none relative isolate overflow-hidden rounded-[2rem] border px-5 py-6 sm:px-8 sm:py-10 lg:px-10 ${
+                isDark
+                  ? "border-cyan-400/20 bg-slate-950/58 shadow-[0_40px_100px_rgba(2,6,23,0.55)]"
+                  : "border-slate-300/80 bg-white/72 shadow-[0_30px_80px_rgba(15,23,42,0.16)]"
+              }`}
+            >
+              <div
+                className={`pointer-events-none absolute inset-0 ${
+                  isDark
+                    ? "bg-gradient-to-r from-slate-950/82 via-slate-950/62 to-slate-950/44 lg:from-slate-950/75 lg:via-slate-950/55 lg:to-slate-950/35"
+                    : "bg-gradient-to-r from-white/84 via-white/64 to-white/44 lg:from-white/74 lg:via-white/56 lg:to-white/36"
+                }`}
+              />
+              <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_25%_35%,rgba(34,211,238,0.2),transparent_42%),radial-gradient(circle_at_80%_20%,rgba(56,189,248,0.16),transparent_45%)]" />
+              <div
+                aria-hidden
+                className="pointer-events-none absolute inset-0 bg-[linear-gradient(rgba(14,116,144,0.14)_1px,transparent_1px),linear-gradient(90deg,rgba(14,116,144,0.14)_1px,transparent_1px)] bg-[length:42px_42px] opacity-30"
+              />
 
-              <div className="relative z-10 grid gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
+              <div className="pointer-events-none relative z-10 grid gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
                 <motion.div style={{ y: heroY }} className="space-y-7">
-                  <p className="inline-flex items-center gap-2 rounded-full border border-teal-200 bg-teal-50/90 px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-teal-700">
+                  <p
+                    className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] ${
+                      isDark
+                        ? "border-cyan-400/35 bg-cyan-500/12 text-cyan-100"
+                        : "border-teal-300/45 bg-teal-400/10 text-teal-700"
+                    }`}
+                  >
                     <BriefcaseBusiness size={14} />
                     Building modern product systems
                   </p>
 
                   <div className="space-y-4">
-                    <h1 className="font-display text-4xl font-semibold leading-tight text-slate-900 sm:text-5xl lg:text-[4.25rem] lg:leading-[1]">
+                    <h1
+                      className={`font-display text-4xl font-semibold leading-tight sm:text-5xl lg:text-[4.25rem] lg:leading-[1] ${
+                        isDark ? "text-white" : "text-slate-900"
+                      }`}
+                    >
                       {personalInfo.name}
                     </h1>
-                    <p className="max-w-2xl text-xl text-slate-700">{personalInfo.role}</p>
-                    <p className="max-w-2xl leading-relaxed text-slate-600">
+                    <p
+                      className={`max-w-2xl text-xl ${
+                        isDark ? "text-cyan-100/80" : "text-teal-700/90"
+                      }`}
+                    >
+                      {personalInfo.role}
+                    </p>
+                    <p
+                      className={`max-w-2xl leading-relaxed ${
+                        isDark ? "text-slate-300" : "text-slate-600"
+                      }`}
+                    >
                       {personalInfo.summary}
                     </p>
                   </div>
@@ -228,7 +585,7 @@ export default function HomePage() {
                     <button
                       type="button"
                       onClick={() => scrollToSection("projects")}
-                      className="button-primary"
+                      className="button-primary pointer-events-auto"
                     >
                       Explore Projects
                       <ArrowRight size={16} />
@@ -236,7 +593,7 @@ export default function HomePage() {
                     <button
                       type="button"
                       onClick={() => scrollToSection("contact")}
-                      className="button-accent"
+                      className="button-accent pointer-events-auto"
                     >
                       Let us work together
                       <ArrowUpRight size={16} />
@@ -245,7 +602,11 @@ export default function HomePage() {
                       href={personalInfo.resumeFile}
                       target="_blank"
                       rel="noreferrer"
-                      className="button-ghost"
+                      className={`pointer-events-auto inline-flex items-center gap-2 rounded-full border px-5 py-3 text-sm font-semibold transition ${
+                        isDark
+                          ? "border-cyan-300/35 bg-slate-900/70 text-cyan-100 hover:border-cyan-200/60 hover:bg-slate-900/85 hover:text-white"
+                          : "border-slate-300/85 bg-white/85 text-slate-700 hover:border-teal-500/45 hover:bg-white hover:text-slate-900"
+                      }`}
                     >
                       Resume
                       <Download size={16} />
@@ -261,20 +622,46 @@ export default function HomePage() {
                         viewport={{ once: true, amount: 0.5 }}
                         transition={{ duration: 0.45, delay: 0.12 + index * 0.06 }}
                         whileHover={{ y: -4 }}
-                        className="surface-panel px-4 py-3"
+                        className={`rounded-2xl border px-4 py-3 backdrop-blur-sm ${
+                          isDark
+                            ? "border-cyan-300/20 bg-slate-950/65"
+                            : "border-slate-300/80 bg-white/82"
+                        }`}
                       >
-                        <p className="text-[11px] uppercase tracking-[0.18em] text-slate-500">
+                        <p
+                          className={`text-[11px] uppercase tracking-[0.18em] ${
+                            isDark ? "text-cyan-100/70" : "text-slate-500"
+                          }`}
+                        >
                           {fact.label}
                         </p>
-                        <p className="mt-1 text-sm font-semibold text-slate-800">{fact.value}</p>
+                        <p
+                          className={`mt-1 text-sm font-semibold ${
+                            isDark ? "text-white" : "text-slate-800"
+                          }`}
+                        >
+                          {fact.value}
+                        </p>
                       </motion.div>
                     ))}
                   </div>
                 </motion.div>
 
                 <Reveal className="space-y-5 lg:self-end lg:pb-2">
-                  <div className="rounded-3xl border border-white/60 bg-white/30 p-5 backdrop-blur-md">
-                    <p className="eyebrow">Social</p>
+                  <div
+                    className={`pointer-events-none rounded-3xl border p-5 backdrop-blur-md ${
+                      isDark
+                        ? "border-cyan-300/20 bg-black/40"
+                        : "border-slate-300/80 bg-white/78"
+                    }`}
+                  >
+                    <p
+                      className={`text-xs font-semibold uppercase tracking-[0.2em] ${
+                        isDark ? "text-cyan-200/85" : "text-teal-700"
+                      }`}
+                    >
+                      Social
+                    </p>
                     <div className="mt-3 flex flex-wrap gap-2">
                       {socialLinks.map((social, index) => {
                         const Icon = socialIconMap[social.label] ?? ExternalLink;
@@ -289,7 +676,11 @@ export default function HomePage() {
                             viewport={{ once: true, amount: 0.6 }}
                             transition={{ duration: 0.35, delay: 0.06 + index * 0.04 }}
                             whileHover={{ y: -3, scale: 1.02 }}
-                            className="inline-flex items-center gap-2 rounded-full border border-slate-200/80 bg-white/70 px-3 py-2 text-sm font-semibold text-slate-700 transition hover:border-slate-500 hover:bg-white/90 hover:text-slate-900"
+                            className={`pointer-events-auto inline-flex items-center gap-2 rounded-full border px-3 py-2 text-sm font-semibold transition ${
+                              isDark
+                                ? "border-cyan-300/30 bg-slate-900/75 text-cyan-50 hover:border-cyan-200/60 hover:bg-slate-900 hover:text-white"
+                                : "border-slate-300/80 bg-white/85 text-slate-700 hover:border-teal-500/45 hover:bg-white hover:text-slate-900"
+                            }`}
                           >
                             <Icon size={14} />
                             {social.label}
@@ -306,18 +697,19 @@ export default function HomePage() {
 
         <section id="about" className="py-16">
           <div className={`${containerClass} relative`}>
-            <SectionAmbient tone="teal" />
-            <div className="relative z-10 space-y-9">
-              <Reveal>
-                <SectionTitle
-                  eyebrow="About"
-                  title="Engineering With Product Thinking"
-                  description="I optimize systems for speed, reliability, and measurable outcomes while keeping delivery practical for business teams."
-                />
-              </Reveal>
+            <div className="space-y-9">
+              <SectionTitle
+                eyebrow="About"
+                title="Engineering With Product Thinking"
+                description="I optimize systems for speed, reliability, and measurable outcomes while keeping delivery practical for business teams."
+              />
 
-              <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-                <Reveal className="surface-panel p-7 sm:p-8">
+              <div
+                className={`grid gap-6 rounded-[2rem] border p-3 shadow-soft backdrop-blur-xl sm:p-4 lg:grid-cols-[1.1fr_0.9fr] ${
+                  isDark ? "border-cyan-300/18 bg-slate-950/30" : "border-white/80 bg-white/24"
+                }`}
+              >
+                <div className="rounded-[2rem] p-7 sm:p-8">
                   <h3 className="font-display text-2xl font-semibold text-slate-900">
                     Profile Snapshot
                   </h3>
@@ -351,9 +743,9 @@ export default function HomePage() {
                       ))}
                     </div>
                   </div>
-                </Reveal>
+                </div>
 
-                <Reveal delay={0.08} className="surface-panel p-7 sm:p-8">
+                <div className="rounded-[2rem] p-7 sm:p-8">
                   <p className="eyebrow">Profile Visual</p>
                   <div className="mt-4 overflow-hidden rounded-3xl">
                     {splineScene ? (
@@ -385,7 +777,7 @@ export default function HomePage() {
                       </div>
                     ))}
                   </div>
-                </Reveal>
+                </div>
               </div>
             </div>
           </div>
@@ -393,8 +785,7 @@ export default function HomePage() {
 
         <section id="skills" className="py-16">
           <div className={`${containerClass} relative`}>
-            <SectionAmbient tone="sky" />
-            <div className="relative z-10 space-y-9">
+            <div className="space-y-9">
               <Reveal>
                 <SectionTitle
                   eyebrow="Skills"
@@ -433,34 +824,34 @@ export default function HomePage() {
                 ))}
               </div>
 
-              <Reveal className="section-shell p-6 sm:p-8">
-                <div className="grid gap-7 xl:grid-cols-[1.08fr_0.92fr]">
-                  <div>
+              <Reveal className="section-shell p-4 sm:p-6 lg:p-8">
+                <div className="grid gap-6 lg:grid-cols-[minmax(0,1.08fr)_minmax(0,0.92fr)] xl:gap-7">
+                  <div className="min-w-0">
                     <div className="space-y-3">
                       <p className="eyebrow">Freelance Services</p>
-                      <h3 className="font-display text-3xl font-semibold leading-tight text-slate-900">
+                      <h3 className="font-display text-2xl font-semibold leading-tight text-slate-900 sm:text-3xl">
                         Available for high-impact contract work
                       </h3>
                     </div>
-                    <div className="mt-6 grid gap-4 md:grid-cols-2">
+                    <div className="mt-6 grid gap-4 sm:grid-cols-2">
                       {freelanceServices.map((service) => (
                         <motion.article
                           key={service.title}
                           whileHover={{ y: -3 }}
                           transition={{ duration: 0.2 }}
-                          className="rounded-3xl border border-slate-200 bg-white/80 p-5"
+                          className="h-full rounded-3xl border border-slate-200 bg-white/80 p-5 sm:p-6"
                         >
-                          <h4 className="font-display text-xl font-semibold text-slate-900">
+                          <h4 className="break-words font-display text-lg font-semibold text-slate-900 sm:text-xl">
                             {service.title}
                           </h4>
-                          <p className="mt-2 text-sm leading-relaxed text-slate-600">
+                          <p className="mt-2 break-words text-sm leading-relaxed text-slate-600">
                             {service.description}
                           </p>
                           <div className="mt-4 flex flex-wrap gap-2">
                             {service.stack.map((item) => (
                               <span
                                 key={item}
-                                className="rounded-full bg-orange-100 px-3 py-1.5 text-xs font-semibold text-orange-700"
+                                className="break-words rounded-full bg-orange-100 px-3 py-1.5 text-xs font-semibold text-orange-700"
                               >
                                 {item}
                               </span>
@@ -471,7 +862,7 @@ export default function HomePage() {
                     </div>
                   </div>
 
-                  <div className="space-y-4 rounded-3xl border border-white/60 bg-white/35 p-4 sm:p-5">
+                  <div className="min-w-0 space-y-4 rounded-3xl border border-white/60 bg-white/35 p-4 sm:p-5 lg:p-6">
                     <div className="space-y-2">
                       <p className="eyebrow">Stack Signal</p>
                       <p className="text-sm leading-relaxed text-slate-600">
@@ -484,10 +875,10 @@ export default function HomePage() {
                       data={skillDepthMetrics}
                       highlightedLabel={skillsFocus}
                       onHoverChange={setSkillsFocus}
-                      className="h-[290px] sm:h-[320px]"
+                      className="h-[230px] sm:h-[280px] md:h-[320px]"
                     />
 
-                    <div className="space-y-2">
+                    <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-1">
                       {skillDepthMetrics.map((metric, index) => (
                         <button
                           key={metric.label}
@@ -502,8 +893,8 @@ export default function HomePage() {
                               : "border-white/50 bg-white/35 hover:bg-white/60"
                           }`}
                         >
-                          <div className="flex items-center justify-between gap-2">
-                            <p className="text-sm font-semibold text-slate-800">{metric.label}</p>
+                          <div className="flex min-w-0 items-center justify-between gap-3">
+                            <p className="truncate text-sm font-semibold text-slate-800">{metric.label}</p>
                             <p className="text-xs font-semibold text-slate-600">
                               {metric.value}
                               {metric.suffix ?? ""}
@@ -531,8 +922,7 @@ export default function HomePage() {
 
         <section id="resume" className="py-16">
           <div className={`${containerClass} relative`}>
-            <SectionAmbient tone="teal" />
-            <div className="relative z-10 space-y-9">
+            <div className="space-y-9">
               <Reveal>
                 <SectionTitle
                   eyebrow="Resume"
@@ -614,8 +1004,7 @@ export default function HomePage() {
 
         <section id="internships" className="py-16">
           <div className={`${containerClass} relative`}>
-            <SectionAmbient tone="orange" />
-            <div className="relative z-10 space-y-9">
+            <div className="space-y-9">
               <Reveal>
                 <SectionTitle
                   eyebrow="Internships"
@@ -645,7 +1034,6 @@ export default function HomePage() {
 
         <section id="projects" className="py-16">
           <div className={`${containerClass} relative`}>
-            <SectionAmbient tone="sky" />
             {unicornProjectId ? (
               <div className="pointer-events-none absolute inset-x-0 top-20 h-[520px] overflow-hidden rounded-[2rem] opacity-[0.3]">
                 <UnicornEmbed
@@ -654,10 +1042,9 @@ export default function HomePage() {
                   className="h-full min-h-0"
                   height={520}
                 />
-                <div className="absolute inset-0 bg-gradient-to-b from-[#f8f7f1]/70 via-[#f8f7f1]/90 to-[#f8f7f1]" />
               </div>
             ) : null}
-            <div className="relative z-10 space-y-9">
+            <div className="space-y-9">
               <Reveal>
                 <SectionTitle
                   eyebrow="Projects"
@@ -735,8 +1122,7 @@ export default function HomePage() {
 
         <section id="contact" className="py-16">
           <div className={`${containerClass} relative`}>
-            <SectionAmbient tone="orange" />
-            <div className="relative z-10 space-y-9">
+            <div className="space-y-9">
               <Reveal>
                 <SectionTitle
                   eyebrow="Contact"
@@ -817,7 +1203,11 @@ export default function HomePage() {
         </section>
       </main>
 
-      <footer className="border-t border-white/70 py-8">
+      <footer
+        className={`border-t border-white/70 py-8 transition-[padding] duration-300 ${
+          isSidebarCollapsed ? "lg:pl-28" : "lg:pl-72"
+        }`}
+      >
         <div
           className={`${containerClass} flex flex-col items-start justify-between gap-4 text-sm text-slate-500 sm:flex-row sm:items-center`}
         >
@@ -830,6 +1220,7 @@ export default function HomePage() {
           </p>
         </div>
       </footer>
+      </div>
     </>
   );
 }

@@ -5,8 +5,10 @@ import { Canvas, useFrame } from "@react-three/fiber";
 import { useMemo, useRef, useState } from "react";
 import type { GraphMetric } from "@/lib/portfolio-data";
 import type { Group } from "three";
+import { ACESFilmicToneMapping, SRGBColorSpace } from "three";
 
 const BAR_GAP = 1.08;
+const SCENE_Y_OFFSET = -0.36;
 
 type SectionGraphSceneProps = {
   data: GraphMetric[];
@@ -58,7 +60,7 @@ function MetricBars({
   });
 
   return (
-    <group ref={group}>
+    <group ref={group} position={[0, SCENE_Y_OFFSET, 0]}>
       {heights.map((height, index) => {
         const metric = data[index];
         const x = (index - (data.length - 1) / 2) * BAR_GAP;
@@ -152,9 +154,14 @@ export default function SectionGraphScene({
         className="pointer-events-none absolute inset-0 rounded-[1.75rem] border border-white/65"
       />
       <Canvas
-        dpr={[1, 1.2]}
+        dpr={[1, 2]}
         camera={{ position: [0, 1.4, 5.8], fov: 45 }}
-        gl={{ antialias: false, alpha: true }}
+        gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
+        onCreated={({ gl }) => {
+          gl.toneMapping = ACESFilmicToneMapping;
+          gl.toneMappingExposure = 1.06;
+          gl.outputColorSpace = SRGBColorSpace;
+        }}
         style={{ pointerEvents: "auto" }}
       >
         <ambientLight intensity={0.72} />
