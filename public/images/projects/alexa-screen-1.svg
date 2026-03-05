@@ -1,0 +1,8 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720" fill="none">
+  <rect width="1280" height="720" rx="44" fill="#1F2937"/>
+  <rect x="86" y="106" width="1108" height="508" rx="26" fill="#111827" stroke="#F97316" stroke-opacity="0.5"/>
+  <rect x="142" y="164" width="996" height="70" rx="14" fill="#7C3AED" fill-opacity="0.35"/>
+  <rect x="142" y="262" width="310" height="302" rx="20" fill="#1E293B"/>
+  <rect x="480" y="262" width="658" height="302" rx="20" fill="#312E81"/>
+  <text x="170" y="208" fill="#FDE68A" font-family="Segoe UI, Arial, sans-serif" font-size="26" font-weight="700">Voice command intent matrix</text>
+</svg>

@@ -1,0 +1,18 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720" fill="none">
+  <defs>
+    <linearGradient id="g" x1="80" y1="40" x2="1240" y2="700" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0F766E"/>
+      <stop offset="1" stop-color="#0EA5E9"/>
+    </linearGradient>
+  </defs>
+  <rect width="1280" height="720" rx="44" fill="url(#g)"/>
+  <rect x="86" y="114" width="1108" height="492" rx="28" fill="rgba(2,6,23,0.18)" stroke="rgba(255,255,255,0.35)"/>
+  <circle cx="226" cy="228" r="20" fill="#67E8F9"/>
+  <circle cx="286" cy="228" r="20" fill="#A5F3FC"/>
+  <rect x="216" y="312" width="848" height="24" rx="12" fill="rgba(255,255,255,0.8)"/>
+  <rect x="216" y="356" width="670" height="18" rx="9" fill="rgba(255,255,255,0.6)"/>
+  <rect x="216" y="412" width="386" height="96" rx="16" fill="rgba(15,23,42,0.35)"/>
+  <rect x="626" y="412" width="438" height="96" rx="16" fill="rgba(14,165,233,0.25)"/>
+  <text x="216" y="170" fill="white" font-family="Segoe UI, Arial, sans-serif" font-size="44" font-weight="700">SyncDev</text>
+  <text x="216" y="206" fill="rgba(236,254,255,0.95)" font-family="Segoe UI, Arial, sans-serif" font-size="24">Realtime collaboration workspace</text>
+</svg>

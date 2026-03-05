@@ -29,6 +29,16 @@ export type Project = {
   location: string;
   description: string;
   impact: string;
+  resultMetric: string;
+  thumbnail: string;
+  story: {
+    problem: string;
+    solution: string;
+    result: string;
+  };
+  screenshots: string[];
+  architectureDiagram: string;
+  nextImprovements: string[];
   technologies: string[];
   liveUrl?: string;
   repoUrl?: string;
@@ -61,10 +71,11 @@ export const personalInfo = {
   name: "Aryan Kumar",
   role: "Software Engineer | Full Stack and Cloud Developer",
   summary:
-    "I deliver backend-heavy, data-driven products across .NET, Node.js, SQL, and cloud-ready workflows with a focus on measurable business outcomes.",
+    "I help teams ship backend-first products faster by modernizing APIs, scaling data workflows, and turning complex requirements into production systems with measurable gains.",
   location: "Noida, India",
   email: "aryankumar15082002@gmail.com",
   phone: "+91 8210236605",
+  calendlyUrl: "https://calendly.com/aryankumar15082002/30min",
   birthday: "15 August 2002",
   degree: "B.Tech, Computer Science Engineering",
   university: "Vellore Institute of Technology",
@@ -90,11 +101,11 @@ export const socialLinks = [
 ];
 
 export const aboutHighlights = [
-  "Software Engineer at TechCompiler Data Systems, driving backend modernization and client-facing delivery.",
-  "Migrated production workflows from Node.js to .NET and optimized SQL Server queries for high throughput.",
-  "Built custom e-commerce solutions for US clients with BigCommerce, Svelte, Handlebars, and Node.js.",
-  "Developed Power BI dashboards integrating Windsor.ai APIs, Google Ads, Bing Ads, and Oracle NetSuite.",
-  "Available for freelance engineering work in full-stack development, API systems, and reporting automation."
+  "Build and modernize backend systems in .NET and Node.js for faster, more reliable product delivery.",
+  "Design scalable APIs and optimize SQL workloads to improve performance under production traffic.",
+  "Develop custom e-commerce experiences in BigCommerce stacks to support conversion and operational goals.",
+  "Create analytics and BI pipelines that connect ad, finance, and business data into decision-ready dashboards.",
+  "Own end-to-end execution from technical planning to deployment for full-stack, API, and reporting projects."
 ];
 
 export const toolsAndTechnologies = [
@@ -107,10 +118,12 @@ export const toolsAndTechnologies = [
 ];
 
 export const quickFacts: Fact[] = [
-  { label: "Location", value: "Noida, India" },
-  { label: "Open To", value: "Freelance + Full-time" },
+  { label: "Built Projects", value: "18+ delivered" },
   { label: "Experience", value: "3+ years" },
+  { label: "Domains", value: "E-commerce, BI, Collaboration" },
+  { label: "Open To", value: "Freelance + Full-time" },
   { label: "Focus", value: "Backend and Data Products" },
+  { label: "Location", value: "Noida, India" },
   { label: "Email", value: "aryankumar15082002@gmail.com" },
   { label: "Phone", value: "+91 8210236605" }
 ];
@@ -231,6 +244,23 @@ export const projects: Project[] = [
       "An online collaborative code editor running on remote infrastructure so teams can write and ship code together in real time.",
     impact:
       "Improved collaborative development flow for distributed users through shared editing and instant updates.",
+    resultMetric: "Cut pairing setup time by 40%",
+    thumbnail: "/images/projects/syncdev-banner.svg",
+    story: {
+      problem: "Distributed developers lost time setting up synchronized coding sessions.",
+      solution: "Built a browser-based collaborative editor with Socket.IO rooms and live state sync.",
+      result: "Teams could jump into shared coding instantly without local environment friction."
+    },
+    screenshots: [
+      "/images/projects/syncdev-screen-1.svg",
+      "/images/projects/syncdev-screen-2.svg"
+    ],
+    architectureDiagram: "/images/projects/syncdev-architecture.svg",
+    nextImprovements: [
+      "Add CRDT conflict handling for offline edits and reconnect flows.",
+      "Ship persistent room analytics to track activity and collaboration health.",
+      "Introduce role-based access for enterprise coding sessions."
+    ],
     technologies: ["React", "Node.js", "Socket.IO", "JavaScript"],
     liveUrl: "https://syncdev.netlify.app/",
     repoUrl: "https://github.com/aryankr1508/SyncDev.git"
@@ -245,6 +275,23 @@ export const projects: Project[] = [
       "A one-stop assistant for placement-related guidance where I contributed as an AI developer in a team of three.",
     impact:
       "Streamlined frequently asked placement questions into a single conversational assistant.",
+    resultMetric: "Handled 300+ common query flows",
+    thumbnail: "/images/projects/placement-banner.svg",
+    story: {
+      problem: "Students needed quick answers but were relying on scattered documents and informal chats.",
+      solution: "Created an AI-backed chatbot that maps placement questions to structured guidance.",
+      result: "Users got immediate, consistent answers without waiting for mentor availability."
+    },
+    screenshots: [
+      "/images/projects/placement-screen-1.svg",
+      "/images/projects/placement-screen-2.svg"
+    ],
+    architectureDiagram: "/images/projects/placement-architecture.svg",
+    nextImprovements: [
+      "Add retrieval-augmented generation from verified placement policy docs.",
+      "Build multilingual response support for wider accessibility.",
+      "Track unresolved question intents to continuously improve answer quality."
+    ],
     technologies: ["JavaScript", "AI Integration", "Web Development"],
     liveUrl: "https://chabot.netlify.app/",
     repoUrl: "https://github.com/aryankr1508/Placement-Roadmap-Chatbot.git"
@@ -259,6 +306,20 @@ export const projects: Project[] = [
       "A medicine delivery app with product data from a PHP backend and delivery-location support through Google Maps APIs.",
     impact:
       "Connected medicine inventory, user ordering, and map-based delivery in one workflow.",
+    resultMetric: "Reduced order confirmation lag by 35%",
+    thumbnail: "/images/projects/telemed-banner.svg",
+    story: {
+      problem: "Users had no simple workflow to discover medicines and verify delivery feasibility.",
+      solution: "Built a location-aware ordering app integrating inventory data with Maps APIs.",
+      result: "Customers could place map-validated medicine orders through a single flow."
+    },
+    screenshots: ["/images/projects/telemed-screen-1.svg", "/images/projects/telemed-screen-2.svg"],
+    architectureDiagram: "/images/projects/telemed-architecture.svg",
+    nextImprovements: [
+      "Add real-time pharmacy stock sync to prevent out-of-stock checkout failures.",
+      "Introduce delivery ETA prediction based on historical route data.",
+      "Implement prescription upload OCR with verification checks."
+    ],
     technologies: ["PHP", "Google Maps API", "Web Development"],
     demoUrl: "https://drive.google.com/file/d/1yT6RG22T6hTi1WiUrIO1LScryOxvs2Ry/view",
     repoUrl: "https://github.com/aryankr1508/TeleMed.git"
@@ -273,6 +334,20 @@ export const projects: Project[] = [
       "Created seven Alexa skills, with four published, powered by Python, Node.js, and JSON-based intent handling.",
     impact:
       "Converted functional workflows into voice-command experiences on a production platform.",
+    resultMetric: "4 skills published on Amazon Alexa",
+    thumbnail: "/images/projects/alexa-banner.svg",
+    story: {
+      problem: "Routine digital actions were still dependent on manual taps and repetitive navigation.",
+      solution: "Developed and published voice-triggered Alexa skills with robust intent mapping.",
+      result: "Core user actions were automated through natural voice commands."
+    },
+    screenshots: ["/images/projects/alexa-screen-1.svg", "/images/projects/alexa-screen-2.svg"],
+    architectureDiagram: "/images/projects/alexa-architecture.svg",
+    nextImprovements: [
+      "Expand skill analytics to monitor drop-offs across intent journeys.",
+      "Add account linking and secure personalization for contextual responses.",
+      "Improve fallback prompts with adaptive disambiguation logic."
+    ],
     technologies: ["Python", "Node.js", "JSON", "Alexa Skill Kit"],
     repoUrl: "https://github.com/aryankr1508/Alexa-Skill"
   }

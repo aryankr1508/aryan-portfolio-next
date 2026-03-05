@@ -1,0 +1,16 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720" fill="none">
+  <defs>
+    <linearGradient id="g" x1="70" y1="40" x2="1230" y2="700" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#7C3AED"/>
+      <stop offset="1" stop-color="#F97316"/>
+    </linearGradient>
+  </defs>
+  <rect width="1280" height="720" rx="44" fill="url(#g)"/>
+  <rect x="82" y="96" width="1116" height="528" rx="30" fill="rgba(30,41,59,0.28)" stroke="rgba(254,215,170,0.4)"/>
+  <rect x="140" y="148" width="370" height="430" rx="28" fill="rgba(15,23,42,0.4)"/>
+  <rect x="552" y="156" width="582" height="126" rx="20" fill="rgba(249,115,22,0.32)"/>
+  <rect x="552" y="308" width="582" height="126" rx="20" fill="rgba(124,58,237,0.35)"/>
+  <rect x="552" y="460" width="582" height="94" rx="20" fill="rgba(251,191,36,0.28)"/>
+  <text x="166" y="226" fill="white" font-family="Segoe UI, Arial, sans-serif" font-size="44" font-weight="700">Alexa Skills</text>
+  <text x="166" y="264" fill="rgba(254,215,170,0.95)" font-family="Segoe UI, Arial, sans-serif" font-size="22">Voice automation builds</text>
+</svg>

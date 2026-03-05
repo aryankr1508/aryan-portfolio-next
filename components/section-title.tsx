@@ -14,10 +14,10 @@ export default function SectionTitle({
       {eyebrow ? (
         <p className="eyebrow font-display">{eyebrow}</p>
       ) : null}
-      <h2 className="font-display text-3xl font-semibold leading-tight text-slate-900 sm:text-4xl md:text-[2.65rem] md:leading-[1.08]">
+      <h2 className="font-display text-3xl font-semibold leading-tight text-heading sm:text-4xl md:text-[2.65rem] md:leading-[1.08]">
         {title}
       </h2>
-      <p className="text-base leading-relaxed text-slate-600 sm:text-lg">
+      <p className="text-base leading-relaxed text-body sm:text-lg">
         {description}
       </p>
     </div>

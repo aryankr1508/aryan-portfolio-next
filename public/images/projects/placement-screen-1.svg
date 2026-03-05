@@ -1,0 +1,9 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720" fill="none">
+  <rect width="1280" height="720" rx="44" fill="#EEF2FF"/>
+  <rect x="90" y="106" width="1100" height="508" rx="26" fill="white" stroke="#93C5FD"/>
+  <rect x="146" y="160" width="988" height="56" rx="12" fill="#DBEAFE"/>
+  <rect x="146" y="242" width="390" height="320" rx="18" fill="#EFF6FF" stroke="#60A5FA"/>
+  <rect x="560" y="242" width="574" height="320" rx="18" fill="#F8FAFC" stroke="#93C5FD"/>
+  <text x="170" y="196" fill="#1E40AF" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="700">Student query dashboard</text>
+  <text x="584" y="302" fill="#1D4ED8" font-family="Segoe UI, Arial, sans-serif" font-size="26" font-weight="700">Answer generation preview</text>
+</svg>

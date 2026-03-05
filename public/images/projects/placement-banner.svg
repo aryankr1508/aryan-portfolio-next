@@ -1,0 +1,18 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720" fill="none">
+  <defs>
+    <linearGradient id="g" x1="50" y1="80" x2="1220" y2="680" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0EA5E9"/>
+      <stop offset="1" stop-color="#1D4ED8"/>
+    </linearGradient>
+  </defs>
+  <rect width="1280" height="720" rx="44" fill="url(#g)"/>
+  <rect x="84" y="100" width="1112" height="520" rx="30" fill="rgba(2,6,23,0.24)" stroke="rgba(186,230,253,0.4)"/>
+  <rect x="146" y="160" width="336" height="388" rx="24" fill="rgba(2,6,23,0.36)"/>
+  <rect x="520" y="160" width="614" height="66" rx="14" fill="rgba(255,255,255,0.8)"/>
+  <rect x="520" y="254" width="492" height="28" rx="14" fill="rgba(255,255,255,0.66)"/>
+  <rect x="520" y="300" width="574" height="28" rx="14" fill="rgba(255,255,255,0.56)"/>
+  <rect x="520" y="360" width="614" height="150" rx="20" fill="rgba(30,64,175,0.35)"/>
+  <text x="150" y="210" fill="white" font-family="Segoe UI, Arial, sans-serif" font-size="38" font-weight="700">Placement</text>
+  <text x="150" y="250" fill="white" font-family="Segoe UI, Arial, sans-serif" font-size="38" font-weight="700">Roadmap Bot</text>
+  <text x="150" y="296" fill="rgba(191,219,254,0.95)" font-family="Segoe UI, Arial, sans-serif" font-size="22">AI guidance assistant</text>
+</svg>

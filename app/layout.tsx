@@ -30,6 +30,9 @@ export default function RootLayout({
   return (
     <html lang="en" data-theme="dark">
       <body className={`${manrope.variable} ${sora.variable} font-body antialiased`}>
+        <a href="#main-content" className="skip-link">
+          Skip to main content
+        </a>
         <SmoothScroll>{children}</SmoothScroll>
       </body>
     </html>

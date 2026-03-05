@@ -1,0 +1,21 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720" fill="none">
+  <rect width="1280" height="720" rx="44" fill="#ECFDF5"/>
+  <rect x="110" y="88" width="220" height="92" rx="16" fill="#D1FAE5" stroke="#047857"/>
+  <text x="155" y="145" fill="#065F46" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="700">Users</text>
+  <rect x="430" y="88" width="300" height="92" rx="16" fill="#A7F3D0" stroke="#059669"/>
+  <text x="506" y="145" fill="#065F46" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="700">Web App</text>
+  <rect x="830" y="88" width="320" height="92" rx="16" fill="#99F6E4" stroke="#0F766E"/>
+  <text x="886" y="145" fill="#115E59" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="700">PHP API</text>
+  <line x1="330" y1="134" x2="430" y2="134" stroke="#059669" stroke-width="6"/>
+  <line x1="730" y1="134" x2="830" y2="134" stroke="#0F766E" stroke-width="6"/>
+  <rect x="250" y="292" width="380" height="120" rx="20" fill="white" stroke="#34D399"/>
+  <text x="316" y="364" fill="#047857" font-family="Segoe UI, Arial, sans-serif" font-size="28" font-weight="700">Medicine Inventory</text>
+  <rect x="650" y="292" width="380" height="120" rx="20" fill="white" stroke="#10B981"/>
+  <text x="742" y="364" fill="#047857" font-family="Segoe UI, Arial, sans-serif" font-size="28" font-weight="700">Maps API</text>
+  <line x1="540" y1="180" x2="440" y2="292" stroke="#10B981" stroke-width="6"/>
+  <line x1="740" y1="180" x2="840" y2="292" stroke="#10B981" stroke-width="6"/>
+  <rect x="400" y="520" width="480" height="120" rx="20" fill="#F0FDF4" stroke="#059669"/>
+  <text x="468" y="592" fill="#065F46" font-family="Segoe UI, Arial, sans-serif" font-size="28" font-weight="700">Order and tracking workflow</text>
+  <line x1="440" y1="412" x2="520" y2="520" stroke="#16A34A" stroke-width="6"/>
+  <line x1="840" y1="412" x2="760" y2="520" stroke="#16A34A" stroke-width="6"/>
+</svg>

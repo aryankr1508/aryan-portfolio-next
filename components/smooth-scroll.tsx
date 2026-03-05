@@ -18,11 +18,13 @@ type SmoothScrollProps = {
 
 export default function SmoothScroll({ children }: SmoothScrollProps) {
   useEffect(() => {
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
     const lenis = new Lenis({
-      duration: 1.15,
-      smoothWheel: true,
-      wheelMultiplier: 0.95,
-      touchMultiplier: 1.15
+      duration: prefersReducedMotion ? 0.01 : 1.15,
+      smoothWheel: !prefersReducedMotion,
+      wheelMultiplier: prefersReducedMotion ? 1 : 0.95,
+      touchMultiplier: prefersReducedMotion ? 1 : 1.15
     });
 
     let frameId = 0;
@@ -35,8 +37,8 @@ export default function SmoothScroll({ children }: SmoothScrollProps) {
     window.__portfolioScrollTo = (target, options = {}) => {
       lenis.scrollTo(target, {
         offset: options.offset ?? 0,
-        duration: options.immediate ? 0 : 1.05,
-        immediate: options.immediate ?? false
+        duration: options.immediate || prefersReducedMotion ? 0 : 1.05,
+        immediate: options.immediate ?? prefersReducedMotion
       });
     };
 

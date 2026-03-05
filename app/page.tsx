@@ -3,6 +3,7 @@
 import {
   ArrowRight,
   ArrowUpRight,
+  CalendarClock,
   Code2,
   ChevronsLeft,
   ChevronsRight,
@@ -39,10 +40,10 @@ import CollapsibleCard from "@/components/collapsible-card";
 import ContactForm from "@/components/contact-form";
 import HeroThreeScene from "@/components/hero-three-scene";
 import Reveal from "@/components/reveal";
-import SectionGraphScene from "@/components/section-graph-scene";
 import SectionTitle from "@/components/section-title";
 import SplineScene from "@/components/spline-scene";
 import UnicornEmbed from "@/components/unicorn-embed";
+import { trackEvent } from "@/lib/analytics";
 import type { GraphMetric } from "@/lib/portfolio-data";
 import {
   aboutHighlights,
@@ -81,6 +82,16 @@ const navIconMap: Record<string, LucideIcon> = {
 const containerClass = "mx-auto w-[min(1180px,calc(100%-2rem))]";
 const graphPalette = ["#0f766e", "#0ea5e9", "#f97316", "#14b8a6", "#0369a1", "#334155"];
 const HeroSpline = dynamic(() => import("@splinetool/react-spline"), { ssr: false, loading: () => null });
+const SectionGraphScene = dynamic(() => import("@/components/section-graph-scene"), {
+  ssr: false,
+  loading: () => (
+    <div className="flex h-[230px] items-center justify-center rounded-[1.75rem] border border-slate-200/70 bg-white/55 text-sm text-slate-600 sm:h-[280px] md:h-[320px]">
+      Loading graph...
+    </div>
+  )
+});
+
+const primarySocialLabels = new Set(["GitHub", "LinkedIn"]);
 
 const metricWidth = (value: number, max: number) =>
   `${Math.max(8, Math.min(100, (value / max) * 100))}%`;
@@ -95,6 +106,8 @@ export default function HomePage() {
   });
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [skillsFocus, setSkillsFocus] = useState<string | null>(null);
+  const [useLiteVisuals, setUseLiteVisuals] = useState(false);
+  const [isProjectsVisualReady, setIsProjectsVisualReady] = useState(false);
   const [theme, setTheme] = useState<"dark" | "light">(() => {
     if (typeof window === "undefined") return "dark";
     return window.localStorage.getItem("theme") === "light" ? "light" : "dark";
@@ -129,6 +142,42 @@ export default function HomePage() {
   useEffect(() => {
     window.localStorage.setItem("sidebar-collapsed", String(isSidebarCollapsed));
   }, [isSidebarCollapsed]);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia(
+      "(max-width: 1024px), (prefers-reduced-motion: reduce)"
+    );
+
+    const updateVisualMode = () => {
+      setUseLiteVisuals(mediaQuery.matches);
+    };
+
+    updateVisualMode();
+    mediaQuery.addEventListener("change", updateVisualMode);
+
+    return () => {
+      mediaQuery.removeEventListener("change", updateVisualMode);
+    };
+  }, []);
+
+  useEffect(() => {
+    const projectsSection = document.getElementById("projects");
+    if (!projectsSection) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+          setIsProjectsVisualReady(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: "220px 0px" }
+    );
+
+    observer.observe(projectsSection);
+
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     const sections = navItems
@@ -206,6 +255,10 @@ export default function HomePage() {
     setTheme((current) => (current === "dark" ? "light" : "dark"));
   };
   const isDark = theme === "dark";
+  const primarySocialLinks = socialLinks.filter((social) => primarySocialLabels.has(social.label));
+  const additionalSocialLinks = socialLinks.filter(
+    (social) => !primarySocialLabels.has(social.label)
+  );
 
   return (
     <>
@@ -215,17 +268,17 @@ export default function HomePage() {
       />
 
       <div aria-hidden className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
-        {heroSplineScene ? (
+        {heroSplineScene && !useLiteVisuals ? (
           <HeroSpline
             scene={heroSplineScene}
-            renderOnDemand={false}
+            renderOnDemand
             onLoad={(app: Application) => {
               app.setGlobalEvents(true);
             }}
             className="pointer-events-auto h-full w-full opacity-[0.82]"
           />
         ) : (
-          <HeroThreeScene mode="background" className="opacity-[0.58]" />
+          <HeroThreeScene mode="background" className={useLiteVisuals ? "opacity-[0.42]" : "opacity-[0.58]"} />
         )}
       </div>
       <div
@@ -236,17 +289,22 @@ export default function HomePage() {
             : "bg-[radial-gradient(circle_at_20%_15%,rgba(20,184,166,0.18),transparent_48%),radial-gradient(circle_at_80%_25%,rgba(14,165,233,0.14),transparent_52%),linear-gradient(to_bottom,rgba(248,250,252,0.56),rgba(241,245,249,0.72))]"
         }`}
       />
-      <div aria-hidden className="grid-fog" />
-      <div aria-hidden className="grain-overlay" />
+      {!useLiteVisuals ? <div aria-hidden className="grid-fog" /> : null}
+      {!useLiteVisuals ? <div aria-hidden className="grain-overlay" /> : null}
 
-      <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
-        <div className="drift-blob drift-blob-a" />
-        <div className="drift-blob drift-blob-b" />
-        <div className="drift-blob drift-blob-c" />
-      </div>
+      {!useLiteVisuals ? (
+        <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
+          <div className="drift-blob drift-blob-a" />
+          <div className="drift-blob drift-blob-b" />
+          <div className="drift-blob drift-blob-c" />
+        </div>
+      ) : null}
 
       <div className="relative z-20">
-        <aside className="pointer-events-auto fixed left-3 top-2 z-50 hidden h-[calc(100dvh-1rem)] max-h-[calc(100dvh-1rem)] lg:block xl:left-5">
+        <aside
+          aria-label="Desktop sidebar"
+          className="pointer-events-auto fixed left-3 top-2 z-50 hidden h-[calc(100dvh-1rem)] max-h-[calc(100dvh-1rem)] lg:block xl:left-5"
+        >
           <div className="relative h-full">
             <div
               className={`game-sidebar-shell relative flex h-full min-h-0 flex-col overflow-hidden rounded-[2rem] border p-[clamp(0.45rem,1.1vh,0.75rem)] shadow-[0_30px_100px_rgba(2,6,23,0.42)] backdrop-blur-xl transition-[width] duration-300 ${
@@ -286,7 +344,7 @@ export default function HomePage() {
                 ) : null}
               </button>
 
-              <nav className="relative z-10 min-h-0 flex-1 overflow-hidden">
+              <nav aria-label="Primary navigation" className="relative z-10 min-h-0 flex-1 overflow-hidden">
                 <div className="flex flex-col gap-[clamp(0.12rem,0.42vh,0.35rem)]">
                 {navItems.map((item) => {
                   const Icon = navIconMap[item.id] ?? House;
@@ -459,6 +517,7 @@ export default function HomePage() {
 
           <aside
             id="mobile-sidebar"
+            aria-label="Mobile sidebar"
             className={`absolute left-0 top-0 h-full w-[min(19rem,84vw)] border-r p-4 shadow-[0_24px_80px_rgba(2,6,23,0.45)] backdrop-blur-xl ${
               isDark ? "border-cyan-300/25 bg-slate-950/90" : "border-white/80 bg-white/88"
             }`}
@@ -487,7 +546,7 @@ export default function HomePage() {
               </button>
             </div>
 
-            <nav className="mt-5 space-y-2 overflow-y-auto">
+            <nav aria-label="Mobile navigation" className="mt-5 space-y-2 overflow-y-auto">
               {navItems.map((item) => {
                 const Icon = navIconMap[item.id] ?? House;
                 const isActive = activeSection === item.id;
@@ -518,6 +577,8 @@ export default function HomePage() {
       ) : null}
 
       <main
+        id="main-content"
+        aria-label="Portfolio content"
         className={`pb-20 pt-28 transition-[padding] duration-300 lg:pt-16 ${
           isSidebarCollapsed ? "lg:pl-28" : "lg:pl-72"
         }`}
@@ -534,18 +595,18 @@ export default function HomePage() {
               <div
                 className={`pointer-events-none absolute inset-0 ${
                   isDark
-                    ? "bg-gradient-to-r from-slate-950/82 via-slate-950/62 to-slate-950/44 lg:from-slate-950/75 lg:via-slate-950/55 lg:to-slate-950/35"
-                    : "bg-gradient-to-r from-white/84 via-white/64 to-white/44 lg:from-white/74 lg:via-white/56 lg:to-white/36"
+                    ? "bg-gradient-to-r from-slate-950/74 via-slate-950/56 to-slate-950/38 lg:from-slate-950/68 lg:via-slate-950/50 lg:to-slate-950/32"
+                    : "bg-gradient-to-r from-white/80 via-white/60 to-white/42 lg:from-white/70 lg:via-white/52 lg:to-white/34"
                 }`}
               />
-              <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_25%_35%,rgba(34,211,238,0.2),transparent_42%),radial-gradient(circle_at_80%_20%,rgba(56,189,248,0.16),transparent_45%)]" />
+              <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_25%_35%,rgba(34,211,238,0.14),transparent_42%),radial-gradient(circle_at_80%_20%,rgba(56,189,248,0.12),transparent_45%)]" />
               <div
                 aria-hidden
-                className="pointer-events-none absolute inset-0 bg-[linear-gradient(rgba(14,116,144,0.14)_1px,transparent_1px),linear-gradient(90deg,rgba(14,116,144,0.14)_1px,transparent_1px)] bg-[length:42px_42px] opacity-30"
+                className="pointer-events-none absolute inset-0 bg-[linear-gradient(rgba(14,116,144,0.14)_1px,transparent_1px),linear-gradient(90deg,rgba(14,116,144,0.14)_1px,transparent_1px)] bg-[length:42px_42px] opacity-22"
               />
 
               <div className="pointer-events-none relative z-10 grid gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
-                <motion.div style={{ y: heroY }} className="space-y-7">
+                <motion.div style={{ y: useLiteVisuals ? 0 : heroY }} className="space-y-7">
                   <p
                     className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] ${
                       isDark
@@ -554,7 +615,7 @@ export default function HomePage() {
                     }`}
                   >
                     <BriefcaseBusiness size={14} />
-                    Building modern product systems
+                    Shipping backend systems that move metrics
                   </p>
 
                   <div className="space-y-4">
@@ -584,24 +645,33 @@ export default function HomePage() {
                   <div className="flex flex-wrap gap-3">
                     <button
                       type="button"
-                      onClick={() => scrollToSection("projects")}
+                      onClick={() => {
+                        trackEvent("cta_click", { cta: "hero_view_case_studies", section: "home" });
+                        scrollToSection("projects");
+                      }}
                       className="button-primary pointer-events-auto"
                     >
-                      Explore Projects
+                      View Case Studies
                       <ArrowRight size={16} />
                     </button>
                     <button
                       type="button"
-                      onClick={() => scrollToSection("contact")}
+                      onClick={() => {
+                        trackEvent("cta_click", { cta: "hero_discuss_project", section: "home" });
+                        scrollToSection("contact");
+                      }}
                       className="button-accent pointer-events-auto"
                     >
-                      Let us work together
+                      Discuss Your Project
                       <ArrowUpRight size={16} />
                     </button>
                     <a
                       href={personalInfo.resumeFile}
                       target="_blank"
                       rel="noreferrer"
+                      onClick={() =>
+                        trackEvent("cta_click", { cta: "hero_resume_download", section: "home" })
+                      }
                       className={`pointer-events-auto inline-flex items-center gap-2 rounded-full border px-5 py-3 text-sm font-semibold transition ${
                         isDark
                           ? "border-cyan-300/35 bg-slate-900/70 text-cyan-100 hover:border-cyan-200/60 hover:bg-slate-900/85 hover:text-white"
@@ -613,38 +683,40 @@ export default function HomePage() {
                     </a>
                   </div>
 
-                  <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-                    {quickFacts.slice(0, 3).map((fact, index) => (
-                      <motion.div
-                        key={fact.label}
-                        initial={{ opacity: 0, y: 12 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true, amount: 0.5 }}
-                        transition={{ duration: 0.45, delay: 0.12 + index * 0.06 }}
-                        whileHover={{ y: -4 }}
-                        className={`rounded-2xl border px-4 py-3 backdrop-blur-sm ${
-                          isDark
-                            ? "border-cyan-300/20 bg-slate-950/65"
-                            : "border-slate-300/80 bg-white/82"
-                        }`}
-                      >
-                        <p
-                          className={`text-[11px] uppercase tracking-[0.18em] ${
-                            isDark ? "text-cyan-100/70" : "text-slate-500"
-                          }`}
-                        >
-                          {fact.label}
-                        </p>
-                        <p
-                          className={`mt-1 text-sm font-semibold ${
-                            isDark ? "text-white" : "text-slate-800"
-                          }`}
-                        >
-                          {fact.value}
-                        </p>
-                      </motion.div>
-                    ))}
-                  </div>
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, amount: 0.45 }}
+                    transition={{ duration: 0.45, delay: 0.12 }}
+                    className={`pointer-events-auto rounded-2xl border px-4 py-3 ${
+                      isDark ? "border-cyan-300/20 bg-slate-950/62" : "border-slate-300/80 bg-white/84"
+                    }`}
+                  >
+                    <p
+                      className={`text-[11px] font-semibold uppercase tracking-[0.18em] ${
+                        isDark ? "text-cyan-100/80" : "text-slate-600"
+                      }`}
+                    >
+                      Proof of execution
+                    </p>
+                    <div className="mt-2 flex flex-wrap items-center gap-2 text-sm">
+                      {quickFacts.slice(0, 3).map((fact, index) => (
+                        <div key={fact.label} className="inline-flex items-center gap-2">
+                          <span className={`font-semibold ${isDark ? "text-white" : "text-slate-900"}`}>
+                            {fact.value}
+                          </span>
+                          <span className={`${isDark ? "text-slate-300" : "text-slate-600"}`}>
+                            {fact.label}
+                          </span>
+                          {index < 2 ? (
+                            <span className={`${isDark ? "text-cyan-200/60" : "text-slate-400"}`}>
+                              •
+                            </span>
+                          ) : null}
+                        </div>
+                      ))}
+                    </div>
+                  </motion.div>
                 </motion.div>
 
                 <Reveal className="space-y-5 lg:self-end lg:pb-2">
@@ -660,10 +732,10 @@ export default function HomePage() {
                         isDark ? "text-cyan-200/85" : "text-teal-700"
                       }`}
                     >
-                      Social
+                      Professional Profiles
                     </p>
                     <div className="mt-3 flex flex-wrap gap-2">
-                      {socialLinks.map((social, index) => {
+                      {primarySocialLinks.map((social, index) => {
                         const Icon = socialIconMap[social.label] ?? ExternalLink;
                         return (
                           <motion.a
@@ -688,6 +760,11 @@ export default function HomePage() {
                         );
                       })}
                     </div>
+                    {additionalSocialLinks.length ? (
+                      <p className={`mt-3 text-xs ${isDark ? "text-slate-400" : "text-slate-500"}`}>
+                        Additional social channels are listed in the contact section.
+                      </p>
+                    ) : null}
                   </div>
                 </Reveal>
               </div>
@@ -1034,7 +1111,7 @@ export default function HomePage() {
 
         <section id="projects" className="py-16">
           <div className={`${containerClass} relative`}>
-            {unicornProjectId ? (
+            {unicornProjectId && isProjectsVisualReady && !useLiteVisuals ? (
               <div className="pointer-events-none absolute inset-x-0 top-20 h-[520px] overflow-hidden rounded-[2rem] opacity-[0.3]">
                 <UnicornEmbed
                   projectId={unicornProjectId}
@@ -1049,7 +1126,7 @@ export default function HomePage() {
                 <SectionTitle
                   eyebrow="Projects"
                   title="Selected Projects"
-                  description="Products and experiments focused on collaboration, AI assistance, automation, and practical utility."
+                  description="Case studies with concrete delivery context, implementation decisions, and measurable outcomes."
                 />
               </Reveal>
 
@@ -1061,7 +1138,26 @@ export default function HomePage() {
                       transition={{ duration: 0.22 }}
                       className="surface-panel flex h-full flex-col p-6"
                     >
-                      <p className="text-xs uppercase tracking-[0.16em] text-slate-500">
+                      <div className="relative overflow-hidden rounded-2xl border border-white/60">
+                        <Image
+                          src={project.thumbnail}
+                          alt={`${project.title} preview`}
+                          width={1280}
+                          height={720}
+                          className="h-48 w-full object-cover"
+                        />
+                        <div
+                          className={`absolute left-3 top-3 inline-flex rounded-full border px-3 py-1 text-xs font-semibold ${
+                            isDark
+                              ? "border-cyan-300/45 bg-slate-950/85 text-cyan-100"
+                              : "border-white/85 bg-white/92 text-teal-700"
+                          }`}
+                        >
+                          {project.resultMetric}
+                        </div>
+                      </div>
+
+                      <p className="mt-4 text-xs uppercase tracking-[0.16em] text-slate-500">
                         {project.period} | {project.location}
                       </p>
                       <h3 className="mt-2 font-display text-2xl font-semibold text-slate-900">
@@ -1074,6 +1170,21 @@ export default function HomePage() {
                         {project.description}
                       </p>
 
+                      <ul className="mt-4 space-y-2 text-sm text-slate-600">
+                        <li>
+                          <span className="font-semibold text-slate-800">Problem:</span>{" "}
+                          {project.story.problem}
+                        </li>
+                        <li>
+                          <span className="font-semibold text-slate-800">Solution:</span>{" "}
+                          {project.story.solution}
+                        </li>
+                        <li>
+                          <span className="font-semibold text-slate-800">Result:</span>{" "}
+                          {project.story.result}
+                        </li>
+                      </ul>
+
                       <div className="mt-5 flex flex-wrap gap-2">
                         {project.technologies.map((tech) => (
                           <motion.span key={tech} whileHover={{ y: -2 }} className="chip">
@@ -1083,7 +1194,13 @@ export default function HomePage() {
                       </div>
 
                       <div className="mt-6 flex flex-wrap gap-3">
-                        <Link href={`/projects/${project.slug}`} className="button-primary">
+                        <Link
+                          href={`/projects/${project.slug}`}
+                          onClick={() =>
+                            trackEvent("project_detail_click", { project: project.slug, source: "home_card" })
+                          }
+                          className="button-primary"
+                        >
                           Details
                           <ArrowUpRight size={15} />
                         </Link>
@@ -1093,6 +1210,9 @@ export default function HomePage() {
                             href={project.liveUrl}
                             target="_blank"
                             rel="noreferrer"
+                            onClick={() =>
+                              trackEvent("project_live_click", { project: project.slug, source: "home_card" })
+                            }
                             className="button-ghost"
                           >
                             Live
@@ -1105,6 +1225,9 @@ export default function HomePage() {
                             href={project.repoUrl}
                             target="_blank"
                             rel="noreferrer"
+                            onClick={() =>
+                              trackEvent("project_repo_click", { project: project.slug, source: "home_card" })
+                            }
                             className="button-ghost"
                           >
                             GitHub
@@ -1127,7 +1250,7 @@ export default function HomePage() {
                 <SectionTitle
                   eyebrow="Contact"
                   title="Start Your Next Build"
-                  description="Need help with full-stack delivery, backend APIs, e-commerce customization, or analytics automation? Let us connect."
+                  description="Need backend APIs, full-stack delivery, e-commerce customization, or reporting automation? Share your goals and timeline."
                 />
               </Reveal>
 
@@ -1183,17 +1306,57 @@ export default function HomePage() {
                         Available for freelance and full-time opportunities
                       </p>
                     </motion.div>
+
+                    {additionalSocialLinks.length ? (
+                      <div className="space-y-2">
+                        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">
+                          More profiles
+                        </p>
+                        <div className="flex flex-wrap gap-2">
+                          {additionalSocialLinks.map((social) => {
+                            const Icon = socialIconMap[social.label] ?? ExternalLink;
+                            return (
+                              <a
+                                key={social.label}
+                                href={social.url}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="inline-flex items-center gap-2 rounded-full border border-slate-300 bg-white/85 px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:border-teal-500/45 hover:text-slate-900"
+                              >
+                                <Icon size={13} />
+                                {social.label}
+                              </a>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    ) : null}
                   </div>
                 </Reveal>
 
                 <Reveal delay={0.08} className="surface-panel p-7 sm:p-8">
-                  <div className="space-y-2 pb-3">
+                  <div className="space-y-3 pb-3">
                     <p className="font-display text-2xl font-semibold text-slate-900">
                       Send a project brief
                     </p>
                     <p className="text-sm text-slate-600">
                       Messages are delivered directly to {personalInfo.email}.
                     </p>
+                    <div className="flex flex-wrap items-center gap-3 pt-1">
+                      <a
+                        href={personalInfo.calendlyUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        onClick={() => trackEvent("cta_click", { cta: "contact_book_call", section: "contact" })}
+                        className="button-ghost"
+                      >
+                        Book a Call
+                        <CalendarClock size={15} />
+                      </a>
+                      <p className="text-xs font-semibold uppercase tracking-[0.15em] text-emerald-700">
+                        Replies within 24h
+                      </p>
+                    </div>
                   </div>
                   <ContactForm />
                 </Reveal>

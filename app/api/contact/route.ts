@@ -4,6 +4,8 @@ import { NextResponse } from "next/server";
 type ContactPayload = {
   email?: string;
   phone?: string;
+  budget?: string;
+  timeline?: string;
   message?: string;
 };
 
@@ -23,14 +25,23 @@ export async function POST(request: Request) {
 
   const email = payload.email?.trim() ?? "";
   const phone = payload.phone?.trim() ?? "";
+  const budget = payload.budget?.trim() ?? "";
+  const timeline = payload.timeline?.trim() ?? "";
   const message = payload.message?.trim() ?? "";
 
   if (!emailRegex.test(email)) {
     return NextResponse.json({ error: "Please provide a valid email address." }, { status: 400 });
   }
 
-  if (!phoneRegex.test(phone)) {
+  if (phone && !phoneRegex.test(phone)) {
     return NextResponse.json({ error: "Please provide a valid phone number." }, { status: 400 });
+  }
+
+  if (budget.length > 100 || timeline.length > 100) {
+    return NextResponse.json(
+      { error: "Budget and timeline values look invalid. Please try again." },
+      { status: 400 }
+    );
   }
 
   if (message.length < 10 || message.length > 3000) {
@@ -78,7 +89,9 @@ export async function POST(request: Request) {
         "New portfolio inquiry",
         "",
         `Email: ${email}`,
-        `Phone: ${phone}`,
+        `Phone: ${phone || "Not provided"}`,
+        `Budget: ${budget || "Not provided"}`,
+        `Timeline: ${timeline || "Not provided"}`,
         "",
         "Message:",
         message
@@ -86,7 +99,9 @@ export async function POST(request: Request) {
       html: `
         <h2>New portfolio inquiry</h2>
         <p><strong>Email:</strong> ${escapeHtml(email)}</p>
-        <p><strong>Phone:</strong> ${escapeHtml(phone)}</p>
+        <p><strong>Phone:</strong> ${escapeHtml(phone || "Not provided")}</p>
+        <p><strong>Budget:</strong> ${escapeHtml(budget || "Not provided")}</p>
+        <p><strong>Timeline:</strong> ${escapeHtml(timeline || "Not provided")}</p>
         <p><strong>Message:</strong></p>
         <p>${escapeHtml(message).replace(/\n/g, "<br/>")}</p>
       `

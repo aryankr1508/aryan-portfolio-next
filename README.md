@@ -25,8 +25,13 @@ Then open `http://localhost:3000`.
 ## Contact Form Email Setup (Gmail)
 
 1. Copy `.env.example` to `.env.local`.
-2. Set `SMTP_USER` and `SMTP_PASS` for your email account.
-3. Keep `CONTACT_TO_EMAIL=aryankumar15082002@gmail.com` (or change if needed).
+2. Set `SMTP_USER` to your Gmail address.
+3. Set `SMTP_PASS` to a Gmail App Password (not your normal Gmail password):
+   - Open Google Account Security: https://myaccount.google.com/security
+   - Turn on 2-Step Verification.
+   - Open App Passwords: https://myaccount.google.com/apppasswords
+   - Create a password for "Mail" and use that 16-character value as `SMTP_PASS`.
+4. Keep `CONTACT_TO_EMAIL=aryankumar15082002@gmail.com` (or change if needed).
 
 Without SMTP credentials, the form UI will work but email sending will fail with a config error.
 

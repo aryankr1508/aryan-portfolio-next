@@ -1,0 +1,8 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720" fill="none">
+  <rect width="1280" height="720" rx="44" fill="#042F2E"/>
+  <rect x="96" y="118" width="1088" height="484" rx="24" fill="#052E3D" stroke="#5EEAD4" stroke-opacity="0.4"/>
+  <rect x="142" y="170" width="302" height="370" rx="18" fill="#0F172A"/>
+  <rect x="470" y="170" width="662" height="62" rx="14" fill="#0EA5E9" fill-opacity="0.4"/>
+  <rect x="470" y="252" width="662" height="288" rx="18" fill="#020617" stroke="#22D3EE" stroke-opacity="0.35"/>
+  <text x="492" y="212" fill="#CCFBF1" font-family="Segoe UI, Arial, sans-serif" font-size="26" font-weight="700">Session Controls and Team Presence</text>
+</svg>

@@ -2,20 +2,28 @@
 
 import { Send } from "lucide-react";
 import { FormEvent, useMemo, useState } from "react";
+import { trackEvent } from "@/lib/analytics";
 
 type ContactState = "idle" | "submitting" | "success" | "error";
 
 type ContactFormData = {
   email: string;
   phone: string;
+  budget: string;
+  timeline: string;
   message: string;
 };
 
 const initialData: ContactFormData = {
   email: "",
   phone: "",
+  budget: "",
+  timeline: "",
   message: ""
 };
+
+const budgetOptions = ["Under $3k", "$3k - $8k", "$8k - $15k", "$15k+", "Not sure"];
+const timelineOptions = ["ASAP", "2 - 4 weeks", "1 - 2 months", "Flexible"];
 
 export default function ContactForm() {
   const [data, setData] = useState<ContactFormData>(initialData);
@@ -34,6 +42,11 @@ export default function ContactForm() {
     event.preventDefault();
     setState("submitting");
     setFeedback("");
+    trackEvent("contact_form_submit_attempt", {
+      budget: data.budget || "unspecified",
+      timeline: data.timeline || "unspecified",
+      has_phone: Boolean(data.phone.trim())
+    });
 
     try {
       const response = await fetch("/api/contact", {
@@ -50,12 +63,22 @@ export default function ContactForm() {
 
       setState("success");
       setFeedback("Your message was sent successfully. I will reply soon.");
+      trackEvent("contact_form_submit", {
+        status: "success",
+        budget: data.budget || "unspecified",
+        timeline: data.timeline || "unspecified"
+      });
       setData(initialData);
     } catch (error) {
       const message =
         error instanceof Error ? error.message : "Something went wrong while sending.";
       setState("error");
       setFeedback(message);
+      trackEvent("contact_form_submit", {
+        status: "error",
+        budget: data.budget || "unspecified",
+        timeline: data.timeline || "unspecified"
+      });
     }
   };
 
@@ -81,13 +104,12 @@ export default function ContactForm() {
 
       <div className="space-y-2">
         <label htmlFor="phone" className="text-sm font-semibold text-slate-700">
-          Phone Number
+          Phone Number (optional)
         </label>
         <input
           id="phone"
           name="phone"
           type="tel"
-          required
           value={data.phone}
           onChange={(event) =>
             setData((previous) => ({ ...previous, phone: event.target.value }))
@@ -95,6 +117,54 @@ export default function ContactForm() {
           placeholder="+91 9876543210"
           className="h-11 w-full rounded-xl border border-slate-300 bg-white/85 px-3 text-slate-700 outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-100"
         />
+      </div>
+
+      <div className="space-y-2">
+        <p className="text-sm font-semibold text-slate-700">Project Budget (optional)</p>
+        <div className="flex flex-wrap gap-2">
+          {budgetOptions.map((option) => {
+            const isSelected = data.budget === option;
+            return (
+              <button
+                key={option}
+                type="button"
+                aria-pressed={isSelected}
+                onClick={() => setData((previous) => ({ ...previous, budget: option }))}
+                className={`rounded-full border px-3 py-1.5 text-xs font-semibold transition ${
+                  isSelected
+                    ? "border-teal-600 bg-teal-50 text-teal-700"
+                    : "border-slate-300 bg-white/80 text-slate-600 hover:border-teal-400/60 hover:text-slate-900"
+                }`}
+              >
+                {option}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        <p className="text-sm font-semibold text-slate-700">Timeline (optional)</p>
+        <div className="flex flex-wrap gap-2">
+          {timelineOptions.map((option) => {
+            const isSelected = data.timeline === option;
+            return (
+              <button
+                key={option}
+                type="button"
+                aria-pressed={isSelected}
+                onClick={() => setData((previous) => ({ ...previous, timeline: option }))}
+                className={`rounded-full border px-3 py-1.5 text-xs font-semibold transition ${
+                  isSelected
+                    ? "border-orange-500 bg-orange-50 text-orange-700"
+                    : "border-slate-300 bg-white/80 text-slate-600 hover:border-orange-400/60 hover:text-slate-900"
+                }`}
+              >
+                {option}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       <div className="space-y-2">
@@ -124,15 +194,20 @@ export default function ContactForm() {
         <Send size={14} />
       </button>
 
-      {feedback ? (
-        <p
-          className={`text-sm ${
-            state === "success" ? "text-emerald-600" : "text-rose-600"
-          }`}
-        >
-          {feedback}
-        </p>
-      ) : null}
+      <p
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+        className={`min-h-[1.25rem] text-sm ${
+          feedback
+            ? state === "success"
+              ? "text-emerald-600"
+              : "text-rose-600"
+            : "text-transparent"
+        }`}
+      >
+        {feedback || " "}
+      </p>
     </form>
   );
 }
