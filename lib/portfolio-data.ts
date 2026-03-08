@@ -19,6 +19,20 @@ export type ResumeItem = {
   subtitle: string;
   duration: string;
   details: string[];
+  companyProjects?: ExperienceProject[];
+};
+
+export type ExperienceProject = {
+  name: string;
+  role?: string;
+  summary: string;
+  stack: string[];
+  highlights: string[];
+  confidentialityNote?: string;
+  link?: {
+    label: string;
+    url: string;
+  };
 };
 
 export type Project = {
@@ -69,17 +83,16 @@ export type GraphMetric = {
 
 export const personalInfo = {
   name: "Aryan Kumar",
-  role: "Software Engineer | Full Stack and Cloud Developer",
+  role: "Software Engineer",
   summary:
-    "I help teams ship backend-first products faster by modernizing APIs, scaling data workflows, and turning complex requirements into production systems with measurable gains.",
+    "I build scalable web applications and backend systems with a strong focus on API design, performance, and reliable product delivery.",
   location: "Noida, India",
   email: "aryankumar15082002@gmail.com",
   phone: "+91 8210236605",
   calendlyUrl: "https://calendly.com/aryankumar15082002/30min",
-  birthday: "15 August 2002",
   degree: "B.Tech, Computer Science Engineering",
   university: "Vellore Institute of Technology",
-  resumeFile: "/resume/resume-aryan-kumar.pdf"
+  resumeFile: "/resume/Aryan_Kumar_Resume.pdf"
 };
 
 export const navItems: NavItem[] = [
@@ -101,58 +114,146 @@ export const socialLinks = [
 ];
 
 export const aboutHighlights = [
-  "Build and modernize backend systems in .NET and Node.js for faster, more reliable product delivery.",
-  "Design scalable APIs and optimize SQL workloads to improve performance under production traffic.",
-  "Develop custom e-commerce experiences in BigCommerce stacks to support conversion and operational goals.",
-  "Create analytics and BI pipelines that connect ad, finance, and business data into decision-ready dashboards.",
-  "Own end-to-end execution from technical planning to deployment for full-stack, API, and reporting projects."
+  "Lead backend-first product delivery across .NET, Java Spring Boot, Python, and Node.js services.",
+  "Design and ship REST, GraphQL, SOAP, and integration-heavy APIs for production systems.",
+  "Build full-stack web, mobile, desktop, and TV applications based on business and platform needs.",
+  "Develop data engineering and BI workflows with SQL, Power BI, and automated reporting pipelines.",
+  "Own delivery from architecture and implementation to CI/CD, cloud rollout, and production support."
 ];
 
 export const toolsAndTechnologies = [
-  ".NET and C#",
-  "Node.js and JavaScript",
-  "SQL Server and Cosmos DB",
-  "Power BI and Power Query",
-  "CI/CD Pipelines",
-  "Git and GitHub"
+  "Backend-first with .NET and C#",
+  "Java Spring Boot, Python, and Node.js",
+  "REST, GraphQL, SOAP, and FIXML APIs",
+  "SQL + NoSQL data platforms",
+  "Cloud + CI/CD on Azure, AWS, and GCP",
+  "Power BI, Data Engineering, and Analytics"
 ];
 
 export const quickFacts: Fact[] = [
   { label: "Built Projects", value: "18+ delivered" },
   { label: "Experience", value: "3+ years" },
-  { label: "Domains", value: "E-commerce, BI, Collaboration" },
+  { label: "Domains", value: "E-commerce, BI, AI, Collaboration" },
   { label: "Open To", value: "Freelance + Full-time" },
-  { label: "Focus", value: "Backend and Data Products" },
-  { label: "Location", value: "Noida, India" },
-  { label: "Email", value: "aryankumar15082002@gmail.com" },
-  { label: "Phone", value: "+91 8210236605" }
+  { label: "Focus", value: "Backend, Cloud, and Data Products" },
+  { label: "Core Stack", value: ".NET, Java, Python, Node.js, SQL" },
+  { label: "Location", value: "Noida, India" }
 ];
 
 export const skillGroups: SkillGroup[] = [
   {
-    title: "Frontend",
-    description: "Responsive UI development and customization-heavy web experiences.",
-    items: ["HTML5", "CSS3", "JavaScript", "React", "Svelte", "Handlebars", "Bootstrap"]
+    title: "Backend Engineering",
+    description: "Primary strength in building scalable, production-grade backend systems.",
+    items: [
+      ".NET / ASP.NET Core",
+      "C#",
+      "Java + Spring Boot",
+      "Python",
+      "Node.js",
+      "Microservices and Service Design",
+      "Performance Tuning"
+    ]
   },
   {
-    title: "Backend",
-    description: "APIs, server logic, integrations, and performance-first architecture.",
-    items: [".NET Core", "C#", "Node.js", "SQL Server", "Cosmos DB", "REST APIs"]
+    title: "API and Integration",
+    description: "End-to-end API design, integration workflows, and protocol interoperability.",
+    items: [
+      "REST APIs",
+      "GraphQL",
+      "SOAP",
+      "FIXML",
+      "Webhook Integrations",
+      "Auth (JWT/OAuth)",
+      "OpenAPI / Swagger"
+    ]
   },
   {
-    title: "Data and BI",
-    description: "Analytics systems and cross-platform reporting automation.",
-    items: ["Power BI", "Power Query (M)", "Windsor.ai APIs", "Google Ads APIs", "Oracle NetSuite"]
+    title: "Databases and Data Engineering",
+    description: "Relational and NoSQL data systems with modeling and pipeline execution.",
+    items: [
+      "SQL Server",
+      "MySQL",
+      "PostgreSQL",
+      "MongoDB",
+      "Cosmos DB",
+      "Data Modeling",
+      "ETL Pipelines"
+    ]
   },
   {
-    title: "Programming Languages",
-    description: "Primary languages used in product engineering and automation.",
-    items: ["C#", "JavaScript", "T-SQL", "Java", "Python", "C/C++"]
+    title: "Cloud, DevOps, and CI/CD",
+    description: "Cloud deployments and release automation for reliable product operations.",
+    items: [
+      "Azure",
+      "AWS",
+      "GCP",
+      "Jenkins",
+      "Azure DevOps",
+      "CI/CD Pipelines",
+      "Release Automation"
+    ]
   },
   {
-    title: "Tools and Delivery",
-    description: "Release workflows, IDEs, and collaboration tooling.",
-    items: ["Git", "GitHub", "Azure DevOps", "VS Code", "Visual Studio", "Power BI Desktop", "PyCharm"]
+    title: "Frontend and E-commerce",
+    description: "Modern frontend systems and e-commerce customization at production scale.",
+    items: [
+      "React",
+      "Next.js",
+      "Angular",
+      "Svelte",
+      "Handlebars",
+      "BigCommerce",
+      "Shopify",
+      "Vanilla JavaScript"
+    ]
+  },
+  {
+    title: "Mobile and Desktop Apps",
+    description: "Cross-platform and native app development for mobile and desktop.",
+    items: [
+      "React Native",
+      "Java (Android)",
+      "Kotlin",
+      "Flutter (Dart)",
+      ".NET Desktop Apps",
+      "WPF",
+      "WinForms"
+    ]
+  },
+  {
+    title: "TV App Frontend",
+    description: "Frontend engineering for smart TV platforms and remote-driven interfaces.",
+    items: [
+      "Roku (BrightScript)",
+      "Lightning JS",
+      "TV UI Architecture",
+      "Remote-first Navigation",
+      "Performance-focused Rendering"
+    ]
+  },
+  {
+    title: "Data, BI, and Reporting",
+    description: "Business intelligence delivery from ingestion to dashboard automation.",
+    items: [
+      "Power BI",
+      "Power Query (M)",
+      "DAX",
+      "Reporting Automation",
+      "Business Data Integration",
+      "KPI Dashboards"
+    ]
+  },
+  {
+    title: "AI and ML",
+    description: "Applied machine learning workflows and AI-enabled product capabilities.",
+    items: [
+      "TensorFlow",
+      "Keras",
+      "NumPy",
+      "Model Training and Evaluation",
+      "Inference Integration",
+      "AI-assisted Features"
+    ]
   }
 ];
 
@@ -194,6 +295,50 @@ export const experienceItems: ResumeItem[] = [
       "Implemented CI/CD pipelines for .NET and Node.js applications to streamline deployments.",
       "Built dynamic dashboards and scorecards in Power BI by integrating Windsor.ai APIs, Google Ads, Bing Ads, and Oracle NetSuite.",
       "Developed Power Query (M) scripts and Advanced Editor business logic for automated reporting and insights."
+    ],
+    companyProjects: [
+      {
+        name: "MIDAS - Nuclear Safety Plume Monitoring System",
+        role: ".NET / WPF Engineer",
+        summary:
+          "Safety-critical desktop platform for monitoring radiological release scenarios and supporting emergency response.",
+        stack: [".NET 9", "C#", "WPF", "SQL Server", "GIS Mapping"],
+        highlights: [
+          "Integrated live input streams from effluent monitors and meteorological towers for continuous monitoring.",
+          "Implemented Gaussian plume calculations to project dispersal impact zones directly on operational maps.",
+          "Built alert logic to notify affected regions during accidental release events for faster response.",
+          "Added manual release simulation and operator training workflows for drill and readiness exercises.",
+          "Implemented protocol validation checks aligned with plant operating and safety standards."
+        ],
+        confidentialityNote:
+          "Delivered in a regulated enterprise environment; source code and internal visuals are confidential."
+      },
+      {
+        name: "BigCommerce Customization Program (US Client)",
+        role: "Full Stack Engineer",
+        summary:
+          "Customization-heavy e-commerce delivery focused on storefront flexibility and operational workflows.",
+        stack: ["Node.js", "Svelte", "Handlebars", "BigCommerce APIs"],
+        highlights: [
+          "Developed and maintained modular storefront components and custom business workflows.",
+          "Integrated backend services with platform APIs for product, order, and content operations.",
+          "Improved maintainability and turnaround speed for recurring client customization requests."
+        ],
+        confidentialityNote:
+          "Client-specific business logic and implementation artifacts are under NDA."
+      },
+      {
+        name: "Marketing and Finance BI Automation",
+        role: "Data and BI Engineer",
+        summary:
+          "Centralized reporting platform combining ad and finance systems into decision-ready dashboards.",
+        stack: ["Power BI", "Power Query (M)", "Windsor.ai API", "NetSuite", "SQL"],
+        highlights: [
+          "Built reusable ingestion and transformation flows across multiple external data sources.",
+          "Developed KPI dashboards and scorecards for campaign and finance performance visibility.",
+          "Reduced manual reporting effort through scheduled refresh and standardized data models."
+        ]
+      }
     ]
   },
   {
@@ -206,6 +351,32 @@ export const experienceItems: ResumeItem[] = [
       "Implemented login and registration APIs for seamless user navigation.",
       "Integrated user functionality across MSSQL and Cosmos DB and deployed CRM workflows in Cosmos DB for scalability.",
       "Ensured data security and integrity while improving operational efficiency."
+    ],
+    companyProjects: [
+      {
+        name: "Accounting and Super Admin Platform",
+        role: "Backend and Full Stack Developer",
+        summary:
+          "Core enterprise modules for financial workflows, role controls, and tenant-level administration.",
+        stack: [".NET", "C#", "MSSQL", "Stored Procedures", "React"],
+        highlights: [
+          "Implemented APIs and stored procedures for budgeting, chart of accounts, and legal entity workflows.",
+          "Built role and permission flows to support secure access across admin surfaces.",
+          "Improved operational consistency through centralized business logic and validation."
+        ]
+      },
+      {
+        name: "CRM Data Layer on Cosmos DB",
+        role: "Data and Integration Engineer",
+        summary:
+          "Scalable CRM data architecture integrating relational and NoSQL systems for product workflows.",
+        stack: ["Cosmos DB", "MSSQL", ".NET APIs"],
+        highlights: [
+          "Designed and integrated cross-database data flows between MSSQL and Cosmos DB.",
+          "Delivered scalable document-based CRM workflows for high-volume operations.",
+          "Focused on reliability, data integrity, and production issue resolution."
+        ]
+      }
     ]
   }
 ];
@@ -218,18 +389,6 @@ export const educationItems: ResumeItem[] = [
     details: [
       "Built a strong foundation in algorithms, software systems, and application development."
     ]
-  },
-  {
-    title: "SurendraNath Centenary School",
-    subtitle: "Intermediate",
-    duration: "2019",
-    details: ["Completed higher secondary education with a technical focus."]
-  },
-  {
-    title: "Delhi Public School",
-    subtitle: "Matric",
-    duration: "2017",
-    details: ["Completed secondary school education."]
   }
 ];
 
@@ -359,9 +518,9 @@ export const internships: Internship[] = [
     role: "Full Stack Web Developer Intern",
     duration: "April 2022 - June 2022",
     details: [
-      "Developed the full responsive frontend and converted Figma UI to production-ready code.",
-      "Integrated location functionality using PHP and Google APIs, and handled hosting on Hostinger.",
-      "Led a team of 8 members during delivery."
+      "Led a team of 8 developers and coordinated delivery milestones.",
+      "Converted Figma designs into responsive production-ready frontend screens.",
+      "Integrated PHP + Google Maps APIs and managed deployment on Hostinger."
     ],
     website: "https://www.cureya.in/"
   },
@@ -370,9 +529,9 @@ export const internships: Internship[] = [
     role: "Full Stack Developer Intern",
     duration: "March 2023 - August 2023",
     details: [
-      "Built .NET APIs and stored procedures for accounting workflows.",
-      "Optimized performance, fixed production bugs, and worked with SQL and Cosmos DB.",
-      "Developed React.js screens for the Learning Management System."
+      "Built .NET APIs and stored procedures for accounting and admin workflows.",
+      "Integrated MSSQL and Cosmos DB flows while fixing production issues.",
+      "Shipped React LMS modules and improved release stability."
     ],
     website: "https://propvivo.com/"
   }

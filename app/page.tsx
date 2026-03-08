@@ -4,17 +4,10 @@ import {
   ArrowRight,
   ArrowUpRight,
   CalendarClock,
-  Code2,
-  ChevronsLeft,
-  ChevronsRight,
-  BriefcaseBusiness,
   Download,
   ExternalLink,
   Facebook,
-  FileText,
-  FolderKanban,
   Github,
-  House,
   Instagram,
   Linkedin,
   Mail,
@@ -22,35 +15,30 @@ import {
   Menu,
   Moon,
   Phone,
-  Send,
   Sparkles,
   Sun,
   Twitter,
-  UserRound,
   X
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
-import { motion, useScroll, useSpring, useTransform } from "framer-motion";
-import dynamic from "next/dynamic";
+import { AnimatePresence, motion, useScroll, useSpring, useTransform } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
-import type { Application } from "@splinetool/runtime";
 import { useEffect, useState } from "react";
 import CollapsibleCard from "@/components/collapsible-card";
 import ContactForm from "@/components/contact-form";
+import HeroCursorCubesScene from "@/components/hero-cursor-cubes-scene";
 import HeroThreeScene from "@/components/hero-three-scene";
 import Reveal from "@/components/reveal";
 import SectionTitle from "@/components/section-title";
+import StageSection from "@/components/stage-section";
 import SplineScene from "@/components/spline-scene";
-import UnicornEmbed from "@/components/unicorn-embed";
 import { trackEvent } from "@/lib/analytics";
-import type { GraphMetric } from "@/lib/portfolio-data";
 import {
   aboutHighlights,
   contactAddress,
   educationItems,
   experienceItems,
-  freelanceServices,
   internships,
   navItems,
   personalInfo,
@@ -69,62 +57,32 @@ const socialIconMap: Record<string, LucideIcon> = {
   Facebook: Facebook
 };
 
-const navIconMap: Record<string, LucideIcon> = {
-  home: House,
-  about: UserRound,
-  skills: Code2,
-  resume: FileText,
-  internships: BriefcaseBusiness,
-  projects: FolderKanban,
-  contact: Send
-};
-
 const containerClass = "mx-auto w-[min(1180px,calc(100%-2rem))]";
-const graphPalette = ["#0f766e", "#0ea5e9", "#f97316", "#14b8a6", "#0369a1", "#334155"];
-const HeroSpline = dynamic(() => import("@splinetool/react-spline"), { ssr: false, loading: () => null });
-const SectionGraphScene = dynamic(() => import("@/components/section-graph-scene"), {
-  ssr: false,
-  loading: () => (
-    <div className="flex h-[230px] items-center justify-center rounded-[1.75rem] border border-slate-200/70 bg-white/55 text-sm text-slate-600 sm:h-[280px] md:h-[320px]">
-      Loading graph...
-    </div>
-  )
-});
-
 const primarySocialLabels = new Set(["GitHub", "LinkedIn"]);
-
-const metricWidth = (value: number, max: number) =>
-  `${Math.max(8, Math.min(100, (value / max) * 100))}%`;
 
 export default function HomePage() {
   const [activeSection, setActiveSection] = useState("home");
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(() => {
-    if (typeof window === "undefined") return true;
-    const saved = window.localStorage.getItem("sidebar-collapsed");
-    if (saved === null) return true;
-    return saved === "true";
-  });
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [skillsFocus, setSkillsFocus] = useState<string | null>(null);
   const [useLiteVisuals, setUseLiteVisuals] = useState(false);
-  const [isProjectsVisualReady, setIsProjectsVisualReady] = useState(false);
   const [theme, setTheme] = useState<"dark" | "light">(() => {
     if (typeof window === "undefined") return "dark";
     return window.localStorage.getItem("theme") === "light" ? "light" : "dark";
   });
+
   const heroSplineScene =
     process.env.NEXT_PUBLIC_HERO_SPLINE_SCENE_URL ?? process.env.NEXT_PUBLIC_SPLINE_SCENE_URL ?? "";
+  const heroInteractiveSplineScene =
+    process.env.NEXT_PUBLIC_HERO_INTERACTIVE_SPLINE_SCENE_URL ??
+    process.env.NEXT_PUBLIC_HERO_SPLINE_SCENE_URL ??
+    "";
+  const heroSceneInBanner = heroInteractiveSplineScene || heroSplineScene;
   const splineScene = process.env.NEXT_PUBLIC_SPLINE_SCENE_URL;
-  const unicornProjectId = process.env.NEXT_PUBLIC_UNICORN_PROJECT_ID;
-
-  const skillDepthMetrics: GraphMetric[] = skillGroups.map((group, index) => ({
-    label: group.title,
-    value: group.items.length,
-    suffix: " tools",
-    description: group.description,
-    color: graphPalette[index % graphPalette.length]
-  }));
-  const skillMetricMax = Math.max(...skillDepthMetrics.map((metric) => metric.value), 1);
+  const isDark = theme === "dark";
+  const primarySocialLinks = socialLinks.filter((social) => primarySocialLabels.has(social.label));
+  const additionalSocialLinks = socialLinks.filter(
+    (social) => !primarySocialLabels.has(social.label)
+  );
+  const heroFacts = quickFacts.slice(0, 4);
 
   const { scrollYProgress, scrollY } = useScroll();
   const progressScale = useSpring(scrollYProgress, {
@@ -132,16 +90,12 @@ export default function HomePage() {
     damping: 28,
     mass: 0.32
   });
-  const heroY = useTransform(scrollY, [0, 620], [0, 72]);
+  const heroY = useTransform(scrollY, [0, 560], [0, 44]);
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
     window.localStorage.setItem("theme", theme);
   }, [theme]);
-
-  useEffect(() => {
-    window.localStorage.setItem("sidebar-collapsed", String(isSidebarCollapsed));
-  }, [isSidebarCollapsed]);
 
   useEffect(() => {
     const mediaQuery = window.matchMedia(
@@ -161,25 +115,6 @@ export default function HomePage() {
   }, []);
 
   useEffect(() => {
-    const projectsSection = document.getElementById("projects");
-    if (!projectsSection) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries.some((entry) => entry.isIntersecting)) {
-          setIsProjectsVisualReady(true);
-          observer.disconnect();
-        }
-      },
-      { rootMargin: "220px 0px" }
-    );
-
-    observer.observe(projectsSection);
-
-    return () => observer.disconnect();
-  }, []);
-
-  useEffect(() => {
     const sections = navItems
       .map((item) => document.getElementById(item.id))
       .filter((section): section is HTMLElement => Boolean(section));
@@ -189,7 +124,7 @@ export default function HomePage() {
     let frameId = 0;
 
     const updateActiveSection = () => {
-      const probeLine = Math.max(120, window.innerHeight * 0.3);
+      const probeLine = Math.max(120, window.innerHeight * 0.32);
       let current = sections[0].id;
 
       for (const section of sections) {
@@ -229,7 +164,7 @@ export default function HomePage() {
     const section = document.getElementById(id);
     if (!section) return;
 
-    const sectionOffset = window.innerWidth >= 1024 ? -28 : -96;
+    const sectionOffset = -96;
     const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const scrollTo = (
       window as Window & {
@@ -254,769 +189,438 @@ export default function HomePage() {
   const toggleTheme = () => {
     setTheme((current) => (current === "dark" ? "light" : "dark"));
   };
-  const isDark = theme === "dark";
-  const primarySocialLinks = socialLinks.filter((social) => primarySocialLabels.has(social.label));
-  const additionalSocialLinks = socialLinks.filter(
-    (social) => !primarySocialLabels.has(social.label)
-  );
 
   return (
     <>
       <motion.div
-        className="fixed inset-x-0 bottom-0 z-[80] h-1 origin-left bg-gradient-to-r from-teal-700 via-cyan-500 to-orange-500"
+        className="fixed inset-x-0 top-0 z-[70] h-1 origin-left bg-gradient-to-r from-emerald-500 via-teal-500 to-amber-500"
         style={{ scaleX: progressScale }}
       />
 
-      <div aria-hidden className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
-        {heroSplineScene && !useLiteVisuals ? (
-          <HeroSpline
-            scene={heroSplineScene}
-            renderOnDemand
-            onLoad={(app: Application) => {
-              app.setGlobalEvents(true);
-            }}
-            className="pointer-events-auto h-full w-full opacity-[0.82]"
+      {!useLiteVisuals ? (
+        <div aria-hidden className="pointer-events-none fixed inset-0 -z-20 overflow-hidden">
+          <HeroThreeScene
+            mode="background"
+            className={isDark ? "opacity-[0.56]" : "opacity-[0.48]"}
           />
-        ) : (
-          <HeroThreeScene mode="background" className={useLiteVisuals ? "opacity-[0.42]" : "opacity-[0.58]"} />
-        )}
-      </div>
+        </div>
+      ) : null}
+
       <div
         aria-hidden
-        className={`pointer-events-none fixed inset-0 -z-20 ${
+        className={`pointer-events-none fixed inset-0 -z-30 ${
           isDark
-            ? "bg-[radial-gradient(circle_at_20%_15%,rgba(34,211,238,0.2),transparent_46%),radial-gradient(circle_at_80%_25%,rgba(37,99,235,0.18),transparent_50%),linear-gradient(to_bottom,rgba(2,6,23,0.22),rgba(2,6,23,0.58))]"
-            : "bg-[radial-gradient(circle_at_20%_15%,rgba(20,184,166,0.18),transparent_48%),radial-gradient(circle_at_80%_25%,rgba(14,165,233,0.14),transparent_52%),linear-gradient(to_bottom,rgba(248,250,252,0.56),rgba(241,245,249,0.72))]"
+            ? "bg-[radial-gradient(circle_at_16%_8%,rgba(20,184,166,0.1),transparent_46%),radial-gradient(circle_at_82%_12%,rgba(251,146,60,0.08),transparent_50%),linear-gradient(to_bottom,rgba(2,3,6,0.98),rgba(7,10,16,0.99))]"
+            : "bg-[radial-gradient(circle_at_18%_8%,rgba(14,165,233,0.16),transparent_46%),radial-gradient(circle_at_80%_14%,rgba(20,184,166,0.16),transparent_50%),linear-gradient(to_bottom,rgba(248,250,252,0.96),rgba(241,245,249,0.98))]"
         }`}
       />
       {!useLiteVisuals ? <div aria-hidden className="grid-fog" /> : null}
       {!useLiteVisuals ? <div aria-hidden className="grain-overlay" /> : null}
 
-      {!useLiteVisuals ? (
-        <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
-          <div className="drift-blob drift-blob-a" />
-          <div className="drift-blob drift-blob-b" />
-          <div className="drift-blob drift-blob-c" />
-        </div>
-      ) : null}
-
-      <div className="relative z-20">
-        <aside
-          aria-label="Desktop sidebar"
-          className="pointer-events-auto fixed left-3 top-2 z-50 hidden h-[calc(100dvh-1rem)] max-h-[calc(100dvh-1rem)] lg:block xl:left-5"
-        >
-          <div className="relative h-full">
-            <div
-              className={`game-sidebar-shell relative flex h-full min-h-0 flex-col overflow-hidden rounded-[2rem] border p-[clamp(0.45rem,1.1vh,0.75rem)] shadow-[0_30px_100px_rgba(2,6,23,0.42)] backdrop-blur-xl transition-[width] duration-300 ${
-                isSidebarCollapsed ? "w-[4.1rem]" : "w-56"
-              } ${isDark ? "border-cyan-300/30 bg-slate-950/76" : "border-white/85 bg-white/74"}`}
-            >
-              <div
-                aria-hidden
-                className={`pointer-events-none absolute inset-0 ${
-                  isDark
-                    ? "bg-[radial-gradient(circle_at_15%_8%,rgba(34,211,238,0.25),transparent_42%),radial-gradient(circle_at_85%_90%,rgba(56,189,248,0.2),transparent_48%)]"
-                    : "bg-[radial-gradient(circle_at_15%_8%,rgba(20,184,166,0.14),transparent_44%),radial-gradient(circle_at_85%_90%,rgba(14,165,233,0.14),transparent_48%)]"
-                }`}
-              />
-
-              <button
-                type="button"
-                onClick={() => scrollToSection("home")}
-                className={`relative z-10 mb-[clamp(0.35rem,1vh,0.9rem)] flex w-full shrink-0 items-center overflow-hidden rounded-2xl border transition ${
-                  isSidebarCollapsed
-                    ? "justify-center px-0 py-[clamp(0.32rem,0.85vh,0.55rem)]"
-                    : "gap-2 px-2 py-[clamp(0.32rem,0.85vh,0.55rem)] text-left"
-                } ${isDark ? "border-cyan-300/20 bg-slate-900/70 hover:border-cyan-200/50" : "border-slate-300/80 bg-white/85 hover:border-teal-400/45"}`}
-                title={isSidebarCollapsed ? "Home" : undefined}
-              >
-                <span className="inline-flex h-[clamp(1.75rem,3vh,2.4rem)] w-[clamp(1.75rem,3vh,2.4rem)] shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-cyan-400 via-sky-400 to-blue-500 text-sm font-bold text-slate-950">
-                  AK
-                </span>
-                {!isSidebarCollapsed ? (
-                  <span
-                    className={`whitespace-nowrap text-sm font-semibold ${
-                      isDark ? "text-cyan-50" : "text-slate-800"
-                    }`}
-                  >
-                    Aryan Kumar
-                  </span>
-                ) : null}
-              </button>
-
-              <nav aria-label="Primary navigation" className="relative z-10 min-h-0 flex-1 overflow-hidden">
-                <div className="flex flex-col gap-[clamp(0.12rem,0.42vh,0.35rem)]">
-                {navItems.map((item) => {
-                  const Icon = navIconMap[item.id] ?? House;
-                  const isActive = activeSection === item.id;
-
-                  return (
-                    <button
-                      key={item.id}
-                      type="button"
-                      onClick={() => scrollToSection(item.id)}
-                      className={`pointer-events-auto relative flex w-full items-center overflow-hidden rounded-xl transition ${
-                        isSidebarCollapsed
-                          ? "justify-center px-0 py-[clamp(0.28rem,0.8vh,0.52rem)]"
-                          : "gap-2 px-2 py-[clamp(0.28rem,0.8vh,0.52rem)] text-left"
-                      } ${
-                        isActive
-                          ? isDark
-                            ? "text-white"
-                            : "text-slate-900"
-                          : isDark
-                            ? "text-slate-300 hover:text-white"
-                            : "text-slate-600 hover:text-slate-900"
-                      }`}
-                      title={isSidebarCollapsed ? item.label : undefined}
-                      aria-label={item.label}
-                    >
-                      {isActive ? (
-                        <motion.span
-                          layoutId="sidebar-active-pill"
-                          className={`absolute inset-0 rounded-xl ${
-                            isDark
-                              ? "bg-gradient-to-r from-cyan-500/35 to-blue-500/30"
-                              : "bg-gradient-to-r from-teal-400/30 to-sky-400/25"
-                          }`}
-                          transition={{ type: "spring", stiffness: 320, damping: 26 }}
-                        />
-                      ) : null}
-
-                      <span
-                        className={`relative z-10 inline-flex h-[clamp(1.7rem,3vh,2.4rem)] w-[clamp(1.7rem,3vh,2.4rem)] shrink-0 items-center justify-center rounded-xl border text-sm ${
-                          isActive
-                            ? isDark
-                              ? "border-cyan-200/70 bg-cyan-500/35 text-cyan-50 ring-1 ring-cyan-200/55 shadow-[0_0_22px_rgba(34,211,238,0.25)]"
-                              : "border-teal-300/80 bg-teal-400/25 text-teal-700 ring-1 ring-teal-300/70 shadow-[0_0_18px_rgba(20,184,166,0.18)]"
-                            : isDark
-                              ? "border-slate-600/70 bg-slate-900/70 text-slate-300"
-                              : "border-slate-300/80 bg-white/85 text-slate-600"
-                        }`}
-                      >
-                        <Icon size={17} />
-                      </span>
-                      {!isSidebarCollapsed ? (
-                        <span className="relative z-10 whitespace-nowrap text-sm font-semibold">
-                          {item.label}
-                        </span>
-                      ) : null}
-                    </button>
-                  );
-                })}
-                </div>
-              </nav>
-
-              <div
-                className={`relative z-10 mt-[clamp(0.35rem,0.95vh,0.9rem)] shrink-0 border-t pt-[clamp(0.35rem,0.95vh,0.9rem)] ${
-                  isDark ? "border-cyan-300/18" : "border-slate-300/75"
-                }`}
-              >
-                <button
-                  type="button"
-                  onClick={toggleTheme}
-                  className={`pointer-events-auto flex w-full items-center rounded-xl border transition ${
-                    isSidebarCollapsed
-                      ? "justify-center px-0 py-1.5"
-                      : "gap-2 px-2 py-1.5"
-                  } ${
-                    isDark
-                      ? "border-slate-600/70 bg-slate-900/70 text-slate-200 hover:border-cyan-300/45 hover:text-white"
-                      : "border-slate-300/80 bg-white/85 text-slate-700 hover:border-teal-400/45 hover:text-slate-900"
-                  }`}
-                  aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
-                  title={isSidebarCollapsed ? (theme === "dark" ? "Light Mode" : "Dark Mode") : undefined}
-                >
-                  <span
-                    className={`inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border ${
-                      isDark ? "border-slate-600/70 bg-slate-950/85" : "border-slate-300/80 bg-white"
-                    }`}
-                  >
-                    {theme === "dark" ? <Sun size={12} /> : <Moon size={12} />}
-                  </span>
-                  {!isSidebarCollapsed ? (
-                    <span className="whitespace-nowrap text-[11px] font-semibold tracking-[0.02em]">
-                      {theme === "dark" ? "Light Mode" : "Dark Mode"}
-                    </span>
-                  ) : null}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setIsSidebarCollapsed((previous) => !previous)}
-                  className={`pointer-events-auto mt-2 flex w-full items-center rounded-xl border transition ${
-                    isSidebarCollapsed ? "justify-center px-0 py-1.5" : "gap-2 px-2 py-1.5"
-                  } ${
-                    isDark
-                      ? "border-cyan-300/28 bg-slate-950/80 text-cyan-100 hover:border-cyan-200/65 hover:text-white"
-                      : "border-slate-300/80 bg-white/90 text-slate-700 hover:border-teal-400/55 hover:text-slate-900"
-                  }`}
-                  aria-label={isSidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-                  title={isSidebarCollapsed ? "Expand sidebar" : undefined}
-                >
-                  <span
-                    className={`inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border ${
-                      isDark ? "border-cyan-300/25 bg-slate-950/85" : "border-slate-300/80 bg-white"
-                    }`}
-                  >
-                    {isSidebarCollapsed ? <ChevronsRight size={11} /> : <ChevronsLeft size={11} />}
-                  </span>
-                  {!isSidebarCollapsed ? (
-                    <span className="whitespace-nowrap text-[11px] font-semibold tracking-[0.02em]">
-                      Collapse
-                    </span>
-                  ) : null}
-                </button>
-              </div>
-            </div>
-          </div>
-        </aside>
-
-      <header className="fixed inset-x-0 top-4 z-50 lg:hidden">
-        <div className={`${containerClass} relative`}>
-          <div className="surface-panel flex items-center justify-between px-4 py-3 sm:px-5">
-            <button
-              type="button"
-              onClick={() => setIsMobileMenuOpen(true)}
-              className={`inline-flex h-10 w-10 items-center justify-center rounded-full border transition ${
-                isDark
-                  ? "border-cyan-300/35 bg-slate-900/80 text-cyan-100 hover:border-cyan-200/60 hover:text-white"
-                  : "border-slate-300/85 bg-white/90 text-slate-700 hover:border-teal-400/55 hover:text-slate-900"
-              }`}
-              aria-label="Open sidebar menu"
-              aria-expanded={isMobileMenuOpen}
-              aria-controls="mobile-sidebar"
-            >
-              <Menu size={18} />
-            </button>
-
-            <button
-              type="button"
-              onClick={toggleTheme}
-              className={`inline-flex items-center gap-2 rounded-full border px-3 py-2 text-sm font-semibold transition ${
-                isDark
-                  ? "border-cyan-300/35 bg-slate-900/80 text-cyan-100 hover:border-cyan-200/60 hover:text-white"
-                  : "border-slate-300/85 bg-white/90 text-slate-700 hover:border-teal-400/55 hover:text-slate-900"
-              }`}
-              aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
-            >
-              {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
-              <span className="hidden sm:inline">{theme === "dark" ? "Light" : "Dark"}</span>
-            </button>
-          </div>
-        </div>
-      </header>
-
-      {isMobileMenuOpen ? (
-        <div className="fixed inset-0 z-[60] lg:hidden">
-          <button
-            type="button"
-            aria-label="Close sidebar menu"
-            onClick={() => setIsMobileMenuOpen(false)}
-            className="absolute inset-0 bg-slate-950/45 backdrop-blur-[2px]"
-          />
-
-          <aside
-            id="mobile-sidebar"
-            aria-label="Mobile sidebar"
-            className={`absolute left-0 top-0 h-full w-[min(19rem,84vw)] border-r p-4 shadow-[0_24px_80px_rgba(2,6,23,0.45)] backdrop-blur-xl ${
-              isDark ? "border-cyan-300/25 bg-slate-950/90" : "border-white/80 bg-white/88"
+      <header className="fixed inset-x-0 top-0 z-50">
+        <div className={`${containerClass} pt-4`}>
+          <div
+            className={`glass-top-nav flex items-center justify-between rounded-full border px-3 py-2 shadow-[0_14px_36px_rgba(2,6,23,0.22)] backdrop-blur-xl sm:px-4 ${
+              isDark
+                ? "border-slate-600/55 bg-slate-950/82"
+                : "border-slate-200/85 bg-white/78"
             }`}
           >
-            <div className="flex items-center justify-between">
-              <button
-                type="button"
-                onClick={() => scrollToSection("home")}
-                className={`font-display text-base font-semibold ${
-                  isDark ? "text-cyan-50" : "text-slate-900"
-                }`}
-              >
+            <button
+              type="button"
+              onClick={() => scrollToSection("home")}
+              className="inline-flex items-center gap-2 rounded-full px-2 py-1.5"
+            >
+              <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-emerald-300 via-teal-300 to-amber-300 text-xs font-bold text-slate-950">
+                AK
+              </span>
+              <span className={`hidden text-sm font-semibold sm:inline ${isDark ? "text-slate-100" : "text-slate-900"}`}>
                 Aryan Kumar
-              </button>
-              <button
-                type="button"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className={`inline-flex h-9 w-9 items-center justify-center rounded-full border transition ${
-                  isDark
-                    ? "border-cyan-300/35 bg-slate-900/80 text-cyan-100 hover:border-cyan-200/60 hover:text-white"
-                    : "border-slate-300/85 bg-white/90 text-slate-700 hover:border-teal-400/55 hover:text-slate-900"
-                }`}
-                aria-label="Close sidebar menu"
-              >
-                <X size={16} />
-              </button>
-            </div>
+              </span>
+            </button>
 
-            <nav aria-label="Mobile navigation" className="mt-5 space-y-2 overflow-y-auto">
+            <nav aria-label="Primary navigation" className="hidden items-center gap-1 lg:flex">
               {navItems.map((item) => {
-                const Icon = navIconMap[item.id] ?? House;
                 const isActive = activeSection === item.id;
-
                 return (
                   <button
                     key={item.id}
                     type="button"
                     onClick={() => scrollToSection(item.id)}
-                    className={`inline-flex w-full items-center gap-3 rounded-xl border px-3 py-2.5 text-left text-sm font-semibold transition ${
+                    className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
                       isActive
                         ? isDark
-                          ? "border-cyan-300/60 bg-cyan-500/20 text-white"
-                          : "border-teal-400/40 bg-teal-500/15 text-slate-900"
+                          ? "bg-white/10 text-slate-100"
+                          : "bg-teal-100 text-teal-700"
                         : isDark
-                          ? "border-slate-700/70 bg-slate-900/70 text-slate-200 hover:border-cyan-300/45 hover:text-white"
-                          : "border-slate-300/80 bg-white/90 text-slate-700 hover:border-teal-400/45 hover:text-slate-900"
+                          ? "text-slate-300 hover:bg-white/10 hover:text-white"
+                          : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
                     }`}
+                    aria-current={isActive ? "page" : undefined}
                   >
-                    <Icon size={15} />
                     {item.label}
                   </button>
                 );
               })}
             </nav>
-          </aside>
-        </div>
-      ) : null}
 
-      <main
-        id="main-content"
-        aria-label="Portfolio content"
-        className={`pb-20 pt-28 transition-[padding] duration-300 lg:pt-16 ${
-          isSidebarCollapsed ? "lg:pl-28" : "lg:pl-72"
-        }`}
-      >
-        <section id="home" className="pointer-events-none py-14 sm:py-20">
-          <div className={`${containerClass} pointer-events-none`}>
-            <div
-              className={`pointer-events-none relative isolate overflow-hidden rounded-[2rem] border px-5 py-6 sm:px-8 sm:py-10 lg:px-10 ${
-                isDark
-                  ? "border-cyan-400/20 bg-slate-950/58 shadow-[0_40px_100px_rgba(2,6,23,0.55)]"
-                  : "border-slate-300/80 bg-white/72 shadow-[0_30px_80px_rgba(15,23,42,0.16)]"
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={toggleTheme}
+                className={`inline-flex items-center gap-2 rounded-full border px-3 py-2 text-sm font-semibold transition ${
+                  isDark
+                    ? "border-slate-600/55 bg-slate-900/82 text-slate-100 hover:border-slate-400/65 hover:text-white"
+                    : "border-slate-300/85 bg-white/90 text-slate-700 hover:border-teal-500/45 hover:text-slate-900"
+                }`}
+                aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+              >
+                {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
+                <span className="hidden sm:inline">{theme === "dark" ? "Light" : "Dark"}</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setIsMobileMenuOpen(true)}
+                className={`inline-flex h-10 w-10 items-center justify-center rounded-full border transition lg:hidden ${
+                  isDark
+                    ? "border-slate-600/55 bg-slate-900/82 text-slate-100 hover:border-slate-400/65 hover:text-white"
+                    : "border-slate-300/85 bg-white/90 text-slate-700 hover:border-teal-500/45 hover:text-slate-900"
+                }`}
+                aria-label="Open navigation menu"
+                aria-expanded={isMobileMenuOpen}
+                aria-controls="mobile-nav"
+              >
+                <Menu size={18} />
+              </button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <AnimatePresence>
+        {isMobileMenuOpen ? (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[60] lg:hidden"
+          >
+            <button
+              type="button"
+              aria-label="Close navigation menu"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="absolute inset-0 bg-slate-950/55"
+            />
+
+            <motion.aside
+              id="mobile-nav"
+              aria-label="Mobile navigation"
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+              transition={{ duration: 0.25, ease: "easeOut" }}
+              className={`absolute right-0 top-0 flex h-full w-[min(20rem,88vw)] flex-col border-l p-5 backdrop-blur-xl ${
+                isDark ? "border-slate-600/45 bg-slate-950/94" : "border-slate-200/80 bg-white/94"
               }`}
             >
+              <div className="flex items-center justify-between">
+                <p className={`font-display text-lg font-semibold ${isDark ? "text-slate-100" : "text-slate-900"}`}>
+                  Navigation
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className={`inline-flex h-9 w-9 items-center justify-center rounded-full border transition ${
+                    isDark
+                      ? "border-slate-600/55 bg-slate-900/82 text-slate-100 hover:border-slate-400/65 hover:text-white"
+                      : "border-slate-300/85 bg-white/90 text-slate-700 hover:border-teal-500/45 hover:text-slate-900"
+                  }`}
+                  aria-label="Close navigation menu"
+                >
+                  <X size={16} />
+                </button>
+              </div>
+
+              <nav className="mt-6 space-y-2">
+                {navItems.map((item) => {
+                  const isActive = activeSection === item.id;
+                  return (
+                    <button
+                      key={item.id}
+                      type="button"
+                      onClick={() => scrollToSection(item.id)}
+                      className={`inline-flex w-full items-center justify-between rounded-2xl border px-4 py-3 text-left text-sm font-semibold transition ${
+                        isActive
+                          ? isDark
+                            ? "border-teal-300/45 bg-white/10 text-white"
+                            : "border-teal-300/65 bg-teal-50 text-teal-700"
+                          : isDark
+                            ? "border-slate-700/80 bg-slate-900/70 text-slate-200 hover:border-teal-300/40 hover:text-white"
+                            : "border-slate-300/85 bg-white/90 text-slate-700 hover:border-teal-500/45 hover:text-slate-900"
+                      }`}
+                    >
+                      <span>{item.label}</span>
+                      <ArrowRight size={15} />
+                    </button>
+                  );
+                })}
+              </nav>
+            </motion.aside>
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
+
+      <main id="main-content" aria-label="Portfolio content" className="pb-20 pt-28">
+        <section id="home" className="flex min-h-[calc(82svh-6rem)] items-center py-8">
+          <div className={`${containerClass} relative`}>
+            <div
+              className={`hero-interactive-shell relative isolate overflow-hidden rounded-[2rem] border px-5 py-6 sm:px-8 sm:py-10 lg:px-10 ${
+                isDark
+                  ? "border-slate-600/45 bg-slate-950/68"
+                  : "border-slate-200/80 bg-white/68"
+              }`}
+            >
+              <HeroCursorCubesScene
+                theme={theme}
+                splineScene={!useLiteVisuals ? heroSceneInBanner : undefined}
+                useLiteVisuals={useLiteVisuals}
+                variant="background"
+                className="z-[1]"
+              />
+              {!useLiteVisuals ? (
+                <div aria-hidden className="pointer-events-none absolute inset-0 z-[1] hero-interactive-grid opacity-40" />
+              ) : null}
               <div
-                className={`pointer-events-none absolute inset-0 ${
+                className={`pointer-events-none absolute inset-0 z-[2] ${
                   isDark
-                    ? "bg-gradient-to-r from-slate-950/74 via-slate-950/56 to-slate-950/38 lg:from-slate-950/68 lg:via-slate-950/50 lg:to-slate-950/32"
-                    : "bg-gradient-to-r from-white/80 via-white/60 to-white/42 lg:from-white/70 lg:via-white/52 lg:to-white/34"
+                    ? "bg-gradient-to-r from-slate-950/70 via-slate-950/58 to-slate-950/42 lg:from-slate-950/64 lg:via-slate-950/50 lg:to-slate-950/36"
+                    : "bg-gradient-to-r from-white/82 via-white/66 to-white/46 lg:from-white/74 lg:via-white/58 lg:to-white/38"
                 }`}
               />
-              <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_25%_35%,rgba(34,211,238,0.14),transparent_42%),radial-gradient(circle_at_80%_20%,rgba(56,189,248,0.12),transparent_45%)]" />
-              <div
-                aria-hidden
-                className="pointer-events-none absolute inset-0 bg-[linear-gradient(rgba(14,116,144,0.14)_1px,transparent_1px),linear-gradient(90deg,rgba(14,116,144,0.14)_1px,transparent_1px)] bg-[length:42px_42px] opacity-22"
-              />
-
-              <div className="pointer-events-none relative z-10 grid gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
+              <div className="pointer-events-none relative z-10 grid gap-7 lg:grid-cols-[1.08fr_0.92fr] lg:items-center">
                 <motion.div style={{ y: useLiteVisuals ? 0 : heroY }} className="space-y-7">
                   <p
                     className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] ${
                       isDark
-                        ? "border-cyan-400/35 bg-cyan-500/12 text-cyan-100"
-                        : "border-teal-300/45 bg-teal-400/10 text-teal-700"
+                        ? "border-teal-300/35 bg-teal-500/12 text-teal-100"
+                        : "border-teal-300/55 bg-teal-500/10 text-teal-700"
                     }`}
                   >
-                    <BriefcaseBusiness size={14} />
-                    Shipping backend systems that move metrics
+                    <Sparkles size={14} />
+                    Open to freelance and full-time roles
                   </p>
 
-                  <div className="space-y-4">
-                    <h1
-                      className={`font-display text-4xl font-semibold leading-tight sm:text-5xl lg:text-[4.25rem] lg:leading-[1] ${
-                        isDark ? "text-white" : "text-slate-900"
+                  <h1
+                    className={`font-display text-4xl font-semibold leading-tight sm:text-5xl lg:text-[3.5rem] lg:leading-[1.04] ${
+                      isDark ? "text-white" : "text-slate-900"
+                    }`}
+                  >
+                    Hi, I&apos;m Aryan.
+                    <span
+                      className={`block ${
+                        isDark
+                          ? "bg-gradient-to-r from-teal-300 via-emerald-300 to-amber-300 bg-clip-text text-transparent"
+                          : "bg-gradient-to-r from-teal-700 via-emerald-700 to-amber-700 bg-clip-text text-transparent"
                       }`}
                     >
-                      {personalInfo.name}
-                    </h1>
-                    <p
-                      className={`max-w-2xl text-xl ${
-                        isDark ? "text-cyan-100/80" : "text-teal-700/90"
-                      }`}
-                    >
-                      {personalInfo.role}
-                    </p>
-                    <p
-                      className={`max-w-2xl leading-relaxed ${
-                        isDark ? "text-slate-300" : "text-slate-600"
-                      }`}
-                    >
-                      {personalInfo.summary}
-                    </p>
-                  </div>
+                      A Full Stack Developer building scalable web applications.
+                    </span>
+                  </h1>
+
+                  <p className={`max-w-2xl text-base leading-relaxed sm:text-lg ${isDark ? "text-slate-300" : "text-slate-600"}`}>
+                    {personalInfo.summary}
+                  </p>
 
                   <div className="flex flex-wrap gap-3">
                     <button
                       type="button"
                       onClick={() => {
-                        trackEvent("cta_click", { cta: "hero_view_case_studies", section: "home" });
+                        trackEvent("cta_click", { cta: "hero_view_work", section: "home" });
                         scrollToSection("projects");
                       }}
                       className="button-primary pointer-events-auto"
                     >
-                      View Case Studies
+                      View Work
                       <ArrowRight size={16} />
                     </button>
                     <button
                       type="button"
                       onClick={() => {
-                        trackEvent("cta_click", { cta: "hero_discuss_project", section: "home" });
+                        trackEvent("cta_click", { cta: "hero_contact", section: "home" });
                         scrollToSection("contact");
                       }}
-                      className="button-accent pointer-events-auto"
+                      className="button-ghost pointer-events-auto"
                     >
-                      Discuss Your Project
+                      Contact Me
                       <ArrowUpRight size={16} />
                     </button>
                     <a
                       href={personalInfo.resumeFile}
                       target="_blank"
                       rel="noreferrer"
-                      onClick={() =>
-                        trackEvent("cta_click", { cta: "hero_resume_download", section: "home" })
-                      }
-                      className={`pointer-events-auto inline-flex items-center gap-2 rounded-full border px-5 py-3 text-sm font-semibold transition ${
-                        isDark
-                          ? "border-cyan-300/35 bg-slate-900/70 text-cyan-100 hover:border-cyan-200/60 hover:bg-slate-900/85 hover:text-white"
-                          : "border-slate-300/85 bg-white/85 text-slate-700 hover:border-teal-500/45 hover:bg-white hover:text-slate-900"
-                      }`}
+                      onClick={() => trackEvent("cta_click", { cta: "hero_resume_download", section: "home" })}
+                      className="button-accent pointer-events-auto"
                     >
                       Resume
                       <Download size={16} />
                     </a>
                   </div>
 
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true, amount: 0.45 }}
-                    transition={{ duration: 0.45, delay: 0.12 }}
-                    className={`pointer-events-auto rounded-2xl border px-4 py-3 ${
-                      isDark ? "border-cyan-300/20 bg-slate-950/62" : "border-slate-300/80 bg-white/84"
-                    }`}
-                  >
-                    <p
-                      className={`text-[11px] font-semibold uppercase tracking-[0.18em] ${
-                        isDark ? "text-cyan-100/80" : "text-slate-600"
-                      }`}
-                    >
-                      Proof of execution
-                    </p>
-                    <div className="mt-2 flex flex-wrap items-center gap-2 text-sm">
-                      {quickFacts.slice(0, 3).map((fact, index) => (
-                        <div key={fact.label} className="inline-flex items-center gap-2">
-                          <span className={`font-semibold ${isDark ? "text-white" : "text-slate-900"}`}>
-                            {fact.value}
-                          </span>
-                          <span className={`${isDark ? "text-slate-300" : "text-slate-600"}`}>
-                            {fact.label}
-                          </span>
-                          {index < 2 ? (
-                            <span className={`${isDark ? "text-cyan-200/60" : "text-slate-400"}`}>
-                              •
-                            </span>
-                          ) : null}
-                        </div>
-                      ))}
-                    </div>
-                  </motion.div>
+                  <div className="flex flex-wrap gap-2">
+                    {heroFacts.map((fact) => (
+                      <span key={fact.label} className="chip">
+                        {fact.value}
+                      </span>
+                    ))}
+                  </div>
                 </motion.div>
 
-                <Reveal className="space-y-5 lg:self-end lg:pb-2">
-                  <div
-                    className={`pointer-events-none rounded-3xl border p-5 backdrop-blur-md ${
-                      isDark
-                        ? "border-cyan-300/20 bg-black/40"
-                        : "border-slate-300/80 bg-white/78"
-                    }`}
-                  >
-                    <p
-                      className={`text-xs font-semibold uppercase tracking-[0.2em] ${
-                        isDark ? "text-cyan-200/85" : "text-teal-700"
+                <Reveal className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
+                  <article className="surface-panel showcase-card card-hero overflow-hidden p-4 sm:p-5">
+                    <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">
+                      Profile Visual
+                    </p>
+                    <div
+                      className={`mt-3 overflow-hidden rounded-2xl border border-white/60 p-3 ${
+                        isDark ? "bg-slate-950/48" : "bg-slate-100/70"
                       }`}
                     >
-                      Professional Profiles
+                      {splineScene && !useLiteVisuals ? (
+                        <SplineScene
+                          scene={splineScene}
+                          className="min-h-[250px] rounded-none border-0 shadow-none"
+                        />
+                      ) : (
+                        <div className="mx-auto w-full max-w-[17rem] overflow-hidden rounded-2xl border border-white/70">
+                          <Image
+                            src="/images/aryan.jpg"
+                            alt="Aryan Kumar portrait"
+                            width={652}
+                            height={652}
+                            className="h-auto w-full object-cover object-top"
+                          />
+                        </div>
+                      )}
+                    </div>
+                    <p className="mt-3 inline-flex items-center gap-2 text-sm text-slate-600">
+                      <MapPin size={15} />
+                      {personalInfo.location}
+                    </p>
+                  </article>
+
+                  <article className="surface-panel showcase-card card-hero p-5">
+                    <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">
+                      Primary Profiles
                     </p>
                     <div className="mt-3 flex flex-wrap gap-2">
-                      {primarySocialLinks.map((social, index) => {
+                      {primarySocialLinks.map((social) => {
                         const Icon = socialIconMap[social.label] ?? ExternalLink;
                         return (
-                          <motion.a
+                          <a
                             key={social.label}
                             href={social.url}
                             target="_blank"
                             rel="noreferrer"
-                            initial={{ opacity: 0, y: 10 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true, amount: 0.6 }}
-                            transition={{ duration: 0.35, delay: 0.06 + index * 0.04 }}
-                            whileHover={{ y: -3, scale: 1.02 }}
-                            className={`pointer-events-auto inline-flex items-center gap-2 rounded-full border px-3 py-2 text-sm font-semibold transition ${
-                              isDark
-                                ? "border-cyan-300/30 bg-slate-900/75 text-cyan-50 hover:border-cyan-200/60 hover:bg-slate-900 hover:text-white"
-                                : "border-slate-300/80 bg-white/85 text-slate-700 hover:border-teal-500/45 hover:bg-white hover:text-slate-900"
-                            }`}
-                          >
+                          className="pointer-events-auto inline-flex items-center gap-2 rounded-full border border-slate-300 bg-white/85 px-3 py-2 text-xs font-semibold text-slate-700 transition hover:border-teal-500/45 hover:text-slate-900"
+                        >
                             <Icon size={14} />
                             {social.label}
-                          </motion.a>
+                          </a>
                         );
                       })}
                     </div>
-                    {additionalSocialLinks.length ? (
-                      <p className={`mt-3 text-xs ${isDark ? "text-slate-400" : "text-slate-500"}`}>
-                        Additional social channels are listed in the contact section.
-                      </p>
-                    ) : null}
-                  </div>
+                  </article>
                 </Reveal>
               </div>
             </div>
           </div>
         </section>
 
-        <section id="about" className="py-16">
-          <div className={`${containerClass} relative`}>
-            <div className="space-y-9">
-              <SectionTitle
-                eyebrow="About"
-                title="Engineering With Product Thinking"
-                description="I optimize systems for speed, reliability, and measurable outcomes while keeping delivery practical for business teams."
-              />
-
-              <div
-                className={`grid gap-6 rounded-[2rem] border p-3 shadow-soft backdrop-blur-xl sm:p-4 lg:grid-cols-[1.1fr_0.9fr] ${
-                  isDark ? "border-cyan-300/18 bg-slate-950/30" : "border-white/80 bg-white/24"
-                }`}
-              >
-                <div className="rounded-[2rem] p-7 sm:p-8">
-                  <h3 className="font-display text-2xl font-semibold text-slate-900">
-                    Profile Snapshot
-                  </h3>
-                  <ul className="mt-5 space-y-4">
-                    {aboutHighlights.map((item, index) => (
-                      <motion.li
-                        key={item}
-                        initial={{ opacity: 0, x: -8 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        viewport={{ once: true, amount: 0.5 }}
-                        transition={{ duration: 0.4, delay: index * 0.04 }}
-                        className="flex items-start gap-3 text-slate-600"
-                      >
-                        <span className="mt-1.5 h-2.5 w-2.5 rounded-full bg-teal-600" />
-                        <span className="leading-relaxed">{item}</span>
-                      </motion.li>
-                    ))}
-                  </ul>
-
-                  <div className="mt-7">
-                    <p className="eyebrow">Tools and Technologies</p>
-                    <div className="mt-3 flex flex-wrap gap-2">
-                      {toolsAndTechnologies.map((item) => (
-                        <motion.span
-                          key={item}
-                          whileHover={{ y: -2, scale: 1.03 }}
-                          className="chip"
-                        >
-                          {item}
-                        </motion.span>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="rounded-[2rem] p-7 sm:p-8">
-                  <p className="eyebrow">Profile Visual</p>
-                  <div className="mt-4 overflow-hidden rounded-3xl">
-                    {splineScene ? (
-                      <SplineScene
-                        scene={splineScene}
-                        className="min-h-[320px] rounded-none border-0 shadow-none"
-                      />
-                    ) : (
-                      <Image
-                        src="/images/aryan.jpg"
-                        alt="Aryan Kumar portrait"
-                        width={720}
-                        height={720}
-                        className="h-auto w-full object-cover"
-                      />
-                    )}
-                  </div>
-
-                  <div className="mt-6 space-y-3">
-                    {quickFacts.map((fact) => (
-                      <div
-                        key={fact.label}
-                        className="flex items-start justify-between gap-4 border-b border-slate-200 pb-3"
-                      >
-                        <p className="text-sm text-slate-500">{fact.label}</p>
-                        <p className="text-right text-sm font-semibold text-slate-800">
-                          {fact.value}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section id="skills" className="py-16">
-          <div className={`${containerClass} relative`}>
-            <div className="space-y-9">
+        <StageSection id="about" tone="mint" containerClass={containerClass}>
               <Reveal>
                 <SectionTitle
-                  eyebrow="Skills"
-                  title="Stack Built for Delivery"
-                  description="A practical toolkit for building backend systems, shipping full-stack products, and automating analytics workflows."
+                  eyebrow="About"
+                  title="Focused On Impact, Not Resume Clutter"
+                  description="I build practical product systems that improve speed, reliability, and developer flow across API-heavy and data-heavy workloads."
                 />
               </Reveal>
 
-              <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+              <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
+                <Reveal className="surface-panel showcase-card card-about p-7 sm:p-8">
+                  <h3 className="font-display text-2xl font-semibold text-slate-900">What I bring</h3>
+                  <ul className="mt-5 space-y-3">
+                    {aboutHighlights.map((item) => (
+                      <li key={item} className="flex items-start gap-3 text-slate-600">
+                        <span className="mt-1.5 h-2.5 w-2.5 rounded-full bg-teal-600" />
+                        <span className="leading-relaxed">{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </Reveal>
+
+                <Reveal delay={0.08} className="surface-panel showcase-card card-about p-7 sm:p-8">
+                  <h3 className="font-display text-2xl font-semibold text-slate-900">Core Stack</h3>
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    {toolsAndTechnologies.map((item) => (
+                      <span key={item} className="chip">
+                        {item}
+                      </span>
+                    ))}
+                  </div>
+                  <p className="mt-6 text-sm leading-relaxed text-slate-600">
+                    B.Tech in Computer Science Engineering (2019-2023), Vellore Institute of Technology.
+                  </p>
+                </Reveal>
+              </div>
+        </StageSection>
+
+        <StageSection id="skills" tone="sky" containerClass={containerClass}>
+              <Reveal>
+                <SectionTitle
+                  eyebrow="Skills"
+                  title="Backend-First, Full-Spectrum Skill Set"
+                  description="A practical overview of my core backend strengths plus frontend, mobile, desktop, cloud, DevOps, data engineering, BI, and AI capabilities."
+                />
+              </Reveal>
+
+              <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
                 {skillGroups.map((group, index) => (
-                  <Reveal key={group.title} delay={index * 0.05}>
+                  <Reveal key={group.title} delay={index * 0.04}>
                     <motion.article
-                      whileHover={{ y: -4 }}
+                      whileHover={{ y: -6 }}
                       transition={{ duration: 0.2 }}
-                      className="surface-panel h-full p-6"
+                      className="surface-panel showcase-card card-skill h-full p-6"
                     >
-                      <h3 className="font-display text-xl font-semibold text-slate-900">
-                        {group.title}
-                      </h3>
-                      <p className="mt-2 text-sm leading-relaxed text-slate-600">
-                        {group.description}
-                      </p>
-                      <div className="mt-5 flex flex-wrap gap-2">
+                      <h3 className="font-display text-xl font-semibold text-slate-900">{group.title}</h3>
+                      <p className="mt-2 text-sm leading-relaxed text-slate-600">{group.description}</p>
+                      <div className="mt-4 flex flex-wrap gap-2">
                         {group.items.map((item) => (
-                          <motion.span
-                            key={item}
-                            whileHover={{ y: -2, scale: 1.03 }}
-                            className="chip"
-                          >
+                          <span key={item} className="chip">
                             {item}
-                          </motion.span>
+                          </span>
                         ))}
                       </div>
                     </motion.article>
                   </Reveal>
                 ))}
               </div>
+        </StageSection>
 
-              <Reveal className="section-shell p-4 sm:p-6 lg:p-8">
-                <div className="grid gap-6 lg:grid-cols-[minmax(0,1.08fr)_minmax(0,0.92fr)] xl:gap-7">
-                  <div className="min-w-0">
-                    <div className="space-y-3">
-                      <p className="eyebrow">Freelance Services</p>
-                      <h3 className="font-display text-2xl font-semibold leading-tight text-slate-900 sm:text-3xl">
-                        Available for high-impact contract work
-                      </h3>
-                    </div>
-                    <div className="mt-6 grid gap-4 sm:grid-cols-2">
-                      {freelanceServices.map((service) => (
-                        <motion.article
-                          key={service.title}
-                          whileHover={{ y: -3 }}
-                          transition={{ duration: 0.2 }}
-                          className="h-full rounded-3xl border border-slate-200 bg-white/80 p-5 sm:p-6"
-                        >
-                          <h4 className="break-words font-display text-lg font-semibold text-slate-900 sm:text-xl">
-                            {service.title}
-                          </h4>
-                          <p className="mt-2 break-words text-sm leading-relaxed text-slate-600">
-                            {service.description}
-                          </p>
-                          <div className="mt-4 flex flex-wrap gap-2">
-                            {service.stack.map((item) => (
-                              <span
-                                key={item}
-                                className="break-words rounded-full bg-orange-100 px-3 py-1.5 text-xs font-semibold text-orange-700"
-                              >
-                                {item}
-                              </span>
-                            ))}
-                          </div>
-                        </motion.article>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="min-w-0 space-y-4 rounded-3xl border border-white/60 bg-white/35 p-4 sm:p-5 lg:p-6">
-                    <div className="space-y-2">
-                      <p className="eyebrow">Stack Signal</p>
-                      <p className="text-sm leading-relaxed text-slate-600">
-                        Graph and bars below are generated from the same `skillGroups` content
-                        shown above.
-                      </p>
-                    </div>
-
-                    <SectionGraphScene
-                      data={skillDepthMetrics}
-                      highlightedLabel={skillsFocus}
-                      onHoverChange={setSkillsFocus}
-                      className="h-[230px] sm:h-[280px] md:h-[320px]"
-                    />
-
-                    <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-1">
-                      {skillDepthMetrics.map((metric, index) => (
-                        <button
-                          key={metric.label}
-                          type="button"
-                          onMouseEnter={() => setSkillsFocus(metric.label)}
-                          onMouseLeave={() => setSkillsFocus(null)}
-                          onFocus={() => setSkillsFocus(metric.label)}
-                          onBlur={() => setSkillsFocus(null)}
-                          className={`w-full rounded-xl border px-3 py-2 text-left transition ${
-                            skillsFocus === metric.label
-                              ? "border-slate-300 bg-white/75"
-                              : "border-white/50 bg-white/35 hover:bg-white/60"
-                          }`}
-                        >
-                          <div className="flex min-w-0 items-center justify-between gap-3">
-                            <p className="truncate text-sm font-semibold text-slate-800">{metric.label}</p>
-                            <p className="text-xs font-semibold text-slate-600">
-                              {metric.value}
-                              {metric.suffix ?? ""}
-                            </p>
-                          </div>
-                          <div className="mt-1.5 h-1.5 rounded-full bg-slate-200/85">
-                            <motion.div
-                              initial={{ width: 0 }}
-                              whileInView={{ width: metricWidth(metric.value, skillMetricMax) }}
-                              viewport={{ once: true, amount: 0.6 }}
-                              transition={{ duration: 0.5, delay: 0.04 + index * 0.03 }}
-                              className="h-full rounded-full"
-                              style={{ backgroundColor: metric.color }}
-                            />
-                          </div>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </Reveal>
-            </div>
-          </div>
-        </section>
-
-        <section id="resume" className="py-16">
-          <div className={`${containerClass} relative`}>
-            <div className="space-y-9">
+        <StageSection id="resume" tone="amber" containerClass={containerClass}>
               <Reveal>
                 <SectionTitle
                   eyebrow="Resume"
-                  title="Experience Timeline"
-                  description="A quick view into production engineering work across software delivery, product modernization, and reporting systems."
+                  title="Recent Professional Experience"
+                  description="A concise timeline of delivery work, product ownership, and engineering impact. Expand each role to view deep dives for company projects."
                 />
               </Reveal>
 
-              <Reveal className="surface-panel p-6 sm:p-8">
+              <Reveal className="surface-panel showcase-card card-resume p-6 sm:p-8">
                 <div className="flex flex-wrap items-center justify-between gap-4">
                   <div>
-                    <p className="font-display text-2xl font-semibold text-slate-900">
-                      Resume Download
-                    </p>
-                    <p className="mt-1 text-sm text-slate-600">
-                      Get the latest PDF with projects and work details.
-                    </p>
+                    <p className="font-display text-2xl font-semibold text-slate-900">Download Resume</p>
+                    <p className="mt-1 text-sm text-slate-600">Latest PDF with project and role details.</p>
                   </div>
                   <a
                     href={personalInfo.resumeFile}
@@ -1024,17 +628,15 @@ export default function HomePage() {
                     rel="noreferrer"
                     className="button-primary"
                   >
-                    Download Resume
+                    Download
                     <Download size={16} />
                   </a>
                 </div>
               </Reveal>
 
               <div className="grid gap-6 xl:grid-cols-2">
-                <Reveal className="surface-panel p-7 sm:p-8">
-                  <h3 className="font-display text-2xl font-semibold text-slate-900">
-                    Professional Experience
-                  </h3>
+                <Reveal className="surface-panel showcase-card card-resume p-7 sm:p-8">
+                  <h3 className="font-display text-2xl font-semibold text-slate-900">Professional Experience</h3>
                   <div className="mt-6 space-y-4">
                     {experienceItems.map((item) => (
                       <CollapsibleCard
@@ -1043,24 +645,21 @@ export default function HomePage() {
                         subtitle={item.subtitle}
                         duration={item.duration}
                         details={item.details}
+                        projects={item.companyProjects}
                       />
                     ))}
                   </div>
                 </Reveal>
 
-                <Reveal delay={0.08} className="surface-panel p-7 sm:p-8">
-                  <h3 className="font-display text-2xl font-semibold text-slate-900">
-                    Education
-                  </h3>
-                  <div className="mt-6 space-y-6 border-l-2 border-teal-200 pl-5">
+                <Reveal delay={0.08} className="surface-panel showcase-card card-resume p-7 sm:p-8">
+                  <h3 className="font-display text-2xl font-semibold text-slate-900">Education</h3>
+                  <div className="mt-6 space-y-5 border-l-2 border-teal-200 pl-5">
                     {educationItems.map((item) => (
                       <article key={item.title} className="space-y-2">
                         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-teal-700">
                           {item.duration}
                         </p>
-                        <h4 className="font-display text-xl font-semibold text-slate-900">
-                          {item.title}
-                        </h4>
+                        <h4 className="font-display text-xl font-semibold text-slate-900">{item.title}</h4>
                         <p className="text-sm font-semibold text-slate-500">{item.subtitle}</p>
                         <ul className="space-y-2 pt-1">
                           {item.details.map((detail) => (
@@ -1075,204 +674,192 @@ export default function HomePage() {
                   </div>
                 </Reveal>
               </div>
-            </div>
-          </div>
-        </section>
+        </StageSection>
 
-        <section id="internships" className="py-16">
-          <div className={`${containerClass} relative`}>
-            <div className="space-y-9">
+        <StageSection id="internships" tone="indigo" containerClass={containerClass}>
               <Reveal>
                 <SectionTitle
                   eyebrow="Internships"
-                  title="Hands-on Delivery Experience"
-                  description="Internship projects where product execution, integrations, and ownership helped shape my engineering approach."
-                />
-              </Reveal>
-
-              <Reveal className="surface-panel p-7 sm:p-8">
-                <div className="space-y-4">
-                  {internships.map((internship) => (
-                    <CollapsibleCard
-                      key={`${internship.company}-${internship.duration}`}
-                      title={internship.company}
-                      subtitle={internship.role}
-                      duration={internship.duration}
-                      details={internship.details}
-                      accent="emerald"
-                      link={{ label: "Visit Company", url: internship.website }}
-                    />
-                  ))}
-                </div>
-              </Reveal>
-            </div>
-          </div>
-        </section>
-
-        <section id="projects" className="py-16">
-          <div className={`${containerClass} relative`}>
-            {unicornProjectId && isProjectsVisualReady && !useLiteVisuals ? (
-              <div className="pointer-events-none absolute inset-x-0 top-20 h-[520px] overflow-hidden rounded-[2rem] opacity-[0.3]">
-                <UnicornEmbed
-                  projectId={unicornProjectId}
-                  mode="background"
-                  className="h-full min-h-0"
-                  height={520}
-                />
-              </div>
-            ) : null}
-            <div className="space-y-9">
-              <Reveal>
-                <SectionTitle
-                  eyebrow="Projects"
-                  title="Selected Projects"
-                  description="Case studies with concrete delivery context, implementation decisions, and measurable outcomes."
+                  title="Early Ownership, Real Deliverables"
+                  description="Internship projects where I shipped production features, handled integrations, and worked directly on outcomes."
                 />
               </Reveal>
 
               <div className="grid gap-5 md:grid-cols-2">
-                {projects.map((project, index) => (
-                  <Reveal key={project.slug} delay={index * 0.05}>
-                    <motion.article
-                      whileHover={{ y: -7, scale: 1.01 }}
-                      transition={{ duration: 0.22 }}
-                      className="surface-panel flex h-full flex-col p-6"
-                    >
-                      <div className="relative overflow-hidden rounded-2xl border border-white/60">
-                        <Image
-                          src={project.thumbnail}
-                          alt={`${project.title} preview`}
-                          width={1280}
-                          height={720}
-                          className="h-48 w-full object-cover"
-                        />
-                        <div
-                          className={`absolute left-3 top-3 inline-flex rounded-full border px-3 py-1 text-xs font-semibold ${
-                            isDark
-                              ? "border-cyan-300/45 bg-slate-950/85 text-cyan-100"
-                              : "border-white/85 bg-white/92 text-teal-700"
-                          }`}
-                        >
-                          {project.resultMetric}
-                        </div>
-                      </div>
-
-                      <p className="mt-4 text-xs uppercase tracking-[0.16em] text-slate-500">
-                        {project.period} | {project.location}
+                {internships.map((internship, index) => (
+                  <Reveal key={`${internship.company}-${internship.duration}`} delay={index * 0.05}>
+                    <article className="surface-panel showcase-card card-internship h-full p-6">
+                      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-teal-700">
+                        {internship.duration}
                       </p>
                       <h3 className="mt-2 font-display text-2xl font-semibold text-slate-900">
-                        {project.title}
+                        {internship.company}
                       </h3>
-                      <p className="mt-1 text-sm font-semibold text-teal-700">
-                        {project.subtitle}
-                      </p>
-                      <p className="mt-4 leading-relaxed text-slate-600">
-                        {project.description}
-                      </p>
+                      <p className="mt-1 text-sm font-semibold text-slate-600">{internship.role}</p>
 
-                      <ul className="mt-4 space-y-2 text-sm text-slate-600">
-                        <li>
-                          <span className="font-semibold text-slate-800">Problem:</span>{" "}
-                          {project.story.problem}
-                        </li>
-                        <li>
-                          <span className="font-semibold text-slate-800">Solution:</span>{" "}
-                          {project.story.solution}
-                        </li>
-                        <li>
-                          <span className="font-semibold text-slate-800">Result:</span>{" "}
-                          {project.story.result}
-                        </li>
+                      <ul className="mt-4 space-y-2">
+                        {internship.details.map((detail) => (
+                          <li key={detail} className="flex items-start gap-3 text-sm text-slate-600">
+                            <span className="mt-1.5 h-2 w-2 rounded-full bg-emerald-500" />
+                            <span className="leading-relaxed">{detail}</span>
+                          </li>
+                        ))}
                       </ul>
 
-                      <div className="mt-5 flex flex-wrap gap-2">
-                        {project.technologies.map((tech) => (
-                          <motion.span key={tech} whileHover={{ y: -2 }} className="chip">
-                            {tech}
-                          </motion.span>
-                        ))}
-                      </div>
-
-                      <div className="mt-6 flex flex-wrap gap-3">
-                        <Link
-                          href={`/projects/${project.slug}`}
-                          onClick={() =>
-                            trackEvent("project_detail_click", { project: project.slug, source: "home_card" })
-                          }
-                          className="button-primary"
-                        >
-                          Details
-                          <ArrowUpRight size={15} />
-                        </Link>
-
-                        {project.liveUrl ? (
-                          <a
-                            href={project.liveUrl}
-                            target="_blank"
-                            rel="noreferrer"
-                            onClick={() =>
-                              trackEvent("project_live_click", { project: project.slug, source: "home_card" })
-                            }
-                            className="button-ghost"
-                          >
-                            Live
-                            <ExternalLink size={15} />
-                          </a>
-                        ) : null}
-
-                        {project.repoUrl ? (
-                          <a
-                            href={project.repoUrl}
-                            target="_blank"
-                            rel="noreferrer"
-                            onClick={() =>
-                              trackEvent("project_repo_click", { project: project.slug, source: "home_card" })
-                            }
-                            className="button-ghost"
-                          >
-                            GitHub
-                            <Github size={15} />
-                          </a>
-                        ) : null}
-                      </div>
-                    </motion.article>
+                      <a
+                        href={internship.website}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-teal-700 transition hover:text-teal-600"
+                      >
+                        Visit Company
+                        <ExternalLink size={15} />
+                      </a>
+                    </article>
                   </Reveal>
                 ))}
               </div>
-            </div>
-          </div>
-        </section>
+        </StageSection>
 
-        <section id="contact" className="py-16">
-          <div className={`${containerClass} relative`}>
-            <div className="space-y-9">
+        <StageSection id="projects" tone="sky" containerClass={containerClass}>
+              <Reveal>
+                <SectionTitle
+                  eyebrow="Projects"
+                  title="Selected Work"
+                  description="A visual project grid with concise context, stack tags, and direct links to code and demos."
+                />
+              </Reveal>
+
+              <div className="grid gap-5 md:grid-cols-2">
+                {projects.map((project, index) => {
+                  const liveOrDemoUrl = project.liveUrl ?? project.demoUrl;
+                  const liveLabel = project.liveUrl ? "Live Demo" : project.demoUrl ? "Demo Video" : null;
+
+                  return (
+                    <Reveal key={project.slug} delay={index * 0.05}>
+                      <motion.article
+                        whileHover={{ y: -8 }}
+                        transition={{ duration: 0.22 }}
+                        className={`project-card showcase-card card-project flex h-full flex-col rounded-[2rem] border p-5 shadow-soft backdrop-blur-xl ${
+                          isDark
+                            ? "border-slate-600/45 bg-slate-950/74"
+                            : "border-white/80 bg-white/78"
+                        }`}
+                      >
+                        <div className="overflow-hidden rounded-2xl border border-white/60">
+                          <Image
+                            src={project.thumbnail}
+                            alt={`${project.title} preview`}
+                            width={1280}
+                            height={720}
+                            className="h-52 w-full object-cover transition duration-500 hover:scale-[1.03]"
+                          />
+                        </div>
+
+                        <div className="mt-4 flex flex-wrap items-center gap-2">
+                          <span
+                            className={`rounded-full border px-3 py-1 text-xs font-semibold ${
+                              isDark
+                                ? "border-teal-300/45 bg-teal-500/12 text-teal-100"
+                                : "border-teal-200 bg-teal-50 text-teal-700"
+                            }`}
+                          >
+                            {project.resultMetric}
+                          </span>
+                          <span className="text-xs uppercase tracking-[0.16em] text-slate-500">
+                            {project.period}
+                          </span>
+                        </div>
+
+                        <h3 className="mt-3 font-display text-2xl font-semibold text-slate-900">
+                          {project.title}
+                        </h3>
+                        <p className="mt-1 text-sm font-semibold text-teal-700">{project.subtitle}</p>
+                        <p className="mt-3 text-sm leading-relaxed text-slate-600">{project.description}</p>
+
+                        <div className="mt-4 flex flex-wrap gap-2">
+                          {project.technologies.map((tech) => (
+                            <span key={tech} className="chip">
+                              {tech}
+                            </span>
+                          ))}
+                        </div>
+
+                        <div className="mt-6 flex items-center justify-between gap-3">
+                          <Link
+                            href={`/projects/${project.slug}`}
+                            onClick={() =>
+                              trackEvent("project_detail_click", { project: project.slug, source: "home_grid" })
+                            }
+                            className="button-primary"
+                          >
+                            Case Study
+                            <ArrowUpRight size={15} />
+                          </Link>
+
+                          <div className="flex items-center gap-2">
+                            {liveOrDemoUrl && liveLabel ? (
+                              <a
+                                href={liveOrDemoUrl}
+                                target="_blank"
+                                rel="noreferrer"
+                                aria-label={`${project.title} ${liveLabel}`}
+                                onClick={() =>
+                                  trackEvent("project_live_click", { project: project.slug, source: "home_grid" })
+                                }
+                                className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-300 bg-white/85 text-slate-700 transition hover:border-teal-500/45 hover:text-slate-900"
+                              >
+                                <ExternalLink size={15} />
+                              </a>
+                            ) : null}
+
+                            {project.repoUrl ? (
+                              <a
+                                href={project.repoUrl}
+                                target="_blank"
+                                rel="noreferrer"
+                                aria-label={`${project.title} GitHub repository`}
+                                onClick={() =>
+                                  trackEvent("project_repo_click", { project: project.slug, source: "home_grid" })
+                                }
+                                className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-300 bg-white/85 text-slate-700 transition hover:border-teal-500/45 hover:text-slate-900"
+                              >
+                                <Github size={15} />
+                              </a>
+                            ) : null}
+                          </div>
+                        </div>
+                      </motion.article>
+                    </Reveal>
+                  );
+                })}
+              </div>
+        </StageSection>
+
+        <StageSection id="contact" tone="coral" containerClass={containerClass}>
               <Reveal>
                 <SectionTitle
                   eyebrow="Contact"
-                  title="Start Your Next Build"
-                  description="Need backend APIs, full-stack delivery, e-commerce customization, or reporting automation? Share your goals and timeline."
+                  title="Let&apos;s Build Something Useful"
+                  description="If you need a full-stack developer for product delivery, API integrations, or reporting automation, send me your brief."
                 />
               </Reveal>
 
               <div className="grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
-                <Reveal className="surface-panel p-7 sm:p-8">
+                <Reveal className="surface-panel showcase-card card-contact p-7 sm:p-8">
                   <div className="space-y-6">
-                    <motion.div whileHover={{ x: 2 }} className="flex items-start gap-3">
+                    <div className="flex items-start gap-3">
                       <MapPin className="mt-1 text-teal-700" size={19} />
                       <div>
-                        <p className="text-sm font-semibold uppercase tracking-[0.15em] text-slate-500">
-                          Location
-                        </p>
+                        <p className="text-sm font-semibold uppercase tracking-[0.15em] text-slate-500">Location</p>
                         <p className="mt-1 leading-relaxed text-slate-700">{contactAddress}</p>
                       </div>
-                    </motion.div>
+                    </div>
 
-                    <motion.div whileHover={{ x: 2 }} className="flex items-start gap-3">
+                    <div className="flex items-start gap-3">
                       <Mail className="mt-1 text-teal-700" size={19} />
                       <div>
-                        <p className="text-sm font-semibold uppercase tracking-[0.15em] text-slate-500">
-                          Email
-                        </p>
+                        <p className="text-sm font-semibold uppercase tracking-[0.15em] text-slate-500">Email</p>
                         <a
                           href={`mailto:${personalInfo.email}`}
                           className="mt-1 inline-flex text-slate-700 underline-offset-4 transition hover:text-slate-900 hover:underline"
@@ -1280,14 +867,12 @@ export default function HomePage() {
                           {personalInfo.email}
                         </a>
                       </div>
-                    </motion.div>
+                    </div>
 
-                    <motion.div whileHover={{ x: 2 }} className="flex items-start gap-3">
+                    <div className="flex items-start gap-3">
                       <Phone className="mt-1 text-teal-700" size={19} />
                       <div>
-                        <p className="text-sm font-semibold uppercase tracking-[0.15em] text-slate-500">
-                          Phone
-                        </p>
+                        <p className="text-sm font-semibold uppercase tracking-[0.15em] text-slate-500">Phone</p>
                         <a
                           href={`tel:${personalInfo.phone.replace(/\s+/g, "")}`}
                           className="mt-1 inline-flex text-slate-700 underline-offset-4 transition hover:text-slate-900 hover:underline"
@@ -1295,17 +880,14 @@ export default function HomePage() {
                           {personalInfo.phone}
                         </a>
                       </div>
-                    </motion.div>
+                    </div>
 
-                    <motion.div
-                      whileHover={{ y: -2 }}
-                      className="rounded-3xl border border-teal-200 bg-teal-50 p-4"
-                    >
+                    <div className="rounded-3xl border border-teal-200 bg-teal-50 p-4">
                       <p className="inline-flex items-center gap-2 text-sm font-semibold text-teal-700">
                         <Sparkles size={16} />
                         Available for freelance and full-time opportunities
                       </p>
-                    </motion.div>
+                    </div>
 
                     {additionalSocialLinks.length ? (
                       <div className="space-y-2">
@@ -1334,14 +916,10 @@ export default function HomePage() {
                   </div>
                 </Reveal>
 
-                <Reveal delay={0.08} className="surface-panel p-7 sm:p-8">
+                <Reveal delay={0.08} className="surface-panel showcase-card card-contact p-7 sm:p-8">
                   <div className="space-y-3 pb-3">
-                    <p className="font-display text-2xl font-semibold text-slate-900">
-                      Send a project brief
-                    </p>
-                    <p className="text-sm text-slate-600">
-                      Messages are delivered directly to {personalInfo.email}.
-                    </p>
+                    <p className="font-display text-2xl font-semibold text-slate-900">Send a project brief</p>
+                    <p className="text-sm text-slate-600">Messages are delivered directly to {personalInfo.email}.</p>
                     <div className="flex flex-wrap items-center gap-3 pt-1">
                       <a
                         href={personalInfo.calendlyUrl}
@@ -1361,16 +939,10 @@ export default function HomePage() {
                   <ContactForm />
                 </Reveal>
               </div>
-            </div>
-          </div>
-        </section>
+        </StageSection>
       </main>
 
-      <footer
-        className={`border-t border-white/70 py-8 transition-[padding] duration-300 ${
-          isSidebarCollapsed ? "lg:pl-28" : "lg:pl-72"
-        }`}
-      >
+      <footer className="border-t border-white/70 py-8">
         <div
           className={`${containerClass} flex flex-col items-start justify-between gap-4 text-sm text-slate-500 sm:flex-row sm:items-center`}
         >
@@ -1378,12 +950,10 @@ export default function HomePage() {
             (c) {new Date().getFullYear()} <span className="font-semibold">aryankr1508</span>
           </p>
           <p>
-            Designed and developed by{" "}
-            <span className="font-semibold text-slate-700">Aryan Kumar</span>
+            Designed and developed by <span className="font-semibold text-slate-700">Aryan Kumar</span>
           </p>
         </div>
       </footer>
-      </div>
     </>
   );
 }
