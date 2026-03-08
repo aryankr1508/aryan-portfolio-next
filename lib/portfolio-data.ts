@@ -141,9 +141,10 @@ export const quickFacts: Fact[] = [
 ];
 
 export const skillGroups: SkillGroup[] = [
+  /* ── Row 1: Core Identity ─────────────────────────────────────────────── */
   {
     title: "Backend Engineering",
-    description: "Primary strength in building scalable, production-grade backend systems.",
+    description: "Scalable, production-grade backend systems.",
     items: [
       ".NET / ASP.NET Core",
       "C#",
@@ -155,21 +156,8 @@ export const skillGroups: SkillGroup[] = [
     ]
   },
   {
-    title: "API and Integration",
-    description: "End-to-end API design, integration workflows, and protocol interoperability.",
-    items: [
-      "REST APIs",
-      "GraphQL",
-      "SOAP",
-      "FIXML",
-      "Webhook Integrations",
-      "Auth (JWT/OAuth)",
-      "OpenAPI / Swagger"
-    ]
-  },
-  {
     title: "Databases and Data Engineering",
-    description: "Relational and NoSQL data systems with modeling and pipeline execution.",
+    description: "Relational and NoSQL data systems with modeling and pipelines.",
     items: [
       "SQL Server",
       "MySQL",
@@ -181,8 +169,22 @@ export const skillGroups: SkillGroup[] = [
     ]
   },
   {
+    title: "API and Integration",
+    description: "End-to-end API design, integration workflows, and protocols.",
+    items: [
+      "REST APIs",
+      "GraphQL",
+      "SOAP",
+      "FIXML",
+      "Webhook Integrations",
+      "Auth (JWT/OAuth)",
+      "OpenAPI / Swagger"
+    ]
+  },
+  /* ── Row 2: Differentiators ───────────────────────────────────────────── */
+  {
     title: "Cloud, DevOps, and CI/CD",
-    description: "Cloud deployments and release automation for reliable product operations.",
+    description: "Cloud deployments and release automation for reliable operations.",
     items: [
       "Azure",
       "AWS",
@@ -194,8 +196,20 @@ export const skillGroups: SkillGroup[] = [
     ]
   },
   {
+    title: "Data, BI, and Reporting",
+    description: "Business intelligence from ingestion to dashboard automation.",
+    items: [
+      "Power BI",
+      "Power Query (M)",
+      "DAX",
+      "Reporting Automation",
+      "Business Data Integration",
+      "KPI Dashboards"
+    ]
+  },
+  {
     title: "Frontend and E-commerce",
-    description: "Modern frontend systems and e-commerce customization at production scale.",
+    description: "Modern frontend systems and e-commerce at production scale.",
     items: [
       "React",
       "Next.js",
@@ -207,9 +221,10 @@ export const skillGroups: SkillGroup[] = [
       "Vanilla JavaScript"
     ]
   },
+  /* ── Row 3: Extras / Niche ────────────────────────────────────────────── */
   {
     title: "Mobile and Desktop Apps",
-    description: "Cross-platform and native app development for mobile and desktop.",
+    description: "Cross-platform and native app development.",
     items: [
       "React Native",
       "Java (Android)",
@@ -221,31 +236,8 @@ export const skillGroups: SkillGroup[] = [
     ]
   },
   {
-    title: "TV App Frontend",
-    description: "Frontend engineering for smart TV platforms and remote-driven interfaces.",
-    items: [
-      "Roku (BrightScript)",
-      "Lightning JS",
-      "TV UI Architecture",
-      "Remote-first Navigation",
-      "Performance-focused Rendering"
-    ]
-  },
-  {
-    title: "Data, BI, and Reporting",
-    description: "Business intelligence delivery from ingestion to dashboard automation.",
-    items: [
-      "Power BI",
-      "Power Query (M)",
-      "DAX",
-      "Reporting Automation",
-      "Business Data Integration",
-      "KPI Dashboards"
-    ]
-  },
-  {
     title: "AI and ML",
-    description: "Applied machine learning workflows and AI-enabled product capabilities.",
+    description: "Applied ML workflows and AI-enabled product capabilities.",
     items: [
       "TensorFlow",
       "Keras",
@@ -253,6 +245,17 @@ export const skillGroups: SkillGroup[] = [
       "Model Training and Evaluation",
       "Inference Integration",
       "AI-assisted Features"
+    ]
+  },
+  {
+    title: "TV App Frontend",
+    description: "Smart TV platforms and remote-driven interfaces.",
+    items: [
+      "Roku (BrightScript)",
+      "Lightning JS",
+      "TV UI Architecture",
+      "Remote-first Navigation",
+      "Performance-focused Rendering"
     ]
   }
 ];
@@ -539,3 +542,92 @@ export const internships: Internship[] = [
 
 export const contactAddress =
   "G-632, 1st Avenue, Gaur City 1, Greater Noida West, India";
+
+/* ── Enterprise project helpers ──────────────────────────────────────────── */
+
+export type EnterpriseProjectCard = ExperienceProject & {
+  id: string;
+  company: string;
+  companyDuration: string;
+};
+
+function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+}
+
+export function getEnterpriseProjects(): EnterpriseProjectCard[] {
+  const result: EnterpriseProjectCard[] = [];
+  for (const exp of experienceItems) {
+    if (!exp.companyProjects?.length) continue;
+    for (const project of exp.companyProjects) {
+      result.push({
+        ...project,
+        id: slugify(project.name),
+        company: exp.title,
+        companyDuration: exp.duration,
+      });
+    }
+  }
+  return result;
+}
+
+/* ── Showcase projects (unified master-detail data) ────────────────────── */
+
+export type ShowcaseProject = {
+  id: string;
+  title: string;
+  type: "enterprise" | "personal";
+  year: string;
+  businessLogic: string;
+  contributions: string[];
+  techStack: string[];
+  confidential: boolean;
+  githubUrl?: string;
+  liveUrl?: string;
+};
+
+export function getShowcaseProjects(): ShowcaseProject[] {
+  const showcase: ShowcaseProject[] = [];
+
+  // Enterprise projects from experience
+  for (const exp of experienceItems) {
+    if (!exp.companyProjects?.length) continue;
+    const yearMatch = exp.duration.match(/\d{4}/);
+    for (const p of exp.companyProjects) {
+      showcase.push({
+        id: slugify(p.name),
+        title: p.name,
+        type: "enterprise",
+        year: yearMatch?.[0] ?? "",
+        businessLogic: p.summary,
+        contributions: p.highlights,
+        techStack: p.stack,
+        confidential: !!p.confidentialityNote,
+      });
+    }
+  }
+
+  // Personal / independent projects
+  for (const p of projects) {
+    const yearMatch = p.period.match(/\d{4}/);
+    showcase.push({
+      id: p.slug,
+      title: p.title,
+      type: "personal",
+      year: yearMatch?.[0] ?? p.period,
+      businessLogic: p.description,
+      contributions: p.story
+        ? [p.story.problem, p.story.solution, p.story.result]
+        : [],
+      techStack: p.technologies,
+      confidential: false,
+      githubUrl: p.repoUrl,
+      liveUrl: p.liveUrl ?? p.demoUrl,
+    });
+  }
+
+  return showcase;
+}

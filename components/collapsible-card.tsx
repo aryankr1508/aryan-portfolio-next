@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronDown, ExternalLink } from "lucide-react";
+import { ChevronDown, ExternalLink, ArrowUpRight } from "lucide-react";
 import type { ExperienceProject } from "@/lib/portfolio-data";
 
 type CollapsibleCardProps = {
@@ -15,7 +15,16 @@ type CollapsibleCardProps = {
     label: string;
     url: string;
   };
+  /** Called when user clicks "View in Projects" on a company project */
+  onViewProject?: (projectName: string) => void;
 };
+
+function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+}
 
 export default function CollapsibleCard({
   title,
@@ -25,7 +34,8 @@ export default function CollapsibleCard({
   projects,
   defaultOpen = false,
   accent = "sky",
-  link
+  link,
+  onViewProject
 }: CollapsibleCardProps) {
   const dotColor = accent === "emerald" ? "bg-emerald-400" : "bg-sky-400";
   const durationColor = accent === "emerald" ? "text-emerald-600" : "text-sky-600";
@@ -109,12 +119,25 @@ export default function CollapsibleCard({
                       </p>
                     ) : null}
 
-                    {project.link ? (
-                      <a href={project.link.url} target="_blank" rel="noreferrer" className="button-ghost">
-                        {project.link.label}
-                        <ExternalLink size={15} />
-                      </a>
-                    ) : null}
+                    <div className="flex flex-wrap items-center gap-2">
+                      {project.link ? (
+                        <a href={project.link.url} target="_blank" rel="noreferrer" className="button-ghost">
+                          {project.link.label}
+                          <ExternalLink size={15} />
+                        </a>
+                      ) : null}
+
+                      {onViewProject ? (
+                        <button
+                          type="button"
+                          onClick={() => onViewProject(slugify(project.name))}
+                          className="view-project-badge inline-flex items-center gap-1.5 rounded-full bg-blue-500/10 px-3 py-1.5 text-xs font-semibold text-blue-600 transition hover:bg-blue-500/20 hover:text-blue-700"
+                        >
+                          View Case Study
+                          <ArrowUpRight size={13} />
+                        </button>
+                      ) : null}
+                    </div>
                   </div>
                 </details>
               ))}

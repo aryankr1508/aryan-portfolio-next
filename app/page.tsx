@@ -23,26 +23,28 @@ import {
 import type { LucideIcon } from "lucide-react";
 import { AnimatePresence, motion, useScroll, useSpring, useTransform } from "framer-motion";
 import Image from "next/image";
-import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import CollapsibleCard from "@/components/collapsible-card";
 import ContactForm from "@/components/contact-form";
 import HeroCursorCubesScene from "@/components/hero-cursor-cubes-scene";
 import HeroThreeScene from "@/components/hero-three-scene";
+import ProjectsShowcase from "@/components/projects-showcase";
 import Reveal from "@/components/reveal";
 import SectionTitle from "@/components/section-title";
+import SkillsGrid from "@/components/skills-grid";
 import StageSection from "@/components/stage-section";
 import SplineScene from "@/components/spline-scene";
+import AuroraBackground from "@/components/aurora-background";
 import { trackEvent } from "@/lib/analytics";
 import {
   aboutHighlights,
   contactAddress,
   educationItems,
   experienceItems,
+  getShowcaseProjects,
   internships,
   navItems,
   personalInfo,
-  projects,
   quickFacts,
   skillGroups,
   socialLinks,
@@ -68,6 +70,35 @@ export default function HomePage() {
     if (typeof window === "undefined") return "dark";
     return window.localStorage.getItem("theme") === "light" ? "light" : "dark";
   });
+  const showcaseProjects = useMemo(() => getShowcaseProjects(), []);
+
+  const handleViewProject = useCallback(
+    (projectId: string) => {
+      trackEvent("experience_project_jump", { project: projectId, section: "projects" });
+      // Smooth-scroll to projects section
+      const section = document.getElementById("projects");
+      if (!section) return;
+
+      const sectionOffset = -96;
+      const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const scrollTo = (
+        window as Window & {
+          __portfolioScrollTo?: (
+            target: number | string | HTMLElement,
+            options?: { offset?: number; immediate?: boolean }
+          ) => void;
+        }
+      ).__portfolioScrollTo;
+
+      if (!prefersReducedMotion && scrollTo) {
+        scrollTo(section, { offset: sectionOffset });
+      } else {
+        const top = section.getBoundingClientRect().top + window.scrollY + sectionOffset;
+        window.scrollTo({ top, behavior: prefersReducedMotion ? "auto" : "smooth" });
+      }
+    },
+    []
+  );
 
   const heroSplineScene =
     process.env.NEXT_PUBLIC_HERO_SPLINE_SCENE_URL ?? process.env.NEXT_PUBLIC_SPLINE_SCENE_URL ?? "";
@@ -206,6 +237,7 @@ export default function HomePage() {
         </div>
       ) : null}
 
+      {isDark && !useLiteVisuals ? <AuroraBackground /> : null}
       <div
         aria-hidden
         className={`pointer-events-none fixed inset-0 -z-30 ${
@@ -584,27 +616,7 @@ export default function HomePage() {
                 />
               </Reveal>
 
-              <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-                {skillGroups.map((group, index) => (
-                  <Reveal key={group.title} delay={index * 0.04}>
-                    <motion.article
-                      whileHover={{ y: -6 }}
-                      transition={{ duration: 0.2 }}
-                      className="surface-panel showcase-card card-skill h-full p-6"
-                    >
-                      <h3 className="font-display text-xl font-semibold text-slate-900">{group.title}</h3>
-                      <p className="mt-2 text-sm leading-relaxed text-slate-600">{group.description}</p>
-                      <div className="mt-4 flex flex-wrap gap-2">
-                        {group.items.map((item) => (
-                          <span key={item} className="chip">
-                            {item}
-                          </span>
-                        ))}
-                      </div>
-                    </motion.article>
-                  </Reveal>
-                ))}
-              </div>
+              <SkillsGrid skillGroups={skillGroups} />
         </StageSection>
 
         <StageSection id="resume" tone="amber" containerClass={containerClass}>
@@ -616,7 +628,7 @@ export default function HomePage() {
                 />
               </Reveal>
 
-              <Reveal className="surface-panel showcase-card card-resume p-6 sm:p-8">
+              <Reveal className="surface-panel showcase-card card-resume card-resume-panel p-6 sm:p-8">
                 <div className="flex flex-wrap items-center justify-between gap-4">
                   <div>
                     <p className="font-display text-2xl font-semibold text-slate-900">Download Resume</p>
@@ -635,7 +647,7 @@ export default function HomePage() {
               </Reveal>
 
               <div className="grid gap-6 xl:grid-cols-2">
-                <Reveal className="surface-panel showcase-card card-resume p-7 sm:p-8">
+                <Reveal className="surface-panel showcase-card card-resume card-resume-panel p-7 sm:p-8">
                   <h3 className="font-display text-2xl font-semibold text-slate-900">Professional Experience</h3>
                   <div className="mt-6 space-y-4">
                     {experienceItems.map((item) => (
@@ -646,12 +658,13 @@ export default function HomePage() {
                         duration={item.duration}
                         details={item.details}
                         projects={item.companyProjects}
+                        onViewProject={handleViewProject}
                       />
                     ))}
                   </div>
                 </Reveal>
 
-                <Reveal delay={0.08} className="surface-panel showcase-card card-resume p-7 sm:p-8">
+                <Reveal delay={0.08} className="surface-panel showcase-card card-resume card-resume-panel p-7 sm:p-8">
                   <h3 className="font-display text-2xl font-semibold text-slate-900">Education</h3>
                   <div className="mt-6 space-y-5 border-l-2 border-teal-200 pl-5">
                     {educationItems.map((item) => (
@@ -685,9 +698,18 @@ export default function HomePage() {
                 />
               </Reveal>
 
-              <div className="grid gap-5 md:grid-cols-2">
-                {internships.map((internship, index) => (
-                  <Reveal key={`${internship.company}-${internship.duration}`} delay={index * 0.05}>
+              <motion.div
+                className="grid gap-5 md:grid-cols-2"
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, margin: "-80px" }}
+                variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.1 } } }}
+              >
+                {internships.map((internship) => (
+                  <motion.div
+                    key={`${internship.company}-${internship.duration}`}
+                    variants={{ hidden: { opacity: 0, y: 28 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] } } }}
+                  >
                     <article className="surface-panel showcase-card card-internship h-full p-6">
                       <p className="text-xs font-semibold uppercase tracking-[0.16em] text-teal-700">
                         {internship.duration}
@@ -716,9 +738,9 @@ export default function HomePage() {
                         <ExternalLink size={15} />
                       </a>
                     </article>
-                  </Reveal>
+                  </motion.div>
                 ))}
-              </div>
+              </motion.div>
         </StageSection>
 
         <StageSection id="projects" tone="sky" containerClass={containerClass}>
@@ -726,114 +748,14 @@ export default function HomePage() {
                 <SectionTitle
                   eyebrow="Projects"
                   title="Selected Work"
-                  description="A visual project grid with concise context, stack tags, and direct links to code and demos."
+                  description="Enterprise delivery and independent builds - select a project to explore the details."
                 />
               </Reveal>
 
-              <div className="grid gap-5 md:grid-cols-2">
-                {projects.map((project, index) => {
-                  const liveOrDemoUrl = project.liveUrl ?? project.demoUrl;
-                  const liveLabel = project.liveUrl ? "Live Demo" : project.demoUrl ? "Demo Video" : null;
-
-                  return (
-                    <Reveal key={project.slug} delay={index * 0.05}>
-                      <motion.article
-                        whileHover={{ y: -8 }}
-                        transition={{ duration: 0.22 }}
-                        className={`project-card showcase-card card-project flex h-full flex-col rounded-[2rem] border p-5 shadow-soft backdrop-blur-xl ${
-                          isDark
-                            ? "border-slate-600/45 bg-slate-950/74"
-                            : "border-white/80 bg-white/78"
-                        }`}
-                      >
-                        <div className="overflow-hidden rounded-2xl border border-white/60">
-                          <Image
-                            src={project.thumbnail}
-                            alt={`${project.title} preview`}
-                            width={1280}
-                            height={720}
-                            className="h-52 w-full object-cover transition duration-500 hover:scale-[1.03]"
-                          />
-                        </div>
-
-                        <div className="mt-4 flex flex-wrap items-center gap-2">
-                          <span
-                            className={`rounded-full border px-3 py-1 text-xs font-semibold ${
-                              isDark
-                                ? "border-teal-300/45 bg-teal-500/12 text-teal-100"
-                                : "border-teal-200 bg-teal-50 text-teal-700"
-                            }`}
-                          >
-                            {project.resultMetric}
-                          </span>
-                          <span className="text-xs uppercase tracking-[0.16em] text-slate-500">
-                            {project.period}
-                          </span>
-                        </div>
-
-                        <h3 className="mt-3 font-display text-2xl font-semibold text-slate-900">
-                          {project.title}
-                        </h3>
-                        <p className="mt-1 text-sm font-semibold text-teal-700">{project.subtitle}</p>
-                        <p className="mt-3 text-sm leading-relaxed text-slate-600">{project.description}</p>
-
-                        <div className="mt-4 flex flex-wrap gap-2">
-                          {project.technologies.map((tech) => (
-                            <span key={tech} className="chip">
-                              {tech}
-                            </span>
-                          ))}
-                        </div>
-
-                        <div className="mt-6 flex items-center justify-between gap-3">
-                          <Link
-                            href={`/projects/${project.slug}`}
-                            onClick={() =>
-                              trackEvent("project_detail_click", { project: project.slug, source: "home_grid" })
-                            }
-                            className="button-primary"
-                          >
-                            Case Study
-                            <ArrowUpRight size={15} />
-                          </Link>
-
-                          <div className="flex items-center gap-2">
-                            {liveOrDemoUrl && liveLabel ? (
-                              <a
-                                href={liveOrDemoUrl}
-                                target="_blank"
-                                rel="noreferrer"
-                                aria-label={`${project.title} ${liveLabel}`}
-                                onClick={() =>
-                                  trackEvent("project_live_click", { project: project.slug, source: "home_grid" })
-                                }
-                                className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-300 bg-white/85 text-slate-700 transition hover:border-teal-500/45 hover:text-slate-900"
-                              >
-                                <ExternalLink size={15} />
-                              </a>
-                            ) : null}
-
-                            {project.repoUrl ? (
-                              <a
-                                href={project.repoUrl}
-                                target="_blank"
-                                rel="noreferrer"
-                                aria-label={`${project.title} GitHub repository`}
-                                onClick={() =>
-                                  trackEvent("project_repo_click", { project: project.slug, source: "home_grid" })
-                                }
-                                className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-300 bg-white/85 text-slate-700 transition hover:border-teal-500/45 hover:text-slate-900"
-                              >
-                                <Github size={15} />
-                              </a>
-                            ) : null}
-                          </div>
-                        </div>
-                      </motion.article>
-                    </Reveal>
-                  );
-                })}
-              </div>
+              <ProjectsShowcase
+                projects={showcaseProjects}
+                isDark={isDark}
+              />
         </StageSection>
 
         <StageSection id="contact" tone="coral" containerClass={containerClass}>
