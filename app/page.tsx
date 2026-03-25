@@ -67,8 +67,8 @@ export default function HomePage() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [useLiteVisuals, setUseLiteVisuals] = useState(false);
   const [theme, setTheme] = useState<"dark" | "light">(() => {
-    if (typeof window === "undefined") return "dark";
-    return window.localStorage.getItem("theme") === "light" ? "light" : "dark";
+    if (typeof window === "undefined") return "light";
+    return window.localStorage.getItem("theme") === "dark" ? "dark" : "light";
   });
   const showcaseProjects = useMemo(() => getShowcaseProjects(), []);
 
