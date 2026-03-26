@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const data: Record<string, { color: string; bg: string; icon: string; questions: string[] }> = {
   React: {
@@ -342,9 +342,30 @@ function QuestionCard({ q, idx, done, color, onToggle }: {
 }
 
 export default function PrepPage() {
-  const [active, setActive] = useState("Backend & Systems");
-  const [checked, setChecked] = useState<Record<string, boolean>>({});
+  const [active, setActive] = useState(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("prep-active-tab") || "Backend & Systems";
+    }
+    return "Backend & Systems";
+  });
+  const [checked, setChecked] = useState<Record<string, boolean>>(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const saved = localStorage.getItem("prep-checked");
+        if (saved) return JSON.parse(saved);
+      } catch {}
+    }
+    return {};
+  });
   const [search, setSearch] = useState("");
+
+  useEffect(() => {
+    localStorage.setItem("prep-checked", JSON.stringify(checked));
+  }, [checked]);
+
+  useEffect(() => {
+    localStorage.setItem("prep-active-tab", active);
+  }, [active]);
 
   const toggle = (cat: string, i: number) => {
     const key = `${cat}-${i}`;
@@ -458,7 +479,7 @@ export default function PrepPage() {
         })()}
 
         <div style={{ marginTop: 32, paddingTop: 16, borderTop: "1px solid #1e1e1e", fontSize: 11, color: "#3a3a3a", textAlign: "center" }}>
-          Click any question to mark as reviewed · Progress saved per session
+          Click any question to mark as reviewed · Progress saved in browser
         </div>
       </div>
     </div>
