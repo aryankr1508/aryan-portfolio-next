@@ -1,6 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import AnswerModal from "../../components/answer-modal";
+import { dotnetAnswers } from "./dotnet-answers";
+
+const answers: Record<string, string[]> = {
+  ".NET / C#": dotnetAnswers,
+};
 
 const data: Record<string, { color: string; bg: string; icon: string; questions: string[] }> = {
   React: {
@@ -311,35 +317,50 @@ const sections: Record<string, { label: string; range: [number, number] }[]> = {
   ]
 };
 
-function QuestionCard({ q, idx, done, color, onToggle }: {
-  q: string; idx: number; done: boolean; color: string; onToggle: () => void;
+/* ── Markdown renderer ─────────────────────────────────────────── */
+
+/* ── QuestionCard ──────────────────────────────────────────────── */
+
+function QuestionCard({ q, idx, done, color, onToggle, onOpen, hasAnswer }: {
+  q: string; idx: number; done: boolean; color: string; onToggle: () => void; onOpen?: () => void; hasAnswer?: boolean;
 }) {
+  const canOpen = Boolean(hasAnswer && onOpen);
+
   return (
-    <div onClick={onToggle}
+    <div onClick={canOpen ? onOpen : undefined}
       style={{
         display: "flex", alignItems: "flex-start", gap: 14,
         padding: "12px 16px", borderRadius: 12,
-        background: done ? "#0f0f0f" : "#161616",
-        border: `1px solid ${done ? "#1e1e1e" : "#242424"}`,
-        cursor: "pointer", transition: "all 0.15s", opacity: done ? 0.4 : 1
+        background: done ? "#121212" : "#161616",
+        border: `1px solid ${done ? "#262626" : "#242424"}`,
+        cursor: canOpen ? "pointer" : "default",
+        transition: "all 0.15s"
       }}>
-      <div style={{
-        width: 20, height: 20, borderRadius: 6, flexShrink: 0, marginTop: 1,
-        border: `2px solid ${done ? color : "#3a3a3a"}`,
-        background: done ? color : "transparent",
-        display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.15s"
-      }}>
+      <button
+        type="button"
+        aria-label={done ? `Mark question ${idx + 1} as not reviewed` : `Mark question ${idx + 1} as reviewed`}
+        onClick={(e) => { e.stopPropagation(); onToggle(); }}
+        style={{
+          width: 20, height: 20, borderRadius: 6, flexShrink: 0, marginTop: 1,
+          border: `2px solid ${done ? color : "#3a3a3a"}`,
+          background: done ? color : "transparent",
+          display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.15s",
+          padding: 0, cursor: "pointer"
+        }}>
         {done && <span style={{ color: "#000", fontSize: 11, fontWeight: 900 }}>✓</span>}
-      </div>
-      <div>
+      </button>
+      <div style={{ flex: 1 }}>
         <span style={{ fontSize: 11, color, fontWeight: 700, marginRight: 6, opacity: 0.55 }}>Q{idx + 1}</span>
-        <span style={{ fontSize: 13.5, lineHeight: 1.65, color: done ? "#444" : "#d8d8d8", textDecoration: done ? "line-through" : "none" }}>
+        <span style={{ fontSize: 13.5, lineHeight: 1.65, color: done ? "#8b8b8b" : "#d8d8d8", textDecoration: done ? "line-through" : "none" }}>
           {q}
         </span>
       </div>
+      {hasAnswer && <span style={{ fontSize: 10, color: "#4ade80", opacity: 0.5, marginTop: 3, flexShrink: 0 }}>VIEW</span>}
     </div>
   );
 }
+
+/* ── Main Page ─────────────────────────────────────────────────── */
 
 export default function PrepPage() {
   const [active, setActive] = useState(() => {
@@ -353,11 +374,12 @@ export default function PrepPage() {
       try {
         const saved = localStorage.getItem("prep-checked");
         if (saved) return JSON.parse(saved);
-      } catch {}
+      } catch { /* ignore */ }
     }
     return {};
   });
   const [search, setSearch] = useState("");
+  const [selectedQ, setSelectedQ] = useState<{ cat: string; idx: number } | null>(null);
 
   useEffect(() => {
     localStorage.setItem("prep-checked", JSON.stringify(checked));
@@ -375,6 +397,7 @@ export default function PrepPage() {
   const filtered = data[active].questions.filter(q =>
     q.toLowerCase().includes(search.toLowerCase())
   );
+  const selectedAnswer = selectedQ ? answers[selectedQ.cat]?.[selectedQ.idx] : null;
 
   const totalDone = Object.values(checked).filter(Boolean).length;
   const totalAll = categoryOrder.reduce((s, c) => s + data[c].questions.length, 0);
@@ -393,7 +416,7 @@ export default function PrepPage() {
               <div style={{ width: `${(totalDone / totalAll) * 100}%`, background: "#4ade80", height: "100%", borderRadius: 99, transition: "width 0.4s" }} />
             </div>
             <span style={{ fontSize: 12, color: "#666", whiteSpace: "nowrap" }}>{totalDone} / {totalAll} reviewed</span>
-          </div>
+        </div>
         </div>
 
         {/* Tabs */}
@@ -451,7 +474,9 @@ export default function PrepPage() {
                       const done = !!checked[key];
                       return (
                         <QuestionCard key={key} q={q} idx={realIdx} done={done} color={data[active].color}
-                          onToggle={() => toggle(active, realIdx)} />
+                          onToggle={() => toggle(active, realIdx)}
+                          onOpen={answers[active]?.[realIdx] ? () => setSelectedQ({ cat: active, idx: realIdx }) : undefined}
+                          hasAnswer={!!answers[active]?.[realIdx]} />
                       );
                     })}
                   </div>
@@ -468,7 +493,9 @@ export default function PrepPage() {
                 const done = !!checked[key];
                 return (
                   <QuestionCard key={key} q={q} idx={realIdx} done={done} color={data[active].color}
-                    onToggle={() => toggle(active, realIdx)} />
+                    onToggle={() => toggle(active, realIdx)}
+                    onOpen={answers[active]?.[realIdx] ? () => setSelectedQ({ cat: active, idx: realIdx }) : undefined}
+                    hasAnswer={!!answers[active]?.[realIdx]} />
                 );
               })}
               {filtered.length === 0 && (
@@ -478,8 +505,18 @@ export default function PrepPage() {
           );
         })()}
 
+        {/* Answer Modal */}
+        {selectedQ && selectedAnswer && (
+          <AnswerModal
+            title={`Q${selectedQ.idx + 1}. ${data[selectedQ.cat].questions[selectedQ.idx]}`}
+            content={selectedAnswer}
+            accentColor={data[selectedQ.cat].color}
+            onClose={() => setSelectedQ(null)}
+          />
+        )}
+
         <div style={{ marginTop: 32, paddingTop: 16, borderTop: "1px solid #1e1e1e", fontSize: 11, color: "#3a3a3a", textAlign: "center" }}>
-          Click any question to mark as reviewed · Progress saved in browser
+          Click a question with a VIEW badge to open the answer · Use checkbox to mark as reviewed · Progress saved in browser
         </div>
       </div>
     </div>

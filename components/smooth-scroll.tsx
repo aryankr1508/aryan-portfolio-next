@@ -19,9 +19,38 @@ type SmoothScrollProps = {
 export default function SmoothScroll({ children }: SmoothScrollProps) {
   useEffect(() => {
     const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const isScrollable = (value: string) => /(auto|scroll|overlay)/.test(value);
+    const shouldUseNativeScroll = (node: unknown) => {
+      if (!(node instanceof HTMLElement)) return false;
+
+      let current: HTMLElement | null = node;
+
+      while (current && current !== document.body) {
+        if (
+          current.hasAttribute("data-lenis-prevent") ||
+          current.hasAttribute("data-lenis-prevent-wheel") ||
+          current.hasAttribute("data-lenis-prevent-touch")
+        ) {
+          return true;
+        }
+
+        const styles = window.getComputedStyle(current);
+        const canScrollY = isScrollable(styles.overflowY) && current.scrollHeight > current.clientHeight;
+        const canScrollX = isScrollable(styles.overflowX) && current.scrollWidth > current.clientWidth;
+
+        if (canScrollY || canScrollX) {
+          return true;
+        }
+
+        current = current.parentElement;
+      }
+
+      return false;
+    };
 
     const lenis = new Lenis({
       duration: prefersReducedMotion ? 0.01 : 1.15,
+      prevent: shouldUseNativeScroll,
       smoothWheel: !prefersReducedMotion,
       wheelMultiplier: prefersReducedMotion ? 1 : 0.95,
       touchMultiplier: prefersReducedMotion ? 1 : 1.15

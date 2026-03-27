@@ -78,7 +78,10 @@ export default function ProjectsShowcase({ projects, isDark }: ProjectsShowcaseP
       </div>
 
       <div className="grid gap-5 lg:grid-cols-[0.92fr_1.08fr]">
-        <div className="h-[24rem] space-y-2 overflow-y-auto pr-1 sm:h-[27rem] lg:h-[30rem]">
+        <div
+          data-lenis-prevent=""
+          className="h-[24rem] space-y-2 overflow-y-auto pr-1 sm:h-[27rem] lg:h-[30rem]"
+        >
           {filteredProjects.map((project) => {
             const isEnterprise = project.type === "enterprise";
             return (
@@ -126,7 +129,10 @@ export default function ProjectsShowcase({ projects, isDark }: ProjectsShowcaseP
           })}
         </div>
 
-        <div className="surface-panel showcase-card card-project h-[24rem] overflow-y-auto p-6 sm:h-[27rem] sm:p-7 lg:h-[30rem]">
+        <div
+          data-lenis-prevent=""
+          className="surface-panel showcase-card card-project h-[24rem] overflow-y-auto p-6 sm:h-[27rem] sm:p-7 lg:h-[30rem]"
+        >
           <AnimatePresence mode="wait">
             {activeProject ? (
               <ProjectDetail key={activeProject.id} project={activeProject} isDark={isDark} />
