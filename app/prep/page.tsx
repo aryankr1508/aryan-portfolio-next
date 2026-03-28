@@ -4,12 +4,14 @@ import { useState, useEffect } from "react";
 import AnswerModal from "../../components/answer-modal";
 import { dotnetAnswers } from "./dotnet-answers";
 import { javascriptAnswers, nodeAnswers, reactAnswers } from "./frontend-answers";
+import { sqlAnswers } from "./sql-answers";
 
 const answers: Record<string, string[]> = {
   React: reactAnswers,
   JavaScript: javascriptAnswers,
   "Node.js": nodeAnswers,
   ".NET / C#": dotnetAnswers,
+  SQL: sqlAnswers,
 };
 
 const data: Record<string, { color: string; bg: string; icon: string; questions: string[] }> = {
