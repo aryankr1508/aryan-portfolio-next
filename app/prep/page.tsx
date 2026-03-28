@@ -3,8 +3,12 @@
 import { useState, useEffect } from "react";
 import AnswerModal from "../../components/answer-modal";
 import { dotnetAnswers } from "./dotnet-answers";
+import { javascriptAnswers, nodeAnswers, reactAnswers } from "./frontend-answers";
 
 const answers: Record<string, string[]> = {
+  React: reactAnswers,
+  JavaScript: javascriptAnswers,
+  "Node.js": nodeAnswers,
   ".NET / C#": dotnetAnswers,
 };
 
