@@ -85,7 +85,7 @@ export const personalInfo = {
   name: "Aryan Kumar",
   role: "Software Engineer",
   summary:
-    "I build scalable web applications and backend systems with a strong focus on API design, performance, and reliable product delivery.",
+    "I build scalable product systems across web, mobile, desktop, LMS, backend, data, and AI-agent workflows with a strong focus on API design, performance, and reliable delivery.",
   location: "Noida, India",
   email: "aryankumar15082002@gmail.com",
   phone: "+91 8210236605",
@@ -116,7 +116,8 @@ export const socialLinks = [
 export const aboutHighlights = [
   "Lead backend-first product delivery across .NET, Java Spring Boot, Python, and Node.js services.",
   "Design and ship REST, GraphQL, SOAP, and integration-heavy APIs for production systems.",
-  "Build full-stack web, mobile, desktop, and TV applications based on business and platform needs.",
+  "Build full-stack web, mobile, desktop, LMS, and TV applications based on business and platform needs.",
+  "Work on custom MCP connectors, agentic workflows, and OpenCLAW-style automation systems.",
   "Develop data engineering and BI workflows with SQL, Power BI, and automated reporting pipelines.",
   "Own delivery from architecture and implementation to CI/CD, cloud rollout, and production support."
 ];
@@ -126,6 +127,7 @@ export const toolsAndTechnologies = [
   "Java Spring Boot, Python, and Node.js",
   "REST, GraphQL, SOAP, and FIXML APIs",
   "SQL + NoSQL data platforms",
+  "MCP Connectors and Agentic Workflows",
   "Cloud + CI/CD on Azure, AWS, and GCP",
   "Power BI, Data Engineering, and Analytics"
 ];
@@ -135,7 +137,7 @@ export const quickFacts: Fact[] = [
   { label: "Experience", value: "3+ years" },
   { label: "Domains", value: "E-commerce, BI, AI, Collaboration" },
   { label: "Open To", value: "Freelance + Full-time" },
-  { label: "Focus", value: "Backend, Cloud, and Data Products" },
+  { label: "Focus", value: "Product Systems, APIs, AI, and Data" },
   { label: "Core Stack", value: ".NET, Java, Python, Node.js, SQL" },
   { label: "Location", value: "Noida, India" }
 ];
@@ -237,14 +239,17 @@ export const skillGroups: SkillGroup[] = [
   },
   {
     title: "AI and ML",
-    description: "Applied ML workflows and AI-enabled product capabilities.",
+    description: "Applied AI, ML, and agent-enabled product capabilities.",
     items: [
       "TensorFlow",
       "Keras",
       "NumPy",
       "Model Training and Evaluation",
       "Inference Integration",
-      "AI-assisted Features"
+      "AI-assisted Features",
+      "Agentic Workflows",
+      "Custom MCP Connectors",
+      "OpenCLAW Automation"
     ]
   },
   {
@@ -264,8 +269,8 @@ export const freelanceServices: FreelanceService[] = [
   {
     title: "Full Stack Product Development",
     description:
-      "Build end-to-end web applications with clean UX, scalable backend APIs, and production-ready deployment.",
-    stack: ["React", "Node.js", ".NET", "SQL Server"]
+      "Build end-to-end product systems across web, mobile, desktop, LMS, and backend platforms with clean UX, scalable APIs, and production-ready deployment.",
+    stack: ["React", "React Native", ".NET", "Node.js", "SQL Server"]
   },
   {
     title: "Backend and API Engineering",
@@ -284,6 +289,12 @@ export const freelanceServices: FreelanceService[] = [
     description:
       "Connect business sources and automate dashboards, reports, and scorecards for decision-making.",
     stack: ["Power BI", "Power Query", "API Integrations", "Data Modeling"]
+  },
+  {
+    title: "AI Agents and MCP Connectors",
+    description:
+      "Create custom MCP connectors, agentic workflows, and automation layers that connect tools, data, and business processes.",
+    stack: ["MCP", "OpenCLAW", "Python", "Node.js", "API Integrations"]
   }
 ];
 

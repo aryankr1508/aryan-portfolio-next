@@ -456,7 +456,7 @@ export default function HomePage() {
                           : "bg-gradient-to-r from-teal-700 via-emerald-700 to-amber-700 bg-clip-text text-transparent"
                       }`}
                     >
-                      A Full Stack Developer building scalable web applications.
+                      A Full Stack Developer building cross-platform product systems.
                     </span>
                   </h1>
 
@@ -574,7 +574,7 @@ export default function HomePage() {
                 <SectionTitle
                   eyebrow="About"
                   title="Focused On Impact, Not Resume Clutter"
-                  description="I build practical product systems that improve speed, reliability, and developer flow across API-heavy and data-heavy workloads."
+                  description="I build practical product systems that improve speed, reliability, and developer flow across apps, APIs, data, and AI-agent workflows."
                 />
               </Reveal>
 
@@ -612,7 +612,7 @@ export default function HomePage() {
                 <SectionTitle
                   eyebrow="Skills"
                   title="Backend-First, Full-Spectrum Skill Set"
-                  description="A practical overview of my core backend strengths plus frontend, mobile, desktop, cloud, DevOps, data engineering, BI, and AI capabilities."
+                  description="A practical overview of my core backend strengths plus frontend, mobile, desktop, LMS, cloud, DevOps, data engineering, BI, MCP, and AI capabilities."
                 />
               </Reveal>
 
@@ -763,7 +763,7 @@ export default function HomePage() {
                 <SectionTitle
                   eyebrow="Contact"
                   title="Let&apos;s Build Something Useful"
-                  description="If you need a full-stack developer for product delivery, API integrations, or reporting automation, send me your brief."
+                  description="If you need a full-stack developer for product delivery, cross-platform apps, API integrations, MCP connectors, agentic workflows, or reporting automation, send me your brief."
                 />
               </Reveal>
 
