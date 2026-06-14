@@ -228,7 +228,13 @@ function looksLikeGoogleLoginPage(body: string): boolean {
 }
 
 function isSmtpConfigured(): boolean {
-  return Boolean(smtpHost && Number.isFinite(smtpPort) && smtpPort > 0);
+  return Boolean(
+    smtpHost &&
+      Number.isFinite(smtpPort) &&
+      smtpPort > 0 &&
+      smtpUser &&
+      smtpPass
+  );
 }
 
 function escapeHtml(value: string): string {

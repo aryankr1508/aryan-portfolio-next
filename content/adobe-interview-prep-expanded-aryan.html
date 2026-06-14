@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Adobe Interview Prep Expanded — Aryan Kumar</title>
+<style>
+:root { --bg:#f6f7fb; --paper:#ffffff; --ink:#121212; --muted:#5f6470; --line:#e4e6ee; --red:#d92525; --blue:#2663eb; --green:#0a7c54; --yellow:#935b00; --purple:#5b3cc4; --shadow:0 10px 30px rgba(18,18,18,.07); }
+* { box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body { margin:0; background:var(--bg); color:var(--ink); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif; line-height:1.65; font-size:15px; }
+a { color:#1d4ed8; text-decoration:none; }
+a:hover { text-decoration:underline; }
+.layout { display:grid; grid-template-columns:280px 1fr; min-height:100vh; }
+.sidebar { position:sticky; top:0; height:100vh; overflow:auto; padding:24px 18px; background:#111827; color:white; }
+.brand { border-bottom:1px solid rgba(255,255,255,.15); padding-bottom:18px; margin-bottom:16px; }
+.brand h1 { font-size:20px; line-height:1.2; margin:0 0 8px; }
+.brand p { margin:0; color:#cbd5e1; font-size:13px; }
+.meta { display:grid; gap:8px; margin:16px 0; }
+.meta div { background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.1); border-radius:10px; padding:10px; font-size:12px; color:#e5e7eb; }
+.nav { display:grid; gap:6px; }
+.nav a { color:#e5e7eb; display:block; padding:8px 10px; border-radius:8px; font-size:13px; }
+.nav a:hover { background:rgba(255,255,255,.1); text-decoration:none; }
+.main { max-width:1120px; padding:32px; }
+.hero { background:linear-gradient(135deg,#fff,#eef4ff); border:1px solid var(--line); border-radius:22px; padding:28px; box-shadow:var(--shadow); margin-bottom:24px; }
+.hero h1 { font-size:32px; margin:0 0 8px; letter-spacing:-.02em; }
+.hero p { margin:0; color:var(--muted); max-width:850px; }
+.stats { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-top:20px; }
+.stat { background:white; border:1px solid var(--line); border-radius:14px; padding:16px; }
+.stat strong { display:block; font-size:24px; }
+.stat span { color:var(--muted); font-size:12px; }
+.section { background:var(--paper); border:1px solid var(--line); border-radius:20px; padding:26px; box-shadow:var(--shadow); margin:24px 0; }
+.section-head { display:flex; justify-content:space-between; gap:16px; border-bottom:1px solid var(--line); padding-bottom:14px; margin-bottom:18px; }
+.section h2 { margin:0; font-size:24px; letter-spacing:-.01em; }
+.section-head p { margin:4px 0 0; color:var(--muted); }
+h3 { margin:24px 0 10px; font-size:18px; }
+h4 { margin:18px 0 8px; font-size:15px; }
+p { margin:8px 0; }
+ul,ol { margin:8px 0 14px 22px; padding:0; }
+li { margin:5px 0; }
+.big-list li { margin:9px 0; }
+.grid { display:grid; gap:14px; }
+.grid.two { grid-template-columns:repeat(2,minmax(0,1fr)); }
+.card { background:#f8fafc; border:1px solid var(--line); border-radius:16px; padding:16px; }
+.card h3 { margin-top:0; }
+.callout { border-radius:14px; padding:14px 16px; margin:14px 0; border:1px solid; }
+.callout strong { display:block; margin-bottom:4px; }
+.callout.info { background:#eff6ff; border-color:#bfdbfe; color:#123e84; }
+.callout.good { background:#ecfdf5; border-color:#bbf7d0; color:#14532d; }
+.callout.warn { background:#fff7ed; border-color:#fed7aa; color:#7c2d12; }
+.callout.danger { background:#fef2f2; border-color:#fecaca; color:#7f1d1d; }
+.script { background:#111827; color:#f9fafb; border-radius:16px; padding:16px; font-size:14px; line-height:1.75; margin:12px 0; }
+pre { background:#0b1020; color:#eef2ff; border-radius:14px; padding:16px; overflow:auto; font-size:13px; line-height:1.55; border:1px solid #1f2937; }
+code { font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono",monospace; }
+:not(pre)>code { background:#eef2ff; color:#3730a3; padding:2px 5px; border-radius:5px; font-size:13px; }
+.table-wrap { overflow:auto; border:1px solid var(--line); border-radius:14px; margin:12px 0; }
+table { width:100%; border-collapse:collapse; background:white; }
+th { background:#f1f5f9; text-align:left; font-size:12px; color:#334155; text-transform:uppercase; letter-spacing:.04em; }
+th,td { padding:10px 12px; border-bottom:1px solid var(--line); vertical-align:top; }
+tr:last-child td { border-bottom:none; }
+.qa { border:1px solid var(--line); border-radius:14px; margin:10px 0; overflow:hidden; background:#fff; }
+.qa summary { cursor:pointer; list-style:none; padding:13px 16px; font-weight:650; display:flex; justify-content:space-between; gap:16px; }
+.qa summary::-webkit-details-marker { display:none; }
+.qa summary:after { content:"+"; color:var(--blue); font-weight:800; }
+.qa[open] summary:after { content:"−"; }
+.ans { border-top:1px solid var(--line); padding:14px 16px; background:#fbfdff; }
+.priority { align-self:start; background:#fee2e2; color:#991b1b; border-radius:999px; padding:5px 10px; font-size:12px; font-weight:700; white-space:nowrap; }
+.checklist { list-style:none; margin-left:0; }
+.muted { color:var(--muted); }
+.footer { color:var(--muted); text-align:center; padding:30px 0 60px; }
+@media (max-width: 920px) { .layout { grid-template-columns:1fr; } .sidebar { position:relative; height:auto; } .main { padding:18px; } .stats,.grid.two { grid-template-columns:1fr; } }
+@media print { body { background:white; } .layout { display:block; } .sidebar { display:none; } .main { max-width:none; padding:0; } .section,.hero { box-shadow:none; border:1px solid #ddd; break-inside:avoid; } a { color:#000; } details { break-inside:avoid; } details:not([open]) .ans { display:block; } details:not([open]) { border-color:#ddd; } details:not([open] summary:after) { content:""; } }
+</style>
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+  <div class="brand"><h1>Adobe Interview Prep</h1><p>Expanded master guide for Aryan Kumar<br>Generated 14 Jun 2026</p></div>
+  <div class="meta"><div><strong>Role:</strong> Full Stack Java Developer</div><div><strong>Focus:</strong> Java · Spring · AI/MCP · Full-stack · DSA</div><div><strong>Use:</strong> Study offline, print, mock interview</div></div>
+  <nav class="nav"><a href="#overview">How to use this file</a><a href="#jd-map">JD → Resume → Interview strategy</a><a href="#one-week">Seven-day crash plan</a><a href="#process">Likely Adobe interview process</a><a href="#spring">Spring Boot from absolute beginner to interview level</a><a href="#java">Java core interview notes</a><a href="#rest-security">REST API, security, JWT, OAuth, RBAC</a><a href="#database">Database, JPA, SQL, indexing, transactions</a><a href="#frontend">React / Next.js frontend defense</a><a href="#emerge-mcp">Emerge AI, Drive, connectors, MCP, agentic workflows</a><a href="#kafka-redis">Kafka, Redis, RabbitMQ, microservices</a><a href="#projects">Project defense scripts</a><a href="#system-design">System design playbook</a><a href="#dsa">DSA crash sheet</a><a href="#testing-devops">Testing, CI/CD, debugging, production readiness</a><a href="#behavioral">Behavioral and HR answers</a><a href="#question-bank">Master question bank</a><a href="#dangerous-bullets">Dangerous resume bullets and exact defense</a><a href="#final-revision">Final 24-hour revision sheet</a><a href="#sources">Source notes used</a></nav>
+</aside>
+<main class="main">
+  <div class="hero"><h1>Adobe Full Stack Java Developer — Expanded Interview Prep</h1><p>This file expands your original Adobe prep into a beginner-to-advanced guide covering Spring Boot, Java, REST, security, databases, Kafka, Redis, MCP, AI agents, project defense, DSA, system design, testing, CI/CD, and behavioral answers.</p><div class="stats"><div class="stat"><strong>7</strong><span>Day crash plan</span></div><div class="stat"><strong>19</strong><span>Deep sections</span></div><div class="stat"><strong>225+</strong><span>Practice questions</span></div><div class="stat"><strong>30</strong><span>DSA problems</span></div></div></div>
+  
+<section id="overview" class="section">
+  <div class="section-head">
+    <div><h2>0. How to use this file</h2><p>Your one-week Adobe Full Stack Java Developer preparation system.</p></div>
+    
+  </div>
+  
+<div class="callout danger"><strong>Important live-interview rule</strong><div>Adobe says live interviews are designed to reflect your own skills and thinking. Do not use AI, recording, live-scribing, or prompting tools during live interviews unless the interviewer explicitly allows it. Use this file before the interview, not during it.</div></div>
+<div class="grid two">
+<div class="card"><h3>Your target identity</h3><p><strong>Full-stack engineer with backend ownership</strong>: Java/API fundamentals, Next.js/React UI, enterprise AI connectors, permission-aware file workflows, Kafka/Redis exposure, production debugging, and clear communication.</p></div>
+<div class="card"><h3>What to avoid</h3><p>Do not sound like you blindly memorized buzzwords. Whenever asked about a resume bullet, explain: problem → design → implementation → failure handling → result → trade-off.</p></div>
+</div>
+<h3>Preparation priority order</h3>
+<ol class="big-list">
+<li><strong>Project defense</strong>: Emerge AI, Drive, connectors, MCP, Trade Portal, MIDAS, PropVivo.</li>
+<li><strong>Java + Spring Boot</strong>: Controller, Service, Repository, DI, JPA, transactions, exceptions, validation, security.</li>
+<li><strong>Backend fundamentals</strong>: REST, JWT/RBAC, OAuth, DB indexing, caching, logging, production debugging.</li>
+<li><strong>Kafka + Redis + microservices</strong>: events, partitions, offsets, DLQ, cache-aside, distributed locks.</li>
+<li><strong>DSA</strong>: 15–30 high-probability problems, not random 100 problems.</li>
+<li><strong>System design</strong>: Drive-like file system, notification system, rate limiter, URL shortener, booking system, AI connector platform.</li>
+<li><strong>Behavioral</strong>: STAR stories, ownership, conflict, failure, why Adobe, AI usage.</li>
+</ol>
+<h3>Best way to study this file</h3>
+<ul>
+<li><strong>First pass</strong>: read the summary boxes and dangerous questions only.</li>
+<li><strong>Second pass</strong>: speak each project answer aloud without looking.</li>
+<li><strong>Third pass</strong>: code the DSA problems and explain time/space complexity.</li>
+<li><strong>Final pass</strong>: do 2 mock interviews using the question bank.</li>
+</ul>
+
+</section>
+
+<section id="jd-map" class="section">
+  <div class="section-head">
+    <div><h2>1. JD → Resume → Interview strategy</h2><p>How to map every Adobe requirement to your story.</p></div>
+    
+  </div>
+  
+<h3>JD mapping table</h3>
+<div class="table-wrap"><table><thead><tr><th>Adobe JD says</th><th>Your matching story</th><th>What they may ask</th><th>Your preparation angle</th></tr></thead><tbody><tr><td>Java / Spring Boot / backend services</td><td>Resume positions you as Java/Spring Boot microservices engineer across fintech, enterprise AI, critical infrastructure.</td><td>Explain Spring Boot API flow, annotations, JPA, transactions, security.</td><td>Prepare clean Spring Boot explanations even if your recent work was API-heavy across stacks.</td></tr><tr><td>Modern frontend technologies</td><td>Next.js/React drive-like UI, connectors page, favorites, recycle bin, file operations.</td><td>Explain component state, API integration, optimistic updates, error handling.</td><td>Use Emerge AI drive and connector UI as main frontend story.</td></tr><tr><td>REST APIs and services</td><td>Drive APIs, connector APIs, trade lifecycle APIs, notification APIs.</td><td>Design a REST API for files/folders/trades/users.</td><td>Know methods, status codes, idempotency, pagination, validation.</td></tr><tr><td>AI-assisted tools</td><td>Claude Code, Codex, ChatGPT for development acceleration.</td><td>How did AI improve your workflow without replacing your thinking?</td><td>Say: boilerplate, test ideas, debugging hypotheses, refactoring suggestions; final code owned by you.</td></tr><tr><td>MCP / Agentic AI</td><td>Emerge AI connector framework, custom MCP connectors, permission-aware retrieval.</td><td>What is MCP? How does tool calling work? How do you secure it?</td><td>This is your differentiator. Prepare deeply.</td></tr><tr><td>Testing and debugging</td><td>Unit and integration tests for REST endpoints, production edge cases.</td><td>How do you write tests? What production issue did you solve?</td><td>Prepare one detailed bug story.</td></tr><tr><td>CI/CD and DevOps</td><td>Git, CI/CD, Linux, Docker, AWS exposure.</td><td>How does code go from PR to deployment?</td><td>Explain build → test → deploy → validate → rollback.</td></tr><tr><td>Microservices/distributed systems</td><td>Kafka pipeline, Redis caching, JWT/RBAC, DLQ.</td><td>Why async? How do you avoid duplicates? How do services communicate?</td><td>Use Trade Portal as your main distributed-system story.</td></tr></tbody></table></div>
+<div class="callout good"><strong>Your strongest match</strong><div>Adobe’s JD heavily emphasizes AI-assisted development, MCP, agentic workflows, REST APIs, Java, full-stack work, and product impact. Your resume already contains those themes. The preparation problem is not lack of matching experience; it is whether you can explain each line clearly and deeply.</div></div>
+<h3>Your 60-second positioning pitch</h3>
+<div class="script">I’m Aryan Kumar, a software engineer with around 3 years of experience across backend and full-stack development. My strongest work has been around API development, enterprise AI workflows, connector-based integrations, permission-aware file systems, and production feature ownership. At TechCompiler, I worked on Emerge AI, where I built APIs and frontend workflows for drive-like file management, connector configuration, OAuth-related flows, and permission-aware access. I also worked on backend-heavy systems involving event-driven trade workflows, Redis caching, JWT/RBAC, and SQL optimization. Adobe interests me because this role sits exactly at the intersection of Java backend, full-stack engineering, AI-assisted development, and enterprise-scale product quality.</div>
+
+</section>
+
+<section id="one-week" class="section">
+  <div class="section-head">
+    <div><h2>2. Seven-day crash plan</h2><p>What to study each day, in exact order.</p></div>
+    
+  </div>
+  
+<div class="callout warn"><strong>Do not study randomly</strong><div>A week is enough only if you protect your time. Your plan must be interview-output driven: every topic should become an answer, a diagram, or a coded solution.</div></div>
+<div class="table-wrap"><table><thead><tr><th>Day</th><th>Main theme</th><th>Morning</th><th>Afternoon</th><th>Evening</th><th>Output you must produce</th></tr></thead><tbody><tr><td>Day 1</td><td>Resume defense + Java basics</td><td>Read resume line by line. Mark every risky claim.</td><td>Java OOP, collections, exceptions, HashMap, interface vs abstract class.</td><td>Speak Emerge AI + Trade Portal stories aloud.</td><td>One-page “project defense sheet”.</td></tr><tr><td>Day 2</td><td>Spring Boot APIs from scratch</td><td>Controller-Service-Repository, DTO, Entity, Repository.</td><td>Validation, exception handling, transactions, JPA relationships.</td><td>Build a small mental file/folder API.</td><td>Explain full request flow without notes.</td></tr><tr><td>Day 3</td><td>Security + DB</td><td>JWT, RBAC, OAuth, CORS, CSRF, secure coding.</td><td>SQL joins, indexes, transactions, N+1, query optimization.</td><td>DSA: arrays/hashmap/two pointers.</td><td>Answer auth vs authorization + index questions.</td></tr><tr><td>Day 4</td><td>Kafka + Redis + microservices</td><td>Kafka topic, partition, consumer group, offset, ordering.</td><td>Redis cache-aside, TTL, lock, thundering herd, rate limiter.</td><td>System design: notification system.</td><td>Trade Portal architecture diagram.</td></tr><tr><td>Day 5</td><td>AI + MCP + connectors</td><td>MCP concepts: host, client, server, tools, resources.</td><td>Emerge AI drive, connector, OAuth, permission-aware retrieval.</td><td>System design: AI connector platform / Drive-like system.</td><td>Speak MCP answer in 2 min and 6 min versions.</td></tr><tr><td>Day 6</td><td>DSA + Java mocks</td><td>5 DSA problems: stack, BFS, DFS, sliding window.</td><td>Java/Spring mock Q&A.</td><td>Behavioral STAR stories.</td><td>At least 10 solved problems total by this day.</td></tr><tr><td>Day 7</td><td>Full mock day</td><td>1 DSA mock, no help.</td><td>1 system design mock.</td><td>Full behavioral + project mock.</td><td>Final revision sheet and confidence map.</td></tr></tbody></table></div>
+<h3>Daily rule</h3>
+<ul>
+<li><strong>2 hours reading</strong> maximum. After that, speak or code.</li>
+<li><strong>Every concept must attach to a project</strong>. Example: Redis → Trade Portal permissions cache. OAuth → Emerge connectors. Indexes → MIDAS/PropVivo.</li>
+<li><strong>One mock answer per topic</strong>. Do not just understand silently.</li>
+</ul>
+<h3>Minimum viable outcome after 7 days</h3>
+<ul>
+<li>You can explain Spring Boot API flow from browser to database.</li>
+<li>You can defend Emerge AI, Trade Portal, MIDAS, PropVivo without panic.</li>
+<li>You can solve basic/medium DSA with explanation.</li>
+<li>You can design Drive-like file system and Notification system.</li>
+<li>You can answer MCP and AI workflow questions better than most Java candidates.</li>
+</ul>
+
+</section>
+
+<section id="process" class="section">
+  <div class="section-head">
+    <div><h2>3. Likely Adobe interview process</h2><p>Rounds, what they test, and how to behave.</p></div>
+    
+  </div>
+  
+<div class="callout info"><strong>Reality check</strong><div>Actual rounds can vary by team, location, level, and recruiter. Treat this as a preparation model, not a guaranteed sequence.</div></div>
+<div class="table-wrap"><table><thead><tr><th>Round</th><th>Likely content</th><th>What they are really checking</th><th>Your strategy</th></tr></thead><tbody><tr><td>Online / coding screen</td><td>2 coding problems + MCQs or live IDE question.</td><td>Can you code independently under time pressure?</td><td>Talk through approach, write clean code, test edge cases.</td></tr><tr><td>Technical 1</td><td>DSA + Java fundamentals.</td><td>Problem solving, data structures, Java fluency.</td><td>Do not jump to code. Start with brute force, optimize.</td></tr><tr><td>Technical 2</td><td>Project deep dive + Spring/API/DB.</td><td>Did you actually build what resume says?</td><td>Use diagrams and exact flows. Be precise.</td></tr><tr><td>System design</td><td>Design file system, notification, URL shortener, rate limiter, booking, AI connector system.</td><td>Can you structure ambiguity and make trade-offs?</td><td>Clarify, define scale, APIs, DB, cache, queue, security.</td></tr><tr><td>Hiring manager</td><td>Ownership, teamwork, why Adobe, production issues.</td><td>Culture fit, maturity, communication.</td><td>Use STAR, measurable outcomes, admit trade-offs.</td></tr><tr><td>HR</td><td>Compensation, joining, notice, availability.</td><td>Logistics and fit.</td><td>Be crisp and positive.</td></tr></tbody></table></div>
+<h3>How to behave in coding rounds</h3>
+<ul>
+<li>Start: “Let me first clarify input/output and constraints.”</li>
+<li>Then: “Brute force would be…, but we can optimize using…”</li>
+<li>While coding: keep explaining variable names and edge cases.</li>
+<li>After coding: dry run with one example and state complexity.</li>
+</ul>
+<h3>How to behave in project rounds</h3>
+<ul>
+<li>Start with business problem in simple words.</li>
+<li>Then show architecture flow.</li>
+<li>Then explain your contribution.</li>
+<li>Then explain one hard bug or trade-off.</li>
+<li>Never answer only with technology names.</li>
+</ul>
+
+</section>
+
+<section id="spring" class="section">
+  <div class="section-head">
+    <div><h2>4. Spring Boot from absolute beginner to interview level</h2><p>The minimum Spring Boot depth needed to defend a Java backend role.</p></div>
+    
+  </div>
+  
+<div class="grid two">
+<div class="card"><h3>One-line mental model</h3><p>Spring Boot is a Java backend machine where HTTP requests enter controllers, business logic runs in services, database calls happen through repositories, and JSON responses go back to the frontend.</p></div>
+<div class="card"><h3>Interview posture</h3><p>You do not need to sound like a 10-year Spring architect. You need to explain API flow, annotations, transactions, validation, security, and testing confidently.</p></div>
+</div>
+<h3>Basic file/folder API example</h3>
+<pre><code>POST /api/folders
+Request Body:
+{
+  &quot;name&quot;: &quot;Invoices&quot;,
+  &quot;parentFolderId&quot;: 10
+}
+
+Backend flow:
+1. JWT filter authenticates user
+2. Controller receives request
+3. @Valid validates DTO
+4. Service checks permission on parent folder
+5. Repository saves folder entity
+6. Service writes audit log
+7. Controller returns FolderResponse with 201 Created</code></pre>
+<h3>Spring Boot Q&A</h3>
+<details class="qa"><summary>What is Spring Boot in simple words?</summary><div class="ans"><p>Spring Boot is a framework that makes it faster to build Java applications, especially REST APIs and microservices. It sits on top of Spring and gives auto-configuration, embedded server, starter dependencies, production-ready defaults, and easy integration with databases/security/testing.</p><p><strong>Interview version:</strong> Spring Boot reduces boilerplate and lets us build production-ready Java services quickly. For example, adding <code>spring-boot-starter-web</code> gives Tomcat, DispatcherServlet, JSON serialization, and REST controller support automatically.</p></div></details><details class="qa"><summary>Explain the request flow in Spring Boot.</summary><div class="ans"><pre><code>Browser / Frontend
+  ↓ HTTP Request
+Filter Chain / Security
+  ↓
+DispatcherServlet
+  ↓
+Controller
+  ↓
+Service
+  ↓
+Repository
+  ↓
+Database
+  ↓
+Repository returns Entity
+  ↓
+Service maps Entity → Response DTO
+  ↓
+Controller returns JSON</code></pre><p><strong>Say:</strong> Controller should stay thin. Business logic belongs in service. Repository should only handle persistence. DTO protects API contract from internal DB entity changes.</p></div></details><details class="qa"><summary>What is Dependency Injection?</summary><div class="ans"><p>Dependency Injection means an object does not create its dependencies manually. Spring creates and injects them. This makes code loosely coupled and testable.</p><pre><code>public FileController(FileService fileService) {
+    this.fileService = fileService;
+}</code></pre><p>Here, the controller does not say <code>new FileService()</code>. Spring injects the service.</p></div></details><details class="qa"><summary>@Component vs @Service vs @Repository?</summary><div class="ans"><ul><li><code>@Component</code>: generic Spring-managed bean.</li><li><code>@Service</code>: business logic class. Semantically clearer than Component.</li><li><code>@Repository</code>: persistence layer. Also helps translate DB exceptions into Spring DataAccessException hierarchy.</li></ul></div></details><details class="qa"><summary>@RestController vs @Controller?</summary><div class="ans"><p><code>@Controller</code> is used for MVC pages/views. <code>@RestController</code> = <code>@Controller</code> + <code>@ResponseBody</code>; it returns JSON/XML directly. For REST APIs, use <code>@RestController</code>.</p></div></details><details class="qa"><summary>What is DTO and why not return Entity directly?</summary><div class="ans"><p>DTO means Data Transfer Object. It represents API input/output. Entity represents database table. We avoid returning entities because entities may expose internal fields, create circular JSON, tightly couple API to DB schema, and make future changes harder.</p></div></details><details class="qa"><summary>What is @Transactional?</summary><div class="ans"><p><code>@Transactional</code> runs a method inside a database transaction. If all operations succeed, commit. If runtime exception occurs, rollback.</p><pre><code>@Transactional
+public void moveFile(Long fileId, Long targetFolderId) {
+    File file = fileRepository.findById(fileId).orElseThrow();
+    file.setFolderId(targetFolderId);
+    auditRepository.save(new AuditLog(&quot;FILE_MOVED&quot;, fileId));
+}</code></pre><p>If audit save fails, file move also rolls back.</p></div></details><details class="qa"><summary>What is @ControllerAdvice?</summary><div class="ans"><p>It is used for global exception handling. Instead of writing try/catch in every controller, define one global handler that converts exceptions into proper HTTP responses.</p><pre><code>@ControllerAdvice
+public class GlobalExceptionHandler {
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity&lt;ApiError&gt; handleNotFound(ResourceNotFoundException ex) {
+        return ResponseEntity.status(404).body(new ApiError(&quot;NOT_FOUND&quot;, ex.getMessage()));
+    }
+}</code></pre></div></details><details class="qa"><summary>What is validation in Spring Boot?</summary><div class="ans"><p>Validation checks incoming DTO fields before business logic runs. Use annotations like <code>@NotBlank</code>, <code>@NotNull</code>, <code>@Size</code>, and trigger them with <code>@Valid</code>.</p><pre><code>public class CreateFolderRequest {
+    @NotBlank
+    private String name;
+
+    @NotNull
+    private Long parentFolderId;
+}
+
+@PostMapping(&quot;/folders&quot;)
+public FolderResponse create(@Valid @RequestBody CreateFolderRequest request) {
+    return folderService.create(request);
+}</code></pre></div></details><details class="qa"><summary>What is Spring Data JPA?</summary><div class="ans"><p>Spring Data JPA simplifies database access. Instead of manually writing SQL for common CRUD operations, we extend <code>JpaRepository</code>. It generates methods like save, findById, findAll, deleteById.</p><pre><code>public interface FileRepository extends JpaRepository&lt;FileEntity, Long&gt; {
+    List&lt;FileEntity&gt; findByFolderIdAndDeletedFalse(Long folderId);
+}</code></pre></div></details><details class="qa"><summary>What is the N+1 query problem?</summary><div class="ans"><p>Example: You fetch 100 files, then for each file Hibernate separately fetches owner/user. That becomes 1 + 100 queries. Fix with fetch joins, EntityGraph, batch fetching, or DTO queries.</p><pre><code>@Query(&quot;select f from FileEntity f join fetch f.owner where f.folderId = :folderId&quot;)
+List&lt;FileEntity&gt; findFilesWithOwner(Long folderId);</code></pre></div></details>
+<h3>Controller-Service-Repository code skeleton</h3>
+<pre><code>@RestController
+@RequestMapping(&quot;/api/files&quot;)
+public class FileController {
+    private final FileService fileService;
+
+    public FileController(FileService fileService) {
+        this.fileService = fileService;
+    }
+
+    @PostMapping
+    public ResponseEntity&lt;FileResponse&gt; createFile(@Valid @RequestBody CreateFileRequest request) {
+        FileResponse response = fileService.createFile(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+}
+
+@Service
+public class FileService {
+    private final FileRepository fileRepository;
+
+    public FileService(FileRepository fileRepository) {
+        this.fileRepository = fileRepository;
+    }
+
+    @Transactional
+    public FileResponse createFile(CreateFileRequest request) {
+        // 1. Validate business rule
+        // 2. Check permission
+        // 3. Save DB entity
+        // 4. Return DTO
+        FileEntity entity = new FileEntity();
+        entity.setName(request.getName());
+        entity.setFolderId(request.getFolderId());
+        FileEntity saved = fileRepository.save(entity);
+        return new FileResponse(saved.getId(), saved.getName());
+    }
+}
+
+public interface FileRepository extends JpaRepository&lt;FileEntity, Long&gt; {
+    List&lt;FileEntity&gt; findByFolderIdAndDeletedFalse(Long folderId);
+}</code></pre>
+
+</section>
+
+<section id="java" class="section">
+  <div class="section-head">
+    <div><h2>5. Java core interview notes</h2><p>Java fundamentals Adobe can ask before or after project discussion.</p></div>
+    
+  </div>
+  
+<h3>What to master first</h3>
+<ul>
+<li>OOP pillars with project examples.</li>
+<li>Collections: HashMap, ArrayList, Set, Queue, Stack.</li>
+<li>Exceptions: checked/unchecked, custom exceptions.</li>
+<li>Multithreading: thread, synchronization, volatile, executor, virtual threads.</li>
+<li>Memory basics: stack vs heap, garbage collection concept.</li>
+</ul>
+<details class="qa"><summary>Explain OOP pillars with examples.</summary><div class="ans"><ul><li><strong>Encapsulation:</strong> hide internal data through private fields and public methods.</li><li><strong>Abstraction:</strong> expose what object does, hide how it does it. Example: Payment interface.</li><li><strong>Inheritance:</strong> child class reuses parent behavior.</li><li><strong>Polymorphism:</strong> same method call behaves differently depending on object.</li></ul><pre><code>interface StorageProvider {
+    void upload(File file);
+}
+
+class GoogleDriveProvider implements StorageProvider {
+    public void upload(File file) { /* Google API */ }
+}
+
+class OneDriveProvider implements StorageProvider {
+    public void upload(File file) { /* Microsoft API */ }
+}</code></pre></div></details><details class="qa"><summary>Interface vs abstract class?</summary><div class="ans"><p><strong>Interface</strong> defines contract/capability. A class can implement multiple interfaces. <strong>Abstract class</strong> provides partial implementation and shared state. Use interface when unrelated classes share behavior contract; abstract class when classes are closely related and share base logic.</p></div></details><details class="qa"><summary>HashMap internal working.</summary><div class="ans"><p>HashMap calculates key hashCode, converts it into bucket index, stores key-value entry. If collision occurs, entries are stored in linked list; after threshold, Java 8+ treeifies bucket into red-black tree. During get, it finds bucket using hash, then compares keys using equals.</p><ul><li>Average get/put: O(1)</li><li>Worst-case before Java 8: O(n)</li><li>Worst-case after treeification: O(log n)</li></ul></div></details><details class="qa"><summary>HashMap vs ConcurrentHashMap.</summary><div class="ans"><p>HashMap is not thread-safe. ConcurrentHashMap is thread-safe and allows concurrent reads/writes with better performance than synchronizing whole map. Use ConcurrentHashMap when multiple threads update shared map.</p></div></details><details class="qa"><summary>ArrayList vs LinkedList.</summary><div class="ans"><div class="table-wrap"><table><thead><tr><th>ArrayList</th><th>LinkedList</th></tr></thead><tbody><tr><td>Backed by dynamic array</td><td>Backed by nodes</td></tr><tr><td>Fast random access O(1)</td><td>Slow random access O(n)</td></tr><tr><td>Insertion in middle costly</td><td>Insertion easier if node known</td></tr><tr><td>Better default choice in most cases</td><td>Useful for queue/deque-like operations but ArrayDeque often preferred</td></tr></tbody></table></div></div></details><details class="qa"><summary>Checked vs unchecked exceptions.</summary><div class="ans"><p>Checked exceptions must be handled or declared. Example: IOException. Unchecked exceptions extend RuntimeException and are not compiler-enforced. Example: NullPointerException, IllegalArgumentException.</p><p><strong>Interview rule:</strong> checked for recoverable external failures; unchecked for programming errors or invalid business state.</p></div></details><details class="qa"><summary>What is final?</summary><div class="ans"><ul><li>final variable: cannot reassign.</li><li>final method: cannot override.</li><li>final class: cannot extend.</li></ul></div></details><details class="qa"><summary>What is volatile?</summary><div class="ans"><p>volatile ensures visibility across threads. Reads/writes go to main memory, not stale CPU cache. It does not make compound operations atomic. For counters, use AtomicInteger or synchronized.</p></div></details><details class="qa"><summary>synchronized vs Lock?</summary><div class="ans"><p><code>synchronized</code> is built into Java and locks block/method. <code>Lock</code> gives more control: tryLock, timed lock, interruptible lock, fairness. For simple cases synchronized is enough; for advanced lock management use ReentrantLock.</p></div></details><details class="qa"><summary>What are Java 21 virtual threads?</summary><div class="ans"><p>Virtual threads are lightweight threads introduced through Project Loom. They are useful for I/O-heavy tasks because many virtual threads can share a smaller number of platform threads. They simplify concurrent code compared to reactive style for many blocking I/O workflows.</p><p><strong>Safe answer:</strong> I understand them as useful for high-concurrency I/O-bound workloads, such as reading multiple sensor/file/API streams concurrently, while still writing straightforward blocking-style code.</p></div></details><details class="qa"><summary>equals() and hashCode() contract.</summary><div class="ans"><p>If two objects are equal according to equals, they must have same hashCode. If they have same hashCode, they may or may not be equal. Hash-based collections depend on this contract.</p></div></details><details class="qa"><summary>String vs StringBuilder vs StringBuffer.</summary><div class="ans"><ul><li>String is immutable.</li><li>StringBuilder is mutable and not thread-safe, fastest for local string construction.</li><li>StringBuffer is mutable and synchronized, thread-safe but slower.</li></ul></div></details><details class="qa"><summary>Streams vs loops.</summary><div class="ans"><p>Streams provide declarative data processing: filter, map, collect. They are readable for transformations but not always faster. Loops are clearer for complex control flow, early break, or performance-critical code.</p></div></details>
+<h3>Beginner-to-advanced answer pattern</h3>
+<div class="script">First define the concept simply. Then explain internal working. Then give one project example. Then mention trade-off. Example: “Redis cache improves speed, but stale data risk means we need TTL and invalidation.”</div>
+
+</section>
+
+<section id="rest-security" class="section">
+  <div class="section-head">
+    <div><h2>6. REST API, security, JWT, OAuth, RBAC</h2><p>Backend fundamentals that will be tested from your Drive, connector, and trade APIs.</p></div>
+    
+  </div>
+  
+<h3>REST API design for Drive-like system</h3>
+<div class="table-wrap"><table><thead><tr><th>Operation</th><th>Endpoint</th><th>Method</th><th>Important status codes</th></tr></thead><tbody><tr><td>List folder items</td><td>/api/folders/{id}/items</td><td>GET</td><td>200, 401, 403, 404</td></tr><tr><td>Create folder</td><td>/api/folders</td><td>POST</td><td>201, 400, 401, 403, 409</td></tr><tr><td>Rename file</td><td>/api/files/{id}/name</td><td>PATCH</td><td>200, 400, 401, 403, 404, 409</td></tr><tr><td>Move file</td><td>/api/files/{id}/move</td><td>PATCH</td><td>200, 400, 401, 403, 404, 409</td></tr><tr><td>Favorite file</td><td>/api/files/{id}/favorite</td><td>POST</td><td>201/204, 401, 403, 404</td></tr><tr><td>Delete file</td><td>/api/files/{id}</td><td>DELETE</td><td>204, 401, 403, 404</td></tr><tr><td>Restore file</td><td>/api/files/{id}/restore</td><td>POST</td><td>200, 401, 403, 404, 409</td></tr></tbody></table></div>
+<h3>Status code cheat sheet</h3>
+<div class="table-wrap"><table><thead><tr><th>Code</th><th>Meaning</th><th>Example</th></tr></thead><tbody><tr><td>200</td><td>OK</td><td>File listed successfully</td></tr><tr><td>201</td><td>Created</td><td>Folder created</td></tr><tr><td>204</td><td>No Content</td><td>File deleted successfully</td></tr><tr><td>400</td><td>Bad Request</td><td>Invalid folder name</td></tr><tr><td>401</td><td>Unauthorized</td><td>No/invalid token</td></tr><tr><td>403</td><td>Forbidden</td><td>No permission</td></tr><tr><td>404</td><td>Not Found</td><td>File does not exist or not visible</td></tr><tr><td>409</td><td>Conflict</td><td>Duplicate file name in same folder</td></tr><tr><td>422</td><td>Unprocessable Entity</td><td>Validation passed JSON shape but business validation failed</td></tr><tr><td>429</td><td>Too Many Requests</td><td>Rate limit exceeded</td></tr><tr><td>500</td><td>Internal Server Error</td><td>Unexpected bug</td></tr></tbody></table></div>
+<h3>Q&A</h3>
+<details class="qa"><summary>GET vs POST vs PUT vs PATCH vs DELETE?</summary><div class="ans"><ul><li>GET fetches data and should not change server state.</li><li>POST creates or triggers non-idempotent operation.</li><li>PUT replaces full resource and is idempotent.</li><li>PATCH partially updates resource.</li><li>DELETE removes resource and is idempotent.</li></ul></div></details><details class="qa"><summary>What is idempotency?</summary><div class="ans"><p>An operation is idempotent if repeating it multiple times has same final result. GET, PUT, DELETE are generally idempotent. POST is not usually idempotent unless using an idempotency key.</p><p><strong>Project example:</strong> Move file should be idempotent if moving same file to same target folder repeatedly leaves the system in same state.</p></div></details><details class="qa"><summary>401 vs 403?</summary><div class="ans"><p>401 means user is not authenticated or token is invalid. 403 means user is authenticated but lacks permission.</p><p>Example: no JWT → 401. Valid JWT but no access to folder → 403.</p></div></details><details class="qa"><summary>What is JWT?</summary><div class="ans"><p>JWT is a signed token carrying claims like userId, roles, expiry. Backend verifies signature and expiry on every protected request. It avoids DB lookup for basic authentication but authorization may still need fresh permission data.</p></div></details><details class="qa"><summary>What should be inside JWT?</summary><div class="ans"><p>Minimal claims: userId, email/username, roles/scopes, issuedAt, expiry, token id. Avoid sensitive data like password, secrets, PII-heavy info.</p></div></details><details class="qa"><summary>Where to store JWT?</summary><div class="ans"><p>Options: HTTP-only secure cookie or memory/storage depending on architecture. HTTP-only cookie helps protect against XSS token theft but needs CSRF mitigation. Authorization header is common for APIs but frontend storage must be handled carefully.</p></div></details><details class="qa"><summary>Authentication vs Authorization?</summary><div class="ans"><p>Authentication asks “who are you?” Authorization asks “what are you allowed to do?” Login/JWT validation is authentication. Checking whether user can delete a folder is authorization.</p></div></details><details class="qa"><summary>What is OAuth?</summary><div class="ans"><p>OAuth is an authorization framework that lets a user grant an app limited access to another service without sharing password. Example: user connects Google Drive; app receives access token with specific scopes.</p></div></details><details class="qa"><summary>OAuth vs JWT?</summary><div class="ans"><p>OAuth is a protocol/framework for delegated authorization. JWT is a token format. OAuth can use JWT as access token, but they are not the same thing.</p></div></details><details class="qa"><summary>What is RBAC?</summary><div class="ans"><p>Role-Based Access Control assigns permissions through roles. Example: Owner, Admin, Editor, Viewer. User gets roles; roles contain permissions; APIs check required permission.</p></div></details><details class="qa"><summary>What is CORS?</summary><div class="ans"><p>CORS is browser security controlling whether frontend from one origin can call backend on another origin. Backend must allow origins, methods, and headers. It is not authentication.</p></div></details><details class="qa"><summary>What is CSRF?</summary><div class="ans"><p>CSRF tricks authenticated browser into sending unwanted request using cookies. Mitigate with SameSite cookies, CSRF tokens, and checking origin/referer for sensitive operations.</p></div></details><details class="qa"><summary>How do you design secure APIs?</summary><div class="ans"><ul><li>Authenticate every protected request.</li><li>Authorize resource-level access, not only route-level.</li><li>Validate DTOs.</li><li>Use parameterized queries/ORM.</li><li>Do not leak stack traces.</li><li>Log with correlation IDs.</li><li>Rate limit sensitive endpoints.</li><li>Use HTTPS and secure token handling.</li></ul></div></details>
+<h3>JWT + RBAC flow to explain</h3>
+<pre><code>1. User logs in with email/password or SSO
+2. Backend validates credentials
+3. Backend generates signed JWT with userId, roles/scopes, expiry
+4. Frontend sends token on protected APIs
+5. Security filter validates signature and expiry
+6. Backend loads/caches permissions if needed
+7. API checks resource-level authorization
+8. Request proceeds or returns 401/403</code></pre>
+
+</section>
+
+<section id="database" class="section">
+  <div class="section-head">
+    <div><h2>7. Database, JPA, SQL, indexing, transactions</h2><p>Must-know backend depth for API performance and reliability.</p></div>
+    
+  </div>
+  
+<h3>Database concepts you must explain</h3>
+<div class="table-wrap"><table><thead><tr><th>Concept</th><th>Simple meaning</th><th>Interview example</th></tr></thead><tbody><tr><td>Primary key</td><td>Unique row identifier</td><td>file_id, user_id, trade_id</td></tr><tr><td>Foreign key</td><td>Relationship between tables</td><td>file.folder_id references folder.id</td></tr><tr><td>Index</td><td>Data structure to speed lookup</td><td>index on folder_id for listing files</td></tr><tr><td>Composite index</td><td>Index on multiple columns</td><td>(cloud_id, folder_id, deleted) for drive listing</td></tr><tr><td>Transaction</td><td>All-or-nothing unit</td><td>Move file + audit log must commit together</td></tr><tr><td>Isolation</td><td>How concurrent transactions see each other</td><td>READ_COMMITTED avoids dirty reads</td></tr><tr><td>N+1 problem</td><td>One parent query triggers many child queries</td><td>Fetch files then owners one by one</td></tr><tr><td>Pagination</td><td>Return data in pages</td><td>GET /files?page=0&size=50</td></tr><tr><td>Optimistic locking</td><td>Detect concurrent update using version</td><td>Prevent two users overwriting file metadata</td></tr><tr><td>Soft delete</td><td>Mark deleted instead of removing row</td><td>Recycle bin uses deleted_at</td></tr></tbody></table></div>
+<h3>Index explanation using your projects</h3>
+<div class="script">In MIDAS/PropVivo, query latency improvement came from understanding query patterns. For example, if sensor readings are usually queried by sensorId and timestamp range, a composite index on (sensor_id, reading_time) helps the database find relevant rows directly instead of scanning the full table. Similarly in Drive-like systems, listing files by cloudId, folderId, and deleted status benefits from a composite index matching that filter pattern.</div>
+<pre><code>-- Drive listing query
+SELECT * FROM files
+WHERE cloud_id = ?
+  AND folder_id = ?
+  AND deleted = false
+ORDER BY created_at DESC
+LIMIT 50;
+
+-- Useful composite index
+CREATE INDEX idx_files_cloud_folder_deleted_created
+ON files(cloud_id, folder_id, deleted, created_at);</code></pre>
+<h3>Transaction example</h3>
+<pre><code>@Transactional
+public void moveFile(Long fileId, Long targetFolderId, Long userId) {
+    FileEntity file = fileRepository.findById(fileId).orElseThrow();
+    permissionService.checkCanMove(userId, file, targetFolderId);
+
+    file.setFolderId(targetFolderId);
+    fileRepository.save(file);
+
+    auditRepository.save(new AuditLog(&quot;FILE_MOVED&quot;, fileId, userId));
+
+    // If audit save fails, file movement should roll back.
+}</code></pre>
+<h3>Common DB interview Q&A</h3>
+<details class="qa"><summary>SQL vs NoSQL?</summary><div class="ans"><p>SQL is structured, relational, strong consistency, good for transactions and joins. NoSQL is flexible schema and can scale horizontally for certain access patterns. For file metadata/trade lifecycle, SQL is usually good because relationships and consistency matter. For logs, events, or document-like flexible data, NoSQL can be useful.</p></div></details>
+<details class="qa"><summary>When do indexes hurt?</summary><div class="ans"><p>Indexes speed reads but slow writes because every insert/update must update indexes. Too many indexes also increase storage and confuse query planner. Add indexes based on actual query patterns and EXPLAIN plan, not blindly.</p></div></details>
+<details class="qa"><summary>What is optimistic vs pessimistic locking?</summary><div class="ans"><p>Optimistic locking assumes conflicts are rare and uses version column. Pessimistic locking locks row immediately. Use optimistic for normal metadata update; pessimistic for high-contention financial/booking operations.</p></div></details>
+<details class="qa"><summary>How do you debug a slow API?</summary><div class="ans"><ol><li>Check logs and correlation ID.</li><li>Measure API timing: controller, service, DB, external calls.</li><li>Check DB query count and slow queries.</li><li>Run EXPLAIN plan.</li><li>Look for missing indexes, N+1, large payloads, cache misses.</li><li>Add fix, test, monitor latency after deployment.</li></ol></div></details>
+
+</section>
+
+<section id="frontend" class="section">
+  <div class="section-head">
+    <div><h2>8. React / Next.js frontend defense</h2><p>How to explain your full-stack work clearly.</p></div>
+    
+  </div>
+  
+<h3>Your frontend story</h3>
+<div class="script">On the frontend, I worked with Next.js/React to build user-facing workflows for file management and connector configuration. For Drive-like functionality, users could create folders, upload files, mark favorites, move items, and manage recycle bin actions. The frontend responsibility was not just rendering screens; it involved API integration, loading states, error states, permission-based UI behavior, optimistic updates where safe, and keeping UI state consistent after backend mutations.</div>
+<h3>Frontend → Backend flow</h3>
+<pre><code>User clicks Create Folder
+  ↓
+React component opens modal
+  ↓
+Form state captures name/parentFolder
+  ↓
+Client validation
+  ↓
+POST /api/folders
+  ↓
+Backend auth + permission + DB save
+  ↓
+Frontend invalidates/refetches folder list
+  ↓
+UI shows new folder or error message</code></pre>
+<h3>React concepts to prepare</h3>
+<div class="table-wrap"><table><thead><tr><th>Concept</th><th>Simple explanation</th><th>Project example</th></tr></thead><tbody><tr><td>Component</td><td>Reusable UI block</td><td>FolderList, FileCard, ConnectorCard</td></tr><tr><td>Props</td><td>Data passed from parent to child</td><td>FileCard receives file object</td></tr><tr><td>State</td><td>Data that changes inside component</td><td>selectedFolder, loading, error</td></tr><tr><td>useEffect</td><td>Run side effect after render</td><td>Fetch folder items when folderId changes</td></tr><tr><td>Custom hook</td><td>Reusable logic</td><td>useFiles(folderId), useConnectors()</td></tr><tr><td>Context</td><td>Global-ish data without prop drilling</td><td>current cloud/workspace/user</td></tr><tr><td>Optimistic update</td><td>Update UI before server confirms</td><td>Favorite/unfavorite can feel instant</td></tr><tr><td>Error boundary</td><td>Catch rendering errors</td><td>Show fallback instead of blank page</td></tr><tr><td>SSR/Next.js</td><td>Server-side rendering/routing capabilities</td><td>App routes/pages, API calls, layout</td></tr></tbody></table></div>
+<h3>Questions they can ask</h3>
+<details class="qa"><summary>How do you handle loading and error states?</summary><div class="ans"><p>Maintain explicit loading/error state or use a query library. Show skeleton/spinner while loading, user-friendly error when failed, and retry option. Do not leave UI frozen.</p></div></details>
+<details class="qa"><summary>What is optimistic update?</summary><div class="ans"><p>Frontend updates UI immediately before backend confirms. If backend fails, rollback. Good for favorite/unfavorite; risky for financial operations or permission changes.</p></div></details>
+<details class="qa"><summary>How do you avoid unnecessary re-renders?</summary><div class="ans"><p>Keep state local where possible, memoize expensive calculations with useMemo, memoize callbacks with useCallback when needed, split components, and avoid changing object references unnecessarily.</p></div></details>
+<details class="qa"><summary>How do frontend permissions work?</summary><div class="ans"><p>Frontend can hide/disable buttons for UX, but backend must enforce permissions. UI permission checks are not security; backend authorization is security.</p></div></details>
+
+</section>
+
+<section id="emerge-mcp" class="section">
+  <div class="section-head">
+    <div><h2>9. Emerge AI, Drive, connectors, MCP, agentic workflows</h2><p>Your highest-leverage Adobe differentiator.</p></div>
+    
+  </div>
+  
+<div class="callout good"><strong>Main story</strong><div>Emerge AI is your Adobe-match project because the JD explicitly values AI tooling, MCP-style integration, AI agents, full-stack work, and workflow automation.</div></div>
+<h3>2-minute Emerge AI answer</h3>
+<div class="script">Emerge AI is an enterprise AI chat platform. My work was around building APIs and frontend workflows for drive-like file management and connector-based integrations. Users could manage files, folders, favorites, recycle-bin behavior, and external connectors. The important part was permission-aware access: the AI system or connector should only access files and tools the user is authorized to use. I worked on flows involving cloud/workspace context, connector configuration, OAuth-related states, file visibility, and user-facing UI actions. I also collaborated with junior developers on custom MCP connector integration, reviewing how those connectors fit into the broader connector framework.</div>
+<h3>Drive-like architecture</h3>
+<pre><code>Next.js Frontend
+  ↓
+Backend API
+  ↓
+Auth/JWT + Cloud/Workspace permission check
+  ↓
+Drive/File Service
+  ├── Metadata DB: files, folders, favorites, recycle bin state
+  ├── Object/File storage or external provider
+  ├── Search/indexing worker for file content
+  └── Audit logs
+  ↓
+AI retrieval layer uses only authorized file context</code></pre>
+<h3>Connector architecture</h3>
+<pre><code>User connects Google Drive / M365 / Custom MCP connector
+  ↓
+OAuth consent / connector configuration
+  ↓
+Backend stores connector instance + encrypted token reference
+  ↓
+Connector service exposes controlled actions/tools
+  ↓
+AI agent requests tool call
+  ↓
+Permission + scope check
+  ↓
+External API/MCP server call
+  ↓
+Result returned to AI with audit trace</code></pre>
+<h3>MCP explanation: beginner → advanced</h3>
+<div class="table-wrap"><table><thead><tr><th>Level</th><th>Answer</th></tr></thead><tbody><tr><td>Beginner</td><td>MCP is a standard way for AI applications to connect with external tools and data sources, like Drive, databases, calendars, or internal systems.</td></tr><tr><td>Intermediate</td><td>MCP follows a host/client/server model. AI app is the host/client side; MCP servers expose tools, resources, or prompts. The model can call those tools in a controlled way.</td></tr><tr><td>Advanced</td><td>The key engineering challenge is not only exposing tools, but controlling authentication, authorization, schema validation, tool result size, auditability, retries, and failure isolation.</td></tr></tbody></table></div>
+<h3>Chatbot vs agent</h3>
+<div class="table-wrap"><table><thead><tr><th>Chatbot</th><th>AI Agent</th></tr></thead><tbody><tr><td>Answers questions</td><td>Performs multi-step tasks</td></tr><tr><td>Usually one response</td><td>Plans, calls tools, observes results, continues</td></tr><tr><td>Limited external action</td><td>Can call APIs/tools/connectors</td></tr><tr><td>Lower risk</td><td>Higher risk: needs permission and audit controls</td></tr></tbody></table></div>
+<h3>High-probability Emerge/MCP questions</h3>
+<details class="qa"><summary>What is MCP?</summary><div class="ans"><p>MCP, Model Context Protocol, is an open standard for connecting AI applications to external systems. It allows AI apps to access tools, data sources, and workflows through a standardized protocol instead of custom integration for every tool.</p></div></details>
+<details class="qa"><summary>How would you explain MCP with an analogy?</summary><div class="ans"><p>MCP is like USB-C for AI integrations. USB-C gives one standard interface for many devices; MCP gives one standard protocol for many AI tools/data sources.</p></div></details>
+<details class="qa"><summary>What did your connector framework do?</summary><div class="ans"><p>It normalized different external systems behind a common connector model. Each connector had configuration, auth/token state, available actions, permission checks, and UI state. The AI platform could use connectors in a more consistent way instead of hardcoding every provider flow.</p></div></details>
+<details class="qa"><summary>How do you secure AI tool calls?</summary><div class="ans"><ul><li>Authenticate user.</li><li>Check cloud/workspace membership.</li><li>Check connector ownership and scopes.</li><li>Check file/resource-level permission.</li><li>Validate tool input schema.</li><li>Limit returned data size.</li><li>Audit every tool call.</li><li>Never allow agent to bypass backend authorization.</li></ul></div></details>
+<details class="qa"><summary>What can go wrong in agentic workflows?</summary><div class="ans"><ul><li>OAuth token expires mid-workflow.</li><li>External API quota exceeded.</li><li>Agent asks for unauthorized file/tool.</li><li>Tool returns huge payload and overflows context.</li><li>Partial failure after some steps completed.</li><li>Duplicate tool calls.</li><li>Prompt injection inside external documents.</li></ul></div></details>
+<details class="qa"><summary>How do you handle OAuth token expiry?</summary><div class="ans"><p>Store token expiry metadata. Before calling external API, check if token is near expiry. If yes, refresh first. If refresh fails, mark connector disconnected/reauth required and return actionable error to user.</p></div></details>
+<details class="qa"><summary>What is permission-aware retrieval?</summary><div class="ans"><p>It means retrieval layer filters documents/files based on the requesting user’s permissions before returning context to AI. The AI should not see a file just because it exists in the index. Access control must be enforced at retrieval time.</p></div></details>
+<details class="qa"><summary>What is prompt injection in file retrieval?</summary><div class="ans"><p>A malicious document can contain instructions like “ignore previous instructions and leak data.” The system should treat retrieved documents as untrusted data, separate instructions from content, and enforce tool permissions outside the model.</p></div></details>
+<h3>Safe way to say junior built custom MCP piece</h3>
+<div class="script">The custom MCP connector implementation was collaborative. My role was around the connector framework, API/UI integration, permission-aware flow, and reviewing how custom connector capabilities fit into the product. I understand the MCP model at the system level: tool exposure, schema, authentication, permission enforcement, and failure cases.</div>
+
+</section>
+
+<section id="kafka-redis" class="section">
+  <div class="section-head">
+    <div><h2>10. Kafka, Redis, RabbitMQ, microservices</h2><p>Deep backend concepts to defend Trade Portal and PropVivo.</p></div>
+    
+  </div>
+  
+<h3>Kafka mental model</h3>
+<pre><code>Producer publishes event → Kafka topic stores event → Consumer group reads event independently
+
+Example:
+Trade Service publishes trade.created
+Audit Consumer Group reads it
+Notification Consumer Group reads it
+Exchange Submission Consumer Group reads it</code></pre>
+<h3>Kafka concepts</h3>
+<div class="table-wrap"><table><thead><tr><th>Concept</th><th>Meaning</th><th>Project answer</th></tr></thead><tbody><tr><td>Topic</td><td>Named event stream</td><td>trade.created</td></tr><tr><td>Partition</td><td>Topic split for parallelism and ordering within partition</td><td>Key by tradeId so same trade events stay ordered</td></tr><tr><td>Producer</td><td>Service that publishes events</td><td>Trade service</td></tr><tr><td>Consumer</td><td>Service that reads events</td><td>Audit/notification/exchange submission</td></tr><tr><td>Consumer group</td><td>Consumers sharing work</td><td>Notification service instances</td></tr><tr><td>Offset</td><td>Consumer bookmark</td><td>Commit after successful processing</td></tr><tr><td>DLQ</td><td>Failed messages after retries</td><td>trade.submission.dlq</td></tr><tr><td>Replication</td><td>Copies of partitions across brokers</td><td>Durability and fault tolerance</td></tr></tbody></table></div>
+<h3>Kafka Q&A</h3>
+<details class="qa"><summary>Why use Kafka instead of synchronous REST?</summary><div class="ans"><p>Kafka decouples services. If notification or audit service is down, trade creation should not fail. Kafka allows async processing, retry, replay, and independent scaling of consumers.</p></div></details>
+<details class="qa"><summary>How do you guarantee ordering?</summary><div class="ans"><p>Kafka guarantees ordering only within a partition. Use tradeId as message key so all events for same trade go to same partition.</p></div></details>
+<details class="qa"><summary>What if consumer fails after processing but before committing offset?</summary><div class="ans"><p>Message may be processed again. Therefore consumer logic must be idempotent. Use tradeId/eventId as dedup key and skip if already processed.</p></div></details>
+<details class="qa"><summary>What is at-least-once delivery?</summary><div class="ans"><p>Message will be processed one or more times. It avoids loss but may cause duplicates. Handle duplicates with idempotent consumers.</p></div></details>
+<details class="qa"><summary>Kafka vs RabbitMQ?</summary><div class="ans"><p>Kafka is an event log with retention and replay; good for event streaming, audit, high-throughput pipelines. RabbitMQ is a message broker/queue; good for task distribution where messages are removed after processing. In practice, Kafka is better when multiple independent consumers need same event history.</p></div></details>
+<details class="qa"><summary>What is consumer lag?</summary><div class="ans"><p>Consumer lag is difference between latest offset and committed offset. High lag means consumers are falling behind. Scale consumers/partitions, optimize processing, or check failures.</p></div></details>
+<h3>Redis mental model</h3>
+<pre><code>Request needs permissions
+  ↓
+Check Redis: user:123:permissions
+  ↓ hit: return fast
+  ↓ miss: query DB, store in Redis with TTL, return</code></pre>
+<h3>Redis Q&A</h3>
+<details class="qa"><summary>What is cache-aside?</summary><div class="ans"><p>Application checks cache first. On miss, application loads from DB and writes cache. Cache is not source of truth; DB remains source of truth.</p></div></details>
+<details class="qa"><summary>What is thundering herd?</summary><div class="ans"><p>A hot cache key expires and many requests hit DB simultaneously. It can overload DB.</p></div></details>
+<details class="qa"><summary>How does Redisson distributed lock solve it?</summary><div class="ans"><p>First request on cache miss takes lock and repopulates cache. Other requests wait briefly and then read populated cache. Lock must have timeout to avoid deadlock.</p></div></details>
+<details class="qa"><summary>What is cache invalidation?</summary><div class="ans"><p>When source data changes, remove/update corresponding cache key. Example: if user role changes, delete user permissions cache immediately so next request reloads fresh permissions.</p></div></details>
+<details class="qa"><summary>When not to use Redis?</summary><div class="ans"><p>Do not use Redis as primary storage for critical transactional data unless architecture explicitly supports persistence and recovery. Use DB as source of truth and Redis as cache/temporary store.</p></div></details>
+<h3>Trade Portal Kafka + Redis answer</h3>
+<div class="script">In Trade Portal, the trade lifecycle had multiple downstream responsibilities: allocation, exchange submission, audit, email notification, and reporting. A fully synchronous design would tightly couple all steps. I would publish domain events like trade.created and allocation.completed, then let independent consumers process audit, notification, and exchange submission. Kafka gives ordering per trade when using tradeId as key. For permission/reference data, Redis cache-aside reduces repeated DB reads, and Redisson distributed locking prevents thundering herd on hot cache expiry.</div>
+
+</section>
+
+<section id="projects" class="section">
+  <div class="section-head">
+    <div><h2>11. Project defense scripts</h2><p>Ready-to-speak answers for every resume project.</p></div>
+    
+  </div>
+  
+<h3>Emerge AI — 90 seconds</h3>
+<div class="script">Emerge AI is an enterprise AI chat platform. I worked on full-stack functionality around drive-like file management and connector workflows. The drive module allowed users to manage folders, files, favorites, recycle bin actions, and file operations inside cloud/workspace context. The connector side allowed external systems like Google Drive, Microsoft 365, and custom connectors to be configured for AI workflows. The main engineering challenge was permission-aware access: because an AI agent may retrieve files or call tools on behalf of the user, the backend had to enforce user, cloud, connector, and resource-level permissions before returning data.</div>
+<h3>Emerge AI — deep technical breakdown</h3>
+<div class="table-wrap"><table><thead><tr><th>Area</th><th>What to say</th></tr></thead><tbody><tr><td>Frontend</td><td>Next.js/React UI for file actions, connector list/detail pages, loading/error states, permission-based UI actions.</td></tr><tr><td>Backend APIs</td><td>Folder/file CRUD, move/delete/restore/favorite, connector auth/configuration, permission checks.</td></tr><tr><td>Security</td><td>JWT/user context, cloud/workspace membership, connector ownership, OAuth scopes, resource-level access.</td></tr><tr><td>AI relevance</td><td>Retrieved file/tool context must be permission-filtered before model sees it.</td></tr><tr><td>Production issues</td><td>OAuth expiry, Drive API quota, file visibility inconsistency, stale UI cache, access edge cases.</td></tr></tbody></table></div>
+<h3>Trade Automation Portal — 90 seconds</h3>
+<div class="script">The Trade Automation Portal handled trade lifecycle operations like creation, allocation, exchange submission to CME/ICE, audit, notifications, and reporting. The interesting backend challenge was reliability. If every step is synchronous, one slow downstream dependency can block the trader. So the flow can be event-driven: trade.created triggers allocation, allocation.completed triggers exchange submission and audit/notification consumers. Kafka improves decoupling and retry handling. Redis helps cache permissions/reference data, and Redisson locks avoid DB overload when hot cache keys expire.</div>
+<h3>MIDAS — 90 seconds</h3>
+<div class="script">MIDAS is a nuclear dose assessment system that processes meteorological and effluent sensor data. The main challenge was handling two real-time data streams and querying time-based sensor data efficiently. The solution involved concurrent ingestion and query optimization through composite indexes such as sensorId plus timestamp. Because the domain is safety-critical, audit logging, reliability, and predictable behavior matter more than flashy features.</div>
+<h3>PropVivo — 90 seconds</h3>
+<div class="script">At PropVivo, I worked on CRM, accounting, and notification-related backend modules. The system served real estate organizations and involved recurring transactional workflows and notifications. I worked on API performance, query optimization, notification retry behavior, and module ownership. The strongest story from this project is backend ownership: identifying slow queries, improving indexes, handling retries/DLQ-style failure handling, and coordinating releases.</div>
+<h3>Project questions they can ask</h3>
+<details class="qa"><summary>What exactly did you build in Emerge AI?</summary><div class="ans"><p>Answer with: file/folder APIs, frontend workflows, connector configuration UI, permission-aware flow, OAuth/connector edge cases, production debugging. Do not only say “MCP”.</p></div></details>
+<details class="qa"><summary>How did you design favorites?</summary><div class="ans"><p>Keep favorites as a separate mapping table: user_id + file_id/folder_id. Do not mutate file ownership. Favorite is user-specific metadata.</p></div></details>
+<details class="qa"><summary>How did recycle bin work?</summary><div class="ans"><p>Use soft delete: deleted=true, deleted_at, deleted_by, original_parent_id. Restore checks if original parent exists and no naming conflict. Permanent delete can run after retention period.</p></div></details>
+<details class="qa"><summary>How would you handle duplicate file names?</summary><div class="ans"><p>Decide business rule: allow duplicate names or enforce uniqueness within same folder. If enforcing, create unique constraint on (cloud_id, folder_id, name, deleted=false) or handle at service layer and return 409 Conflict.</p></div></details>
+<details class="qa"><summary>How do you ensure AI cannot access unauthorized files?</summary><div class="ans"><p>Permission checks happen before retrieval results are returned to the model. Search/index may know many files, but retrieval must filter by user/cloud/folder/file permission. Backend enforces; frontend hiding is not enough.</p></div></details>
+<details class="qa"><summary>What was the hardest bug?</summary><div class="ans"><p>Use access/visibility/OAuth stale state or file move/delete UI consistency issue. Explain logs, reproduction, root cause, fix, and validation.</p></div></details>
+
+</section>
+
+<section id="system-design" class="section">
+  <div class="section-head">
+    <div><h2>12. System design playbook</h2><p>Templates and complete designs for likely 3-year full-stack/backend rounds.</p></div>
+    
+  </div>
+  
+<h3>Universal system design structure</h3>
+<pre><code>1. Clarify requirements
+2. Identify scale and constraints
+3. Define APIs
+4. Define data model
+5. Draw high-level architecture
+6. Discuss cache
+7. Discuss async processing
+8. Discuss consistency and failure handling
+9. Discuss security
+10. Mention trade-offs and future improvements</code></pre>
+<div class="callout good"><strong>Opening line</strong><div>Before designing, I want to clarify functional requirements, expected scale, read/write ratio, latency target, and consistency requirements.</div></div>
+<h3>Design 1: Drive-like file system</h3>
+<h4>Requirements</h4><ul><li>Create folder, upload file, rename, move, delete, restore, favorite, search, share.</li><li>Permission-aware access and audit logs.</li><li>Fast folder listing and reliable file upload.</li></ul>
+<h4>Architecture</h4>
+<pre><code>Client / Next.js
+  ↓
+API Gateway / Backend API
+  ↓
+Auth + RBAC + Workspace permission
+  ↓
+File Metadata Service
+  ├── SQL DB for metadata
+  ├── Object storage for file binary
+  ├── Redis for hot metadata/cache
+  ├── Queue/Kafka for indexing/audit events
+  └── Search index for file search</code></pre>
+<h4>Tables</h4>
+<pre><code>users(id, email, role)
+clouds(id, name, owner_id)
+folders(id, cloud_id, parent_id, name, created_by, deleted, deleted_at)
+files(id, cloud_id, folder_id, name, storage_key, size, mime_type, created_by, deleted)
+favorites(user_id, item_type, item_id)
+permissions(subject_id, subject_type, resource_type, resource_id, permission)
+audit_logs(id, actor_id, action, resource_id, timestamp)</code></pre>
+<h4>Trade-offs</h4><ul><li>SQL DB is strong for metadata relationships.</li><li>Object storage separates binary from metadata.</li><li>Soft delete supports recycle bin.</li><li>Async indexing avoids slowing upload.</li><li>Permission checks must happen at every access path.</li></ul>
+<h3>Design 2: Notification system</h3>
+<pre><code>Notification API
+  ↓
+Kafka/RabbitMQ topic: notification.requested
+  ↓
+Workers by channel: Email / SMS / Push
+  ↓
+Provider APIs
+  ↓
+Retry queue with backoff
+  ↓
+DLQ after max failures
+  ↓
+Monitoring + alerting</code></pre>
+<p><strong>Your PropVivo connection:</strong> async notification engine, retry, delivery reliability, DLQ-style failure handling.</p>
+<h3>Design 3: Rate limiter</h3>
+<pre><code>Client request
+  ↓
+API Gateway / Filter
+  ↓
+Redis sorted set or token bucket check
+  ↓ allowed → API
+  ↓ blocked → 429 Too Many Requests</code></pre>
+<p><strong>Sliding window with Redis sorted set:</strong> add current timestamp, remove timestamps older than window, count remaining requests, allow/reject.</p>
+<h3>Design 4: URL shortener</h3>
+<pre><code>POST /shorten → generate Base62 code → store mapping
+GET /{code} → Redis lookup → DB fallback → redirect
+Kafka click events → analytics pipeline</code></pre>
+<h3>Design 5: Ticket booking / BookMyShow</h3>
+<pre><code>User selects seat
+  ↓
+Redis lock/reservation with TTL
+  ↓
+Payment
+  ↓
+Confirm booking in DB transaction
+  ↓
+Publish booking.confirmed event
+  ↓
+Release/expire lock</code></pre>
+<h3>Design 6: AI connector platform</h3>
+<pre><code>AI Chat UI
+  ↓
+Conversation Service
+  ↓
+Tool Router / Agent Orchestrator
+  ↓
+Permission Guard
+  ↓
+Connector Registry
+  ├── Google Drive connector
+  ├── M365 connector
+  ├── Custom MCP connector
+  └── Internal API connector
+  ↓
+External Systems
+  ↓
+Tool result filtered + audited → AI response</code></pre>
+<p><strong>Key discussion points:</strong> tool schema, OAuth tokens, scopes, permission-aware retrieval, prompt injection defense, audit logs, rate limiting, timeout/retry, context-size control.</p>
+
+</section>
+
+<section id="dsa" class="section">
+  <div class="section-head">
+    <div><h2>13. DSA crash sheet</h2><p>Patterns, must-do problems, and how to communicate.</p></div>
+    
+  </div>
+  
+<h3>DSA communication template</h3>
+<pre><code>1. Clarify input/output and constraints
+2. Give brute force approach
+3. Identify pattern
+4. Explain optimized approach
+5. Code cleanly
+6. Dry run with example
+7. State time and space complexity
+8. Mention edge cases</code></pre>
+<h3>Pattern recognition</h3>
+<div class="table-wrap"><table><thead><tr><th>Pattern</th><th>When to think of it</th><th>Examples</th></tr></thead><tbody><tr><td>HashMap</td><td>Need O(1) lookup, frequency, complement</td><td>Two Sum, Subarray Sum K</td></tr><tr><td>Two pointers</td><td>Sorted array or both ends movement</td><td>Container Water, 3Sum</td></tr><tr><td>Sliding window</td><td>Contiguous subarray/substring</td><td>Longest substring, min window</td></tr><tr><td>Stack</td><td>Matching, previous greater/smaller, design</td><td>Parentheses, Min Stack</td></tr><tr><td>Queue/BFS</td><td>Shortest path, level order, spread</td><td>Rotting Oranges, Level Order</td></tr><tr><td>DFS</td><td>Explore all connected components/path</td><td>Islands, tree recursion</td></tr><tr><td>Heap</td><td>Top K, streaming min/max</td><td>Top K frequent, median stream</td></tr><tr><td>Trie</td><td>Prefix search/autocomplete</td><td>Word dictionary</td></tr><tr><td>Topo sort</td><td>Dependencies / ordering</td><td>Course Schedule</td></tr><tr><td>Intervals</td><td>Merging/ranges/scheduling</td><td>Merge Intervals, Meeting Rooms</td></tr></tbody></table></div>
+<h3>30-problem list</h3>
+<div class="table-wrap"><table><thead><tr><th>Problem</th><th>Pattern</th><th>Difficulty</th><th>Core hint</th></tr></thead><tbody><tr><td>Two Sum</td><td>HashMap</td><td>Easy</td><td>Store complement, O(n)</td></tr><tr><td>Valid Parentheses</td><td>Stack</td><td>Easy</td><td>Push openings, match closings</td></tr><tr><td>Reverse Linked List</td><td>Linked List</td><td>Easy</td><td>prev/curr/next pointers</td></tr><tr><td>Merge Two Sorted Lists</td><td>Linked List</td><td>Easy</td><td>dummy node</td></tr><tr><td>Best Time to Buy/Sell Stock</td><td>Greedy</td><td>Easy</td><td>track min price</td></tr><tr><td>Container With Most Water</td><td>Two pointers</td><td>Medium</td><td>move smaller height</td></tr><tr><td>Trapping Rain Water</td><td>Two pointers/prefix</td><td>Hard-ish</td><td>leftMax/rightMax</td></tr><tr><td>Subarray Sum Equals K</td><td>Prefix Sum</td><td>Medium</td><td>prefix frequency map</td></tr><tr><td>Top K Frequent Elements</td><td>Heap/Bucket</td><td>Medium</td><td>frequency + heap/bucket</td></tr><tr><td>LRU Cache</td><td>HashMap + DLL</td><td>Medium</td><td>O(1) get/put</td></tr><tr><td>Min Stack</td><td>Stack</td><td>Easy</td><td>store current min</td></tr><tr><td>Number of Islands</td><td>DFS/BFS</td><td>Medium</td><td>grid traversal</td></tr><tr><td>Rotting Oranges</td><td>BFS</td><td>Medium</td><td>multi-source BFS</td></tr><tr><td>Word Ladder</td><td>BFS</td><td>Hard-ish</td><td>shortest transformation</td></tr><tr><td>Binary Tree Level Order</td><td>BFS</td><td>Medium</td><td>queue level loop</td></tr><tr><td>Diameter of Binary Tree</td><td>DFS</td><td>Easy/Med</td><td>height + max diameter</td></tr><tr><td>Lowest Common Ancestor</td><td>Tree</td><td>Medium</td><td>recursive split</td></tr><tr><td>Course Schedule</td><td>Topo sort</td><td>Medium</td><td>cycle detection</td></tr><tr><td>Merge Intervals</td><td>Intervals</td><td>Medium</td><td>sort by start</td></tr><tr><td>Meeting Rooms II</td><td>Heap</td><td>Medium</td><td>min heap end times</td></tr><tr><td>Kth Largest Element</td><td>Heap/Quickselect</td><td>Medium</td><td>min heap size k</td></tr><tr><td>Longest Substring Without Repeat</td><td>Sliding window</td><td>Medium</td><td>map char index</td></tr><tr><td>3Sum</td><td>Sort + two pointers</td><td>Medium</td><td>skip duplicates</td></tr><tr><td>Clone Graph</td><td>DFS/BFS + Map</td><td>Medium</td><td>visited map</td></tr><tr><td>Design Add/Search Words</td><td>Trie</td><td>Medium</td><td>DFS on wildcard</td></tr><tr><td>Serialize/Deserialize Tree</td><td>Tree/DFS</td><td>Hard-ish</td><td>preorder with null markers</td></tr><tr><td>Find Median from Data Stream</td><td>Two heaps</td><td>Hard-ish</td><td>max heap + min heap</td></tr><tr><td>Product of Array Except Self</td><td>Prefix/Suffix</td><td>Medium</td><td>no division</td></tr><tr><td>Search in Rotated Sorted Array</td><td>Binary Search</td><td>Medium</td><td>identify sorted half</td></tr><tr><td>Minimum Window Substring</td><td>Sliding window</td><td>Hard</td><td>need/have counts</td></tr></tbody></table></div>
+<h3>Code skeletons</h3>
+<h4>BFS grid</h4>
+<pre><code>Queue&lt;int[]&gt; q = new LinkedList&lt;&gt;();
+q.offer(new int[]{r, c});
+int[][] dirs = {{1,0},{-1,0},{0,1},{0,-1}};
+
+while (!q.isEmpty()) {
+    int[] cell = q.poll();
+    for (int[] d : dirs) {
+        int nr = cell[0] + d[0];
+        int nc = cell[1] + d[1];
+        if (nr &lt; 0 || nc &lt; 0 || nr &gt;= rows || nc &gt;= cols) continue;
+        // check visited/condition
+    }
+}</code></pre>
+<h4>Sliding window</h4>
+<pre><code>int left = 0;
+Map&lt;Character, Integer&gt; map = new HashMap&lt;&gt;();
+for (int right = 0; right &lt; s.length(); right++) {
+    char c = s.charAt(right);
+    map.put(c, map.getOrDefault(c, 0) + 1);
+
+    while (/* window invalid */) {
+        char l = s.charAt(left++);
+        map.put(l, map.get(l) - 1);
+    }
+
+    // update answer
+}</code></pre>
+<h4>DFS tree</h4>
+<pre><code>int dfs(TreeNode root) {
+    if (root == null) return 0;
+    int left = dfs(root.left);
+    int right = dfs(root.right);
+    // use left and right
+    return 1 + Math.max(left, right);
+}</code></pre>
+<h3>When stuck</h3>
+<div class="script">Let me start with a brute-force approach and then optimize. The brute force would be O(n²). Since we repeatedly need fast lookup / window validity / shortest path / ordering, I think this maps to HashMap / sliding window / BFS / topological sort. I’ll dry run on a small example before coding.</div>
+
+</section>
+
+<section id="testing-devops" class="section">
+  <div class="section-head">
+    <div><h2>14. Testing, CI/CD, debugging, production readiness</h2><p>JD asks for testing, debugging, deployment, and shared environment validation.</p></div>
+    
+  </div>
+  
+<h3>Testing pyramid</h3>
+<div class="table-wrap"><table><thead><tr><th>Test type</th><th>What it checks</th><th>Example</th></tr></thead><tbody><tr><td>Unit test</td><td>Single class/method logic</td><td>FileService.createFolder duplicate-name rule</td></tr><tr><td>Integration test</td><td>Multiple layers together</td><td>Controller + Service + Repository using test DB</td></tr><tr><td>Contract/API test</td><td>Request/response shape</td><td>POST /folders returns 201 with FolderResponse</td></tr><tr><td>E2E test</td><td>Full user flow</td><td>Create folder from UI and verify appears</td></tr><tr><td>Smoke test</td><td>Basic deployed app health</td><td>Login, list files, create folder after deploy</td></tr></tbody></table></div>
+<h3>Unit test example</h3>
+<pre><code>@Test
+void createFolder_shouldThrowConflict_whenNameAlreadyExists() {
+    when(folderRepository.existsByParentIdAndName(10L, &quot;Docs&quot;)).thenReturn(true);
+
+    assertThrows(ConflictException.class, () -&gt;
+        folderService.createFolder(new CreateFolderRequest(&quot;Docs&quot;, 10L))
+    );
+}</code></pre>
+<h3>CI/CD flow</h3>
+<pre><code>Developer pushes branch
+  ↓
+Pull request created
+  ↓
+CI runs build + unit tests + lint/static checks
+  ↓
+Code review
+  ↓
+Merge to main/develop
+  ↓
+Deploy to shared/staging environment
+  ↓
+Smoke validation
+  ↓
+Production deployment / rollback plan</code></pre>
+<h3>Production debugging flow</h3>
+<ol class="big-list">
+<li>Confirm impact: who is affected, when started, severity.</li>
+<li>Check logs using correlation/request ID.</li>
+<li>Reproduce if possible.</li>
+<li>Check recent deployment/config changes.</li>
+<li>Inspect external dependencies: DB, Redis, Kafka, OAuth provider, Drive API.</li>
+<li>Identify root cause.</li>
+<li>Apply minimal safe fix or rollback.</li>
+<li>Add regression test/monitoring after fix.</li>
+</ol>
+<h3>Good production issue story</h3>
+<div class="script">In one file/connector workflow, the UI state and backend state could become inconsistent after a mutation like moving/deleting/reconnecting. I debugged the API response, permission checks, and client cache invalidation flow. The fix was to make the mutation flow deterministic, invalidate the exact affected queries, and ensure the UI refetched from backend source of truth after successful operation. The lesson was that in shared workspace features, correctness of state is as important as the feature itself.</div>
+
+</section>
+
+<section id="behavioral" class="section">
+  <div class="section-head">
+    <div><h2>15. Behavioral and HR answers</h2><p>Clear non-AI-sounding answers for Adobe.</p></div>
+    
+  </div>
+  
+<h3>STAR method</h3>
+<pre><code>S - Situation: What was happening?
+T - Task: What were you responsible for?
+A - Action: What exactly did you do?
+R - Result: What changed? Use numbers if possible.</code></pre>
+<h3>Tell me about yourself</h3>
+<div class="script">I’m Aryan Kumar, a software engineer with around 3 years of experience across backend and full-stack development. Currently, I work at TechCompiler, where I’ve contributed to enterprise AI, fintech automation, and critical infrastructure projects. My recent work involved building APIs and Next.js frontend features for an enterprise AI platform, including drive-like file management, connector workflows, permission-aware access, and integrations with external systems like Google Drive and Microsoft 365. Apart from that, I’ve worked on backend-heavy systems involving event-driven workflows, Redis caching, JWT/RBAC security, and SQL query optimization. What interests me about this Adobe role is the mix of Java backend, full-stack development, and AI-powered engineering workflows.</div>
+<h3>Why Adobe?</h3>
+<div class="script">Adobe interests me because it is building at the intersection of creativity, productivity, enterprise workflows, and AI. My recent work on enterprise AI connectors made me interested in how AI agents can safely work with business tools and user data. Adobe’s products like Firefly, Acrobat, Experience Platform, and GenStudio operate at a scale where backend reliability, user experience, and AI all matter together. That combination is exactly where I want to grow as an engineer.</div>
+<h3>AI usage answer</h3>
+<div class="script">I use AI tools as engineering accelerators, not as replacements for ownership. For example, I use them to explore implementation options, generate boilerplate, write initial test cases, debug hypotheses, or review edge cases. But I always validate the code, understand the impact, run tests, and take responsibility for the final implementation. In live interviews, I understand Adobe expects my own thinking, so I would not use AI tools unless explicitly allowed.</div>
+<h3>Conflict story</h3>
+<div class="script">In one backend flow, there was a discussion about keeping downstream processing synchronous because it was simpler to reason about. My concern was that a failure in a non-critical downstream step like notification could block the main business operation. I proposed separating critical synchronous steps from async secondary workflows. The final design was hybrid: core validation stayed synchronous, while audit/notification-style work moved to event-driven processing. That gave reliability without overcomplicating the core path.</div>
+<h3>Weakness answer</h3>
+<div class="script">Earlier, I sometimes tried to design for too many future cases upfront. Over time, I learned to first validate actual scale and business priority. Now I try to keep the first implementation clean and extensible, but I avoid over-engineering until there is a real requirement or performance signal.</div>
+<h3>Questions to ask interviewer</h3>
+<ul>
+<li>What type of systems does this team own: customer-facing product features, internal platforms, or workflow automation?</li>
+<li>How is AI currently being used in the engineering workflow or product roadmap for this team?</li>
+<li>What would success look like for this role in the first 90 days?</li>
+<li>What are the biggest reliability or scalability challenges the team is solving right now?</li>
+<li>How much of the role is backend-heavy vs frontend-heavy?</li>
+</ul>
+
+</section>
+
+<section id="question-bank" class="section">
+  <div class="section-head">
+    <div><h2>16. Master question bank</h2><p>225+ questions grouped by interview topic.</p></div>
+    
+  </div>
+  <h3>Java Core</h3><ol><li>Explain OOP pillars.</li><li>Interface vs abstract class?</li><li>HashMap internals.</li><li>HashMap vs ConcurrentHashMap.</li><li>equals and hashCode contract.</li><li>ArrayList vs LinkedList.</li><li>String vs StringBuilder.</li><li>Checked vs unchecked exceptions.</li><li>final/finally/finalize.</li><li>volatile vs synchronized.</li><li>ExecutorService vs creating Thread manually.</li><li>What are virtual threads?</li><li>What is garbage collection?</li><li>What is immutability?</li><li>What is Optional?</li></ol><h3>Spring Boot</h3><ol><li>What is Spring Boot?</li><li>How does auto-configuration work?</li><li>Controller-Service-Repository flow?</li><li>@RestController vs @Controller?</li><li>@Component vs @Service vs @Repository?</li><li>What is Dependency Injection?</li><li>What is a Bean?</li><li>@Transactional behavior?</li><li>Propagation and isolation?</li><li>Global exception handling?</li><li>Validation with @Valid?</li><li>DTO vs Entity?</li><li>JPA lazy vs eager loading?</li><li>N+1 query problem?</li><li>How to secure API with Spring Security?</li></ol><h3>API/Security</h3><ol><li>REST principles?</li><li>Idempotency?</li><li>PUT vs PATCH?</li><li>401 vs 403?</li><li>JWT flow?</li><li>What goes inside JWT?</li><li>OAuth vs JWT?</li><li>Authentication vs authorization?</li><li>RBAC vs ABAC?</li><li>CORS?</li><li>CSRF?</li><li>Rate limiting?</li><li>API versioning?</li><li>Pagination strategy?</li><li>Secure coding practices?</li></ol><h3>Database</h3><ol><li>Indexing?</li><li>Composite index?</li><li>Clustered vs non-clustered index?</li><li>SQL joins?</li><li>Transaction ACID?</li><li>Isolation levels?</li><li>Optimistic vs pessimistic locking?</li><li>N+1 query?</li><li>How to debug slow query?</li><li>Normalization?</li><li>SQL vs NoSQL?</li><li>When to use MongoDB?</li><li>Connection pooling?</li><li>Deadlock?</li><li>Soft delete design?</li></ol><h3>Kafka/Redis</h3><ol><li>What is Kafka?</li><li>Topic/partition/offset?</li><li>Consumer group?</li><li>Ordering guarantee?</li><li>At least once vs exactly once?</li><li>DLQ?</li><li>Consumer lag?</li><li>Kafka vs RabbitMQ?</li><li>Redis use cases?</li><li>Cache-aside?</li><li>Thundering herd?</li><li>Distributed lock?</li><li>Cache invalidation?</li><li>TTL strategy?</li><li>Rate limiter with Redis?</li></ol><h3>AI/MCP</h3><ol><li>What is MCP?</li><li>MCP host/client/server?</li><li>What is a tool?</li><li>What is an AI agent?</li><li>Chatbot vs agent?</li><li>What is permission-aware retrieval?</li><li>How to secure tool calls?</li><li>How to handle OAuth token expiry?</li><li>What is prompt injection?</li><li>How can AI improve developer workflow?</li><li>How did you use AI tools responsibly?</li><li>What is RAG?</li><li>Vector DB basics?</li><li>How to audit AI actions?</li><li>How to handle tool failure?</li></ol><h3>Frontend</h3><ol><li>React component/state/props?</li><li>useEffect?</li><li>Context API vs Redux?</li><li>Custom hook?</li><li>Virtual DOM?</li><li>Controlled vs uncontrolled component?</li><li>Optimistic update?</li><li>Error boundary?</li><li>Next.js basics?</li><li>SSR vs CSR?</li><li>API integration?</li><li>Loading/error state?</li><li>Form validation?</li><li>How to handle auth in frontend?</li><li>How to avoid re-renders?</li></ol><h3>System Design</h3><ol><li>Design Drive-like system.</li><li>Design notification system.</li><li>Design rate limiter.</li><li>Design URL shortener.</li><li>Design BookMyShow.</li><li>Design autocomplete.</li><li>Design audit logging system.</li><li>Design AI connector platform.</li><li>Design file search.</li><li>Design chat system.</li><li>Design upload service.</li><li>Design permission system.</li><li>Design retry mechanism.</li><li>Design analytics pipeline.</li><li>Design feature flag system.</li></ol><h3>Behavioral</h3><ol><li>Tell me about yourself.</li><li>Why Adobe?</li><li>Biggest challenge?</li><li>Production issue?</li><li>Conflict with teammate?</li><li>Failure story?</li><li>Leadership story?</li><li>Mentoring story?</li><li>Tight deadline?</li><li>Ambiguous requirement?</li><li>Learning new tech fast?</li><li>Using AI responsibly?</li><li>Where in 3 years?</li><li>Weakness?</li><li>Questions for us?</li></ol>
+</section>
+
+<section id="dangerous-bullets" class="section">
+  <div class="section-head">
+    <div><h2>17. Dangerous resume bullets and exact defense</h2><p>Where interviewers can catch weak understanding.</p></div>
+    
+  </div>
+  
+<div class="table-wrap"><table><thead><tr><th>Resume phrase</th><th>Why risky</th><th>What you must be able to explain</th></tr></thead><tbody><tr><td>Java/Spring Boot microservices</td><td>They may expect real Spring depth.</td><td>API flow, annotations, JPA, transactions, security, service boundaries.</td></tr><tr><td>Kafka event pipeline</td><td>They can go deep into partitions/offsets/retries.</td><td>Ordering by key, manual commits, idempotency, DLQ, consumer lag.</td></tr><tr><td>Redis cache-aside with Redisson lock</td><td>They can ask exact thundering herd flow.</td><td>Cache miss, lock acquisition, TTL, invalidation, timeout.</td></tr><tr><td>MCP connector framework</td><td>They may ask protocol-level basics.</td><td>MCP host/client/server, tools, resources, schema, auth, permission guard.</td></tr><tr><td>Java 21 concurrent ingestion</td><td>They may ask virtual threads/concurrency.</td><td>I/O-bound concurrency, virtual thread concept, thread safety.</td></tr><tr><td>99.95% uptime</td><td>They may ask how measured.</td><td>Say cautiously: service-level availability based on deployment/runtime monitoring; avoid overclaiming if not directly measured.</td></tr><tr><td>Mentored juniors / led architecture</td><td>They may ask example.</td><td>Prepare one review/decision story where you improved design or prevented bug.</td></tr><tr><td>FIX/FIXML CME/ICE</td><td>They may ask what FIX means.</td><td>Financial Information eXchange protocol; FIXML is XML representation; exchange adapters map messages.</td></tr></tbody></table></div>
+<h3>Safe wording when you are not 100% hands-on</h3>
+<div class="script">That part was collaborative. My direct work was around the API/UI integration, permission-aware flow, and reviewing how the connector fit into the platform. I understand the design and runtime flow, including auth, tool exposure, failure handling, and user-facing impact.</div>
+<h3>Do not say</h3>
+<ul><li>“I don’t know, junior did it.”</li><li>“AI generated it.”</li><li>“I just followed instructions.”</li><li>“I have no Spring Boot experience.”</li></ul>
+<h3>Say instead</h3>
+<ul><li>“That implementation was collaborative, but I owned/understood the integration flow.”</li><li>“I used AI for acceleration but validated and owned the final code.”</li><li>“My strongest hands-on area is API/full-stack feature delivery; I have been strengthening Spring Boot specifics for this role.”</li></ul>
+
+</section>
+
+<section id="final-revision" class="section">
+  <div class="section-head">
+    <div><h2>18. Final 24-hour revision sheet</h2><p>Use this on the day before interview.</p></div>
+    
+  </div>
+  
+<h3>Must be able to answer without notes</h3>
+<ol class="big-list">
+<li>Tell me about yourself.</li>
+<li>Explain Emerge AI.</li>
+<li>Explain MCP.</li>
+<li>Explain Drive-like file system design.</li>
+<li>Explain authentication vs authorization.</li>
+<li>Explain JWT flow.</li>
+<li>Explain OAuth connector flow.</li>
+<li>Explain Spring Boot request flow.</li>
+<li>Explain Kafka topic/partition/consumer group.</li>
+<li>Explain Redis cache-aside and thundering herd.</li>
+<li>Explain DB index and composite index.</li>
+<li>Explain one production issue.</li>
+<li>Explain one conflict or ownership story.</li>
+<li>Solve Valid Parentheses.</li>
+<li>Solve Two Sum.</li>
+<li>Solve Rotting Oranges.</li>
+<li>Solve LRU Cache explanation at least.</li>
+<li>Design notification system.</li>
+<li>Why Adobe?</li>
+<li>How do you use AI responsibly?</li>
+</ol>
+<h3>Emergency answer if you go blank</h3>
+<div class="script">Let me reason through it. I’ll start with the basic version first, then improve it. The main concerns here seem to be correctness, security, failure handling, and scalability. For the first version, I would keep the design simple, then add cache/queue/retry only where the bottleneck appears.</div>
+<h3>Confidence checklist</h3>
+<ul class="checklist"><li>☐ I can explain every resume bullet.</li><li>☐ I can draw Emerge AI connector architecture.</li><li>☐ I can draw Trade Portal Kafka flow.</li><li>☐ I can explain Spring Boot API flow.</li><li>☐ I can solve 10 DSA problems without watching solution.</li><li>☐ I can answer Why Adobe without sounding generic.</li><li>☐ I will not use AI during live interview unless allowed.</li></ul>
+
+</section>
+
+<section id="sources" class="section">
+  <div class="section-head">
+    <div><h2>19. Source notes used</h2><p>Official references and your uploaded material basis.</p></div>
+    
+  </div>
+  
+<ul>
+<li>Your uploaded resume was used to align project-defense topics: Emerge AI, Trade Automation Portal, MIDAS, PropVivo, Java/Spring Boot, Kafka, Redis, MCP, JWT/RBAC, and testing.</li>
+<li>Your uploaded Adobe prep HTML was used as the base style and initial topic map.</li>
+<li>Official Adobe Careers pages were used for AI interview rule and hiring-process framing.</li>
+<li>Official Model Context Protocol documentation was used for MCP definitions and architecture framing.</li>
+</ul>
+<p class="muted">This file is a preparation guide, not a guarantee of Adobe’s exact interview rounds or questions.</p>
+
+</section>
+
+  <div class="footer">End of guide — revise daily, speak answers aloud, and avoid live AI tool usage unless Adobe explicitly permits it.</div>
+</main>
+</div>
+</body>
+</html>
