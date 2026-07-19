@@ -657,7 +657,7 @@ export type ShowcaseProject = {
   id: string;
   title: string;
   subtitle: string;
-  category: "company" | "personal";
+  category: "company" | "freelance" | "personal";
   year: string;
   company?: string;
   role: string;
@@ -674,6 +674,47 @@ export type ShowcaseProject = {
   liveUrl?: string;
   liveLabel?: string;
 };
+
+const freelanceShowcaseProjects: ShowcaseProject[] = [
+  {
+    id: "zenought-renewables",
+    title: "Zenought Renewables",
+    subtitle: "Renewable-energy EPC marketing and enquiry platform",
+    category: "freelance",
+    year: "2026",
+    company: "Zenought Renewables Pvt. Ltd.",
+    role: "Freelance Full Stack Developer",
+    engagement: "Freelance client project",
+    status: "Production-ready",
+    overview:
+      "A responsive marketing and enquiry platform for a renewable-energy EPC business, presenting solar, infrastructure, O&M, fabrication, CBG, and organic-fertilizer services.",
+    challenge:
+      "The client needed a credible digital presence that could make a broad, technical EPC offering easy to understand for commercial and industrial audiences while providing a clear path to start an enquiry.",
+    contributions: [
+      "Built a responsive, multi-page Next.js marketing site with reusable content and components for services, industries, projects, leadership, news, and contact.",
+      "Implemented the contact and enquiry flow with a NestJS API, validated request DTOs, and PostgreSQL persistence through TypeORM.",
+      "Structured the monorepo for dependable development and release workflows with Turborepo, pnpm workspaces, Docker Compose, Netlify configuration, and GitHub Actions CI/CD."
+    ],
+    outcome:
+      "Delivered a maintainable web and API foundation that supports the company’s marketing presence and routes prospective customer enquiries into a structured backend workflow.",
+    techStack: [
+      "Next.js",
+      "React",
+      "Tailwind CSS",
+      "NestJS",
+      "TypeORM",
+      "PostgreSQL",
+      "Turborepo",
+      "Docker",
+      "Netlify",
+      "GitHub Actions"
+    ],
+    confidential: false,
+    githubUrl: "https://github.com/aryankr1508/Zenought"
+  }
+];
+
+const freelanceProjectSlugs = new Set(["telemed"]);
 
 export function getShowcaseProjects(): ShowcaseProject[] {
   const showcase: ShowcaseProject[] = [];
@@ -707,16 +748,19 @@ export function getShowcaseProjects(): ShowcaseProject[] {
   // Personal / independent projects
   for (const p of projects) {
     const yearMatch = p.period.match(/\d{4}/);
+    const isFreelance = freelanceProjectSlugs.has(p.slug);
     showcase.push({
       id: p.slug,
       title: p.title,
       subtitle: p.subtitle,
-      category: "personal",
+      category: isFreelance ? "freelance" : "personal",
       year: yearMatch?.[0] ?? p.period,
       role: p.role,
-      engagement: p.period.toLowerCase().includes("team")
-        ? "Team project"
-        : "Independent build",
+      engagement: isFreelance
+        ? "Freelance client project"
+        : p.period.toLowerCase().includes("team")
+          ? "Team project"
+          : "Independent build",
       status: p.period.toLowerCase().includes("present")
         ? "Active"
         : p.liveUrl
@@ -736,6 +780,8 @@ export function getShowcaseProjects(): ShowcaseProject[] {
       liveLabel: p.liveUrl ? "Live Demo" : p.demoUrl ? "Demo Video" : undefined,
     });
   }
+
+  showcase.push(...freelanceShowcaseProjects);
 
   return showcase;
 }

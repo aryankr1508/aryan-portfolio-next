@@ -13,6 +13,7 @@ import {
   Code2,
   ExternalLink,
   Github,
+  Handshake,
   Lock,
   X
 } from "lucide-react";
@@ -36,11 +37,13 @@ type ProjectGroup = {
 const filterLabels: { key: ProjectFilter; label: string }[] = [
   { key: "all", label: "All Work" },
   { key: "company", label: "Company" },
+  { key: "freelance", label: "Freelance" },
   { key: "personal", label: "Personal" }
 ];
 
 const featuredProjectIds = [
   "midas-nuclear-safety-plume-monitoring-system",
+  "zenought-renewables",
   "syncdev"
 ];
 
@@ -76,6 +79,16 @@ function projectGroups(
     ];
   }
 
+  if (filter === "freelance") {
+    return [
+      {
+        label: "Freelance Projects",
+        description: "Client work delivered independently from discovery to deployment",
+        projects: projects.filter((project) => project.category === "freelance")
+      }
+    ];
+  }
+
   const featured = featuredProjectIds
     .map((id) => projects.find((project) => project.id === id))
     .filter((project): project is ShowcaseProject => Boolean(project));
@@ -92,6 +105,13 @@ function projectGroups(
       description: "More production work delivered in full-time roles",
       projects: projects.filter(
         (project) => project.category === "company" && !featuredIds.has(project.id)
+      )
+    },
+    {
+      label: "Freelance Projects",
+      description: "Independent client engagements across product and platform delivery",
+      projects: projects.filter(
+        (project) => project.category === "freelance" && !featuredIds.has(project.id)
       )
     },
     {
@@ -137,6 +157,7 @@ export default function ProjectsShowcase({
     () => ({
       all: projects.length,
       company: projects.filter((project) => project.category === "company").length,
+      freelance: projects.filter((project) => project.category === "freelance").length,
       personal: projects.filter((project) => project.category === "personal").length
     }),
     [projects]
@@ -405,7 +426,9 @@ function ProjectListCard({
   onSelect: () => void;
 }) {
   const isCompany = project.category === "company";
-  const CategoryIcon = isCompany ? Briefcase : Code2;
+  const isFreelance = project.category === "freelance";
+  const CategoryIcon = isCompany ? Briefcase : isFreelance ? Handshake : Code2;
+  const categoryLabel = isCompany ? "Company" : isFreelance ? "Freelance" : "Personal";
   const StatusIcon = project.confidential ? Lock : CheckCircle2;
 
   return (
@@ -434,7 +457,7 @@ function ProjectListCard({
       <div className="flex items-center justify-between gap-3">
         <span className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.15em] text-sky-700">
           <CategoryIcon size={13} />
-          {isCompany ? "Company" : "Personal"}
+          {categoryLabel}
         </span>
         <span className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">
           {project.year}
@@ -489,7 +512,13 @@ function ProjectDetail({
   onNavigate?: () => void;
 }) {
   const isCompany = project.category === "company";
-  const CategoryIcon = isCompany ? Briefcase : Code2;
+  const isFreelance = project.category === "freelance";
+  const CategoryIcon = isCompany ? Briefcase : isFreelance ? Handshake : Code2;
+  const categoryLabel = isCompany
+    ? "Company Project"
+    : isFreelance
+      ? "Freelance Project"
+      : "Personal Build";
 
   return (
     <motion.article
@@ -502,7 +531,7 @@ function ProjectDetail({
       <header>
         <div className="flex flex-wrap items-center gap-2 text-[11px] font-bold uppercase tracking-[0.16em] text-sky-700">
           <CategoryIcon size={13} />
-          <span>{isCompany ? "Company Project" : "Personal Build"}</span>
+          <span>{categoryLabel}</span>
           {project.company ? (
             <>
               <span aria-hidden="true" className="text-slate-400">•</span>
@@ -704,6 +733,20 @@ function ProjectActions({
           Full Case Study
           <ArrowUpRight size={15} />
         </Link>
+      ) : null}
+
+      {project.category === "freelance" ? (
+        <a
+          href="#contact"
+          onClick={() => {
+            onNavigate?.();
+            trackEvent("showcase_freelance_contact_click", { project: project.id });
+          }}
+          className={`button-primary ${compact ? "!px-4 !py-2.5" : ""}`}
+        >
+          Build Something Similar
+          <ArrowUpRight size={15} />
+        </a>
       ) : null}
     </div>
   );

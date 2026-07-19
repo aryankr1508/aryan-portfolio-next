@@ -15,3 +15,6 @@ pnpm-debug.log*
 
 # Local assistant settings
 .claude/settings.local.json
+next-env.d.ts
+package.json
+README.md
