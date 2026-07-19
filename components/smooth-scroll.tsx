@@ -49,11 +49,11 @@ export default function SmoothScroll({ children }: SmoothScrollProps) {
     };
 
     const lenis = new Lenis({
-      duration: prefersReducedMotion ? 0.01 : 1.15,
+      lerp: prefersReducedMotion ? 1 : 0.14,
       prevent: shouldUseNativeScroll,
       smoothWheel: !prefersReducedMotion,
-      wheelMultiplier: prefersReducedMotion ? 1 : 0.95,
-      touchMultiplier: prefersReducedMotion ? 1 : 1.15
+      wheelMultiplier: 1,
+      touchMultiplier: 1
     });
 
     let frameId = 0;
@@ -66,7 +66,7 @@ export default function SmoothScroll({ children }: SmoothScrollProps) {
     window.__portfolioScrollTo = (target, options = {}) => {
       lenis.scrollTo(target, {
         offset: options.offset ?? 0,
-        duration: options.immediate || prefersReducedMotion ? 0 : 1.05,
+        duration: options.immediate || prefersReducedMotion ? 0 : 0.78,
         immediate: options.immediate ?? prefersReducedMotion
       });
     };

@@ -23,11 +23,10 @@ import {
 import type { LucideIcon } from "lucide-react";
 import { AnimatePresence, motion, useScroll, useSpring, useTransform } from "framer-motion";
 import Image from "next/image";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import CollapsibleCard from "@/components/collapsible-card";
 import ContactForm from "@/components/contact-form";
 import HeroCursorCubesScene from "@/components/hero-cursor-cubes-scene";
-import HeroThreeScene from "@/components/hero-three-scene";
 import ProjectsShowcase from "@/components/projects-showcase";
 import Reveal from "@/components/reveal";
 import SectionTitle from "@/components/section-title";
@@ -61,20 +60,56 @@ const socialIconMap: Record<string, LucideIcon> = {
 
 const containerClass = "mx-auto w-[min(1180px,calc(100%-2rem))]";
 const primarySocialLabels = new Set(["GitHub", "LinkedIn"]);
+const themeChangeEvent = "portfolio-theme-change";
+
+type ThemeMode = "dark" | "light";
+
+function getThemeSnapshot(): ThemeMode {
+  return document.documentElement.dataset.theme === "dark" ? "dark" : "light";
+}
+
+function getServerThemeSnapshot(): ThemeMode {
+  return "light";
+}
+
+function subscribeToTheme(onStoreChange: () => void) {
+  const handleStorage = (event: StorageEvent) => {
+    if (event.key !== "theme") return;
+    document.documentElement.dataset.theme = event.newValue === "dark" ? "dark" : "light";
+    onStoreChange();
+  };
+
+  window.addEventListener(themeChangeEvent, onStoreChange);
+  window.addEventListener("storage", handleStorage);
+
+  return () => {
+    window.removeEventListener(themeChangeEvent, onStoreChange);
+    window.removeEventListener("storage", handleStorage);
+  };
+}
 
 export default function HomePage() {
   const [activeSection, setActiveSection] = useState("home");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [useLiteVisuals, setUseLiteVisuals] = useState(false);
-  const [theme, setTheme] = useState<"dark" | "light">(() => {
-    if (typeof window === "undefined") return "light";
-    return window.localStorage.getItem("theme") === "dark" ? "dark" : "light";
-  });
+  const [showcaseRequest, setShowcaseRequest] = useState<{
+    id: string;
+    sequence: number;
+  } | null>(null);
+  const theme = useSyncExternalStore(
+    subscribeToTheme,
+    getThemeSnapshot,
+    getServerThemeSnapshot
+  );
   const showcaseProjects = useMemo(() => getShowcaseProjects(), []);
 
   const handleViewProject = useCallback(
     (projectId: string) => {
       trackEvent("experience_project_jump", { project: projectId, section: "projects" });
+      setShowcaseRequest((current) => ({
+        id: projectId,
+        sequence: (current?.sequence ?? 0) + 1
+      }));
       // Smooth-scroll to projects section
       const section = document.getElementById("projects");
       if (!section) return;
@@ -122,11 +157,6 @@ export default function HomePage() {
     mass: 0.32
   });
   const heroY = useTransform(scrollY, [0, 560], [0, 44]);
-
-  useEffect(() => {
-    document.documentElement.dataset.theme = theme;
-    window.localStorage.setItem("theme", theme);
-  }, [theme]);
 
   useEffect(() => {
     const mediaQuery = window.matchMedia(
@@ -218,7 +248,10 @@ export default function HomePage() {
   };
 
   const toggleTheme = () => {
-    setTheme((current) => (current === "dark" ? "light" : "dark"));
+    const nextTheme = getThemeSnapshot() === "dark" ? "light" : "dark";
+    document.documentElement.dataset.theme = nextTheme;
+    window.localStorage.setItem("theme", nextTheme);
+    window.dispatchEvent(new Event(themeChangeEvent));
   };
 
   return (
@@ -228,31 +261,12 @@ export default function HomePage() {
         style={{ scaleX: progressScale }}
       />
 
-      {!useLiteVisuals ? (
-        <div aria-hidden className="pointer-events-none fixed inset-0 -z-20 overflow-hidden">
-          <HeroThreeScene
-            mode="background"
-            className={isDark ? "opacity-[0.56]" : "opacity-[0.48]"}
-          />
-        </div>
-      ) : null}
-
-      {isDark && !useLiteVisuals ? <AuroraBackground /> : null}
-      <div
-        aria-hidden
-        className={`pointer-events-none fixed inset-0 -z-30 ${
-          isDark
-            ? "bg-[radial-gradient(circle_at_16%_8%,rgba(20,184,166,0.1),transparent_46%),radial-gradient(circle_at_82%_12%,rgba(251,146,60,0.08),transparent_50%),linear-gradient(to_bottom,rgba(2,3,6,0.98),rgba(7,10,16,0.99))]"
-            : "bg-[radial-gradient(circle_at_18%_8%,rgba(14,165,233,0.16),transparent_46%),radial-gradient(circle_at_80%_14%,rgba(20,184,166,0.16),transparent_50%),linear-gradient(to_bottom,rgba(248,250,252,0.96),rgba(241,245,249,0.98))]"
-        }`}
-      />
-      {!useLiteVisuals ? <div aria-hidden className="grid-fog" /> : null}
-      {!useLiteVisuals ? <div aria-hidden className="grain-overlay" /> : null}
+      <AuroraBackground />
 
       <header className="fixed inset-x-0 top-0 z-50">
         <div className={`${containerClass} pt-4`}>
           <div
-            className={`glass-top-nav flex items-center justify-between rounded-full border px-3 py-2 shadow-[0_14px_36px_rgba(2,6,23,0.22)] backdrop-blur-xl sm:px-4 ${
+            className={`glass-top-nav flex items-center justify-between rounded-full border px-3 py-2 shadow-[0_12px_30px_rgba(2,6,23,0.18)] backdrop-blur-md sm:px-4 ${
               isDark
                 ? "border-slate-600/55 bg-slate-950/82"
                 : "border-slate-200/85 bg-white/78"
@@ -352,7 +366,7 @@ export default function HomePage() {
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ duration: 0.25, ease: "easeOut" }}
-              className={`absolute right-0 top-0 flex h-full w-[min(20rem,88vw)] flex-col border-l p-5 backdrop-blur-xl ${
+              className={`absolute right-0 top-0 flex h-full w-[min(20rem,88vw)] flex-col border-l p-5 backdrop-blur-md ${
                 isDark ? "border-slate-600/45 bg-slate-950/94" : "border-slate-200/80 bg-white/94"
               }`}
             >
@@ -624,7 +638,7 @@ export default function HomePage() {
                 <SectionTitle
                   eyebrow="Resume"
                   title="Recent Professional Experience"
-                  description="A concise timeline of delivery work, product ownership, and engineering impact. Expand each role to view deep dives for company projects."
+                  description="A concise timeline of roles, responsibilities, and engineering impact. Follow a project link to explore the full case study in Selected Work."
                 />
               </Reveal>
 
@@ -748,13 +762,15 @@ export default function HomePage() {
                 <SectionTitle
                   eyebrow="Projects"
                   title="Selected Work"
-                  description="Enterprise delivery and independent builds - select a project to explore the details."
+                  description="Production systems delivered in full-time roles and products built from the ground up."
                 />
               </Reveal>
 
               <ProjectsShowcase
+                key={showcaseRequest ? `${showcaseRequest.id}-${showcaseRequest.sequence}` : "showcase"}
                 projects={showcaseProjects}
                 isDark={isDark}
+                requestedProjectId={showcaseRequest?.id}
               />
         </StageSection>
 

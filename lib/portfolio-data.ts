@@ -24,8 +24,12 @@ export type ResumeItem = {
 
 export type ExperienceProject = {
   name: string;
+  shortTitle?: string;
+  subtitle?: string;
   role?: string;
   summary: string;
+  challenge?: string;
+  outcome?: string;
   stack: string[];
   highlights: string[];
   confidentialityNote?: string;
@@ -39,6 +43,7 @@ export type Project = {
   slug: string;
   title: string;
   subtitle: string;
+  role: string;
   period: string;
   location: string;
   description: string;
@@ -50,6 +55,7 @@ export type Project = {
     solution: string;
     result: string;
   };
+  highlights: string[];
   screenshots: string[];
   architectureDiagram: string;
   nextImprovements: string[];
@@ -313,9 +319,15 @@ export const experienceItems: ResumeItem[] = [
     companyProjects: [
       {
         name: "MIDAS - Nuclear Safety Plume Monitoring System",
+        shortTitle: "MIDAS",
+        subtitle: "Nuclear Safety Plume Monitoring System",
         role: ".NET / WPF Engineer",
         summary:
           "Safety-critical desktop platform for monitoring radiological release scenarios and supporting emergency response.",
+        challenge:
+          "Operators needed to combine live effluent and weather signals, calculate plume dispersion, and alert affected zones quickly within a safety-regulated workflow.",
+        outcome:
+          "Enabled continuous release monitoring, mapped impact projections, faster regional alerting, and repeatable operator training simulations in one desktop system.",
         stack: [".NET 9", "C#", "WPF", "SQL Server", "GIS Mapping"],
         highlights: [
           "Integrated live input streams from effluent monitors and meteorological towers for continuous monitoring.",
@@ -329,9 +341,15 @@ export const experienceItems: ResumeItem[] = [
       },
       {
         name: "BigCommerce Customization Program (US Client)",
+        shortTitle: "BigCommerce Customization Program",
+        subtitle: "Custom storefront and operations delivery for a US client",
         role: "Full Stack Engineer",
         summary:
           "Customization-heavy e-commerce delivery focused on storefront flexibility and operational workflows.",
+        challenge:
+          "The storefront required recurring client-specific features and workflow changes without turning each request into brittle, one-off implementation logic.",
+        outcome:
+          "Created modular customization patterns that improved maintainability and shortened turnaround for recurring storefront requests.",
         stack: ["Node.js", "Svelte", "Handlebars", "BigCommerce APIs"],
         highlights: [
           "Developed and maintained modular storefront components and custom business workflows.",
@@ -343,9 +361,14 @@ export const experienceItems: ResumeItem[] = [
       },
       {
         name: "Marketing and Finance BI Automation",
+        subtitle: "Unified campaign and finance reporting",
         role: "Data and BI Engineer",
         summary:
           "Centralized reporting platform combining ad and finance systems into decision-ready dashboards.",
+        challenge:
+          "Marketing and finance data lived across advertising platforms, APIs, and NetSuite, making recurring KPI reporting manual and inconsistent.",
+        outcome:
+          "Centralized campaign and finance KPIs, standardized transformation logic, and reduced recurring reporting work through scheduled refreshes.",
         stack: ["Power BI", "Power Query (M)", "Windsor.ai API", "NetSuite", "SQL"],
         highlights: [
           "Built reusable ingestion and transformation flows across multiple external data sources.",
@@ -369,9 +392,14 @@ export const experienceItems: ResumeItem[] = [
     companyProjects: [
       {
         name: "Accounting and Super Admin Platform",
+        subtitle: "Financial workflows and tenant administration",
         role: "Backend and Full Stack Developer",
         summary:
           "Core enterprise modules for financial workflows, role controls, and tenant-level administration.",
+        challenge:
+          "Budgeting, chart-of-accounts, legal-entity, role, and permission workflows needed secure, centralized business logic across the administration platform.",
+        outcome:
+          "Consolidated financial and tenant administration behind validated APIs and stored procedures, improving workflow consistency and access control.",
         stack: [".NET", "C#", "MSSQL", "Stored Procedures", "React"],
         highlights: [
           "Implemented APIs and stored procedures for budgeting, chart of accounts, and legal entity workflows.",
@@ -381,9 +409,14 @@ export const experienceItems: ResumeItem[] = [
       },
       {
         name: "CRM Data Layer on Cosmos DB",
+        subtitle: "Relational and NoSQL CRM integration",
         role: "Data and Integration Engineer",
         summary:
           "Scalable CRM data architecture integrating relational and NoSQL systems for product workflows.",
+        challenge:
+          "CRM workflows had to span relational MSSQL data and scalable Cosmos DB documents without compromising production reliability or data integrity.",
+        outcome:
+          "Delivered reliable cross-database workflows with a scalable Cosmos DB layer and consistent integration paths for CRM operations.",
         stack: ["Cosmos DB", "MSSQL", ".NET APIs"],
         highlights: [
           "Designed and integrated cross-database data flows between MSSQL and Cosmos DB.",
@@ -410,20 +443,27 @@ export const projects: Project[] = [
   {
     slug: "syncdev",
     title: "SyncDev",
-    subtitle: "Realtime Collaboration Editor",
-    period: "2019 - Present",
+    subtitle: "Real-Time Collaborative Code Workspace",
+    role: "Creator & Full Stack Developer",
+    period: "2023 - Present",
     location: "India",
     description:
-      "An online collaborative code editor running on remote infrastructure so teams can write and ship code together in real time.",
+      "A browser-based coding workspace where developers create or join shareable rooms, edit code together, see participant presence, and run or preview code without configuring a local project.",
     impact:
-      "Improved collaborative development flow for distributed users through shared editing and instant updates.",
-    resultMetric: "Cut pairing setup time by 40%",
+      "Delivered a production-ready collaboration flow with automatic reconnects, 25 editor language modes, persisted editor preferences, sandboxed web previews, in-browser JavaScript execution, and ephemeral room cleanup.",
+    resultMetric: "25 editor language modes",
     thumbnail: "/images/projects/syncdev-banner.svg",
     story: {
-      problem: "Distributed developers lost time setting up synchronized coding sessions.",
-      solution: "Built a browser-based collaborative editor with Socket.IO rooms and live state sync.",
-      result: "Teams could jump into shared coding instantly without local environment friction."
+      problem: "Pair-programming sessions often require repository access, matching local environments, and a separate tool just to share code and confirm who is present.",
+      solution: "Built UUID-based rooms with live code and presence sync, a CodeMirror editing experience, automatic language detection, execution output, and sandboxed previews. Socket.IO powers local or Node deployments, while the Netlify build uses Functions and strongly consistent Blobs with polling, heartbeats, and debounced writes.",
+      result: "A shareable browser workspace that supports 25 language modes, remembers each user’s editor setup, reconnects automatically, and removes stale participants and abandoned room code."
     },
+    highlights: [
+      "Built UUID-based rooms with synchronized code, participant presence, and automatic reconnect handling.",
+      "Designed a transport layer that uses Socket.IO for Node deployments and Netlify Functions with strongly consistent Blobs in production.",
+      "Added automatic detection and syntax tooling across 25 editor language modes with persisted preferences.",
+      "Implemented sandboxed web previews, in-browser JavaScript execution, validation, and an extensible remote execution proxy."
+    ],
     screenshots: [
       "/images/projects/syncdev-screen-1.svg",
       "/images/projects/syncdev-screen-2.svg"
@@ -431,17 +471,26 @@ export const projects: Project[] = [
     architectureDiagram: "/images/projects/syncdev-architecture.svg",
     nextImprovements: [
       "Add CRDT conflict handling for offline edits and reconnect flows.",
-      "Ship persistent room analytics to track activity and collaboration health.",
-      "Introduce role-based access for enterprise coding sessions."
+      "Connect the validated execution proxy to an isolated compiler provider for more server-side runtimes.",
+      "Add optional authenticated, persistent projects with room roles and access controls."
     ],
-    technologies: ["React", "Node.js", "Socket.IO", "JavaScript"],
-    liveUrl: "https://syncdev.netlify.app/",
+    technologies: [
+      "React",
+      "CodeMirror",
+      "Tailwind CSS",
+      "Socket.IO",
+      "Express",
+      "Netlify Functions",
+      "Netlify Blobs"
+    ],
+    liveUrl: "https://syncdev-editor.netlify.app/",
     repoUrl: "https://github.com/aryankr1508/SyncDev.git"
   },
   {
     slug: "placement-roadmap-chatbot",
     title: "Placement Roadmap Chatbot",
     subtitle: "AI Assistant for Placement Queries",
+    role: "AI Developer · Team of 3",
     period: "Team Project",
     location: "India",
     description:
@@ -455,6 +504,11 @@ export const projects: Project[] = [
       solution: "Created an AI-backed chatbot that maps placement questions to structured guidance.",
       result: "Users got immediate, consistent answers without waiting for mentor availability."
     },
+    highlights: [
+      "Mapped recurring placement questions into structured conversational guidance.",
+      "Implemented the AI-backed response flow and intent handling as part of a three-person team.",
+      "Created a single self-service interface for common placement roadmap queries."
+    ],
     screenshots: [
       "/images/projects/placement-screen-1.svg",
       "/images/projects/placement-screen-2.svg"
@@ -473,6 +527,7 @@ export const projects: Project[] = [
     slug: "telemed",
     title: "TeleMed",
     subtitle: "Medicine Delivery Application",
+    role: "Full Stack Developer",
     period: "Product Build",
     location: "India",
     description:
@@ -486,6 +541,11 @@ export const projects: Project[] = [
       solution: "Built a location-aware ordering app integrating inventory data with Maps APIs.",
       result: "Customers could place map-validated medicine orders through a single flow."
     },
+    highlights: [
+      "Connected medicine inventory from a PHP backend to the customer ordering experience.",
+      "Integrated Google Maps APIs for delivery-location validation.",
+      "Combined product discovery, ordering, and delivery feasibility in one workflow."
+    ],
     screenshots: ["/images/projects/telemed-screen-1.svg", "/images/projects/telemed-screen-2.svg"],
     architectureDiagram: "/images/projects/telemed-architecture.svg",
     nextImprovements: [
@@ -501,6 +561,7 @@ export const projects: Project[] = [
     slug: "alexa-skills",
     title: "Alexa Skills",
     subtitle: "Voice-Driven Automation Skills",
+    role: "Creator & Developer",
     period: "Voice Platform Builds",
     location: "Amazon.in",
     description:
@@ -514,6 +575,11 @@ export const projects: Project[] = [
       solution: "Developed and published voice-triggered Alexa skills with robust intent mapping.",
       result: "Core user actions were automated through natural voice commands."
     },
+    highlights: [
+      "Designed JSON intent models and voice interaction flows for seven Alexa skills.",
+      "Implemented skill logic with Python and Node.js.",
+      "Published four skills to the Amazon Alexa platform."
+    ],
     screenshots: ["/images/projects/alexa-screen-1.svg", "/images/projects/alexa-screen-2.svg"],
     architectureDiagram: "/images/projects/alexa-architecture.svg",
     nextImprovements: [
@@ -590,31 +656,48 @@ export function getEnterpriseProjects(): EnterpriseProjectCard[] {
 export type ShowcaseProject = {
   id: string;
   title: string;
-  type: "enterprise" | "personal";
+  subtitle: string;
+  category: "company" | "personal";
   year: string;
-  businessLogic: string;
+  company?: string;
+  role: string;
+  engagement: string;
+  status: string;
+  overview: string;
+  challenge: string;
   contributions: string[];
+  outcome: string;
   techStack: string[];
   confidential: boolean;
+  caseStudyUrl?: string;
   githubUrl?: string;
   liveUrl?: string;
+  liveLabel?: string;
 };
 
 export function getShowcaseProjects(): ShowcaseProject[] {
   const showcase: ShowcaseProject[] = [];
 
-  // Enterprise projects from experience
+  // Company projects from full-time experience
   for (const exp of experienceItems) {
     if (!exp.companyProjects?.length) continue;
     const yearMatch = exp.duration.match(/\d{4}/);
+    const company = exp.title.replace(/\s*\([^)]*\)\s*$/, "");
     for (const p of exp.companyProjects) {
       showcase.push({
         id: slugify(p.name),
-        title: p.name,
-        type: "enterprise",
+        title: p.shortTitle ?? p.name,
+        subtitle: p.subtitle ?? p.summary,
+        category: "company",
         year: yearMatch?.[0] ?? "",
-        businessLogic: p.summary,
+        company,
+        role: p.role ?? "Software Engineer",
+        engagement: "Full-time company",
+        status: p.confidentialityNote ? "Confidential" : "Delivered",
+        overview: p.summary,
+        challenge: p.challenge ?? p.summary,
         contributions: p.highlights,
+        outcome: p.outcome ?? p.highlights.at(-1) ?? p.summary,
         techStack: p.stack,
         confidential: !!p.confidentialityNote,
       });
@@ -627,16 +710,30 @@ export function getShowcaseProjects(): ShowcaseProject[] {
     showcase.push({
       id: p.slug,
       title: p.title,
-      type: "personal",
+      subtitle: p.subtitle,
+      category: "personal",
       year: yearMatch?.[0] ?? p.period,
-      businessLogic: p.description,
-      contributions: p.story
-        ? [p.story.problem, p.story.solution, p.story.result]
-        : [],
+      role: p.role,
+      engagement: p.period.toLowerCase().includes("team")
+        ? "Team project"
+        : "Independent build",
+      status: p.period.toLowerCase().includes("present")
+        ? "Active"
+        : p.liveUrl
+          ? "Live"
+          : p.demoUrl
+            ? "Demo available"
+            : "Open source",
+      overview: p.description,
+      challenge: p.story.problem,
+      contributions: p.highlights,
+      outcome: p.impact,
       techStack: p.technologies,
       confidential: false,
+      caseStudyUrl: `/projects/${p.slug}`,
       githubUrl: p.repoUrl,
       liveUrl: p.liveUrl ?? p.demoUrl,
+      liveLabel: p.liveUrl ? "Live Demo" : p.demoUrl ? "Demo Video" : undefined,
     });
   }
 

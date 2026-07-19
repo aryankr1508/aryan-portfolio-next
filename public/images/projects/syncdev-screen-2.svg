@@ -1,8 +1,45 @@
-﻿<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720" fill="none">
-  <rect width="1280" height="720" rx="44" fill="#042F2E"/>
-  <rect x="96" y="118" width="1088" height="484" rx="24" fill="#052E3D" stroke="#5EEAD4" stroke-opacity="0.4"/>
-  <rect x="142" y="170" width="302" height="370" rx="18" fill="#0F172A"/>
-  <rect x="470" y="170" width="662" height="62" rx="14" fill="#0EA5E9" fill-opacity="0.4"/>
-  <rect x="470" y="252" width="662" height="288" rx="18" fill="#020617" stroke="#22D3EE" stroke-opacity="0.35"/>
-  <text x="492" y="212" fill="#CCFBF1" font-family="Segoe UI, Arial, sans-serif" font-size="26" font-weight="700">Session Controls and Team Presence</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720" fill="none">
+  <rect width="1280" height="720" rx="44" fill="#020817"/>
+  <rect x="42" y="44" width="250" height="632" rx="22" fill="#070C1E" stroke="#293149"/>
+  <text x="74" y="95" fill="#4AED88" font-family="Segoe UI, Arial, sans-serif" font-size="25" font-weight="700">SyncDev</text>
+  <circle cx="78" cy="145" r="6" fill="#4AED88"/>
+  <text x="94" y="151" fill="#CBD5E1" font-family="Segoe UI, Arial, sans-serif" font-size="13">Connected · 3 developers</text>
+  <circle cx="83" cy="214" r="22" fill="#1D4ED8"/>
+  <text x="118" y="211" fill="white" font-family="Segoe UI, Arial, sans-serif" font-size="14" font-weight="700">Aryan</text>
+  <text x="118" y="232" fill="#4AED88" font-family="Segoe UI, Arial, sans-serif" font-size="12">You</text>
+  <circle cx="83" cy="281" r="22" fill="#7C3AED"/>
+  <text x="118" y="286" fill="#CBD5E1" font-family="Segoe UI, Arial, sans-serif" font-size="14">Maya</text>
+  <circle cx="83" cy="348" r="22" fill="#C2410C"/>
+  <text x="118" y="353" fill="#CBD5E1" font-family="Segoe UI, Arial, sans-serif" font-size="14">Dev</text>
+  <rect x="69" y="560" width="196" height="42" rx="11" fill="#0D1126" stroke="#4AED88" stroke-opacity=".55"/>
+  <text x="114" y="586" fill="#4AED88" font-family="Segoe UI, Arial, sans-serif" font-size="13" font-weight="700">Copy room ID</text>
+  <rect x="69" y="616" width="196" height="38" rx="11" fill="#331321"/>
+  <text x="130" y="640" fill="#FDA4AF" font-family="Segoe UI, Arial, sans-serif" font-size="13" font-weight="700">Leave room</text>
+
+  <rect x="310" y="44" width="928" height="632" rx="22" fill="#070C1E" stroke="#293149"/>
+  <text x="345" y="92" fill="white" font-family="Segoe UI, Arial, sans-serif" font-size="19" font-weight="700">Collaborative workspace</text>
+  <rect x="1055" y="67" width="142" height="32" rx="16" fill="#4AED88" fill-opacity=".1"/>
+  <text x="1080" y="88" fill="#4AED88" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="700">SYNCED LIVE</text>
+  <rect x="333" y="120" width="882" height="354" rx="16" fill="#0B1023" stroke="#293149"/>
+  <rect x="333" y="120" width="66" height="354" rx="16" fill="#080D1D"/>
+  <text x="364" y="164" fill="#64748B" font-family="monospace" font-size="15">1</text>
+  <text x="364" y="198" fill="#64748B" font-family="monospace" font-size="15">2</text>
+  <text x="364" y="232" fill="#64748B" font-family="monospace" font-size="15">3</text>
+  <text x="364" y="266" fill="#64748B" font-family="monospace" font-size="15">4</text>
+  <text x="364" y="300" fill="#64748B" font-family="monospace" font-size="15">5</text>
+  <text x="426" y="164" fill="#FF79C6" font-family="monospace" font-size="16">const</text>
+  <text x="482" y="164" fill="#F8F8F2" font-family="monospace" font-size="16">team = [</text>
+  <text x="448" y="198" fill="#F1FA8C" font-family="monospace" font-size="16">'Aryan', 'Maya', 'Dev'</text>
+  <text x="426" y="232" fill="#F8F8F2" font-family="monospace" font-size="16">];</text>
+  <text x="426" y="266" fill="#50FA7B" font-family="monospace" font-size="16">console</text>
+  <text x="488" y="266" fill="#F8F8F2" font-family="monospace" font-size="16">.log(`Connected: ${team.length}`);</text>
+  <rect x="333" y="486" width="882" height="119" rx="14" fill="#080E20" stroke="#293149"/>
+  <text x="357" y="518" fill="#CBD5E1" font-family="Segoe UI, Arial, sans-serif" font-size="13" font-weight="700">OUTPUT</text>
+  <text x="357" y="555" fill="#4AED88" font-family="monospace" font-size="15">Connected: 3</text>
+  <text x="357" y="581" fill="#64748B" font-family="Segoe UI, Arial, sans-serif" font-size="12">Finished successfully · 18ms</text>
+  <rect x="333" y="618" width="882" height="38" rx="10" fill="#0D1328"/>
+  <text x="355" y="642" fill="#94A3B8" font-family="Segoe UI, Arial, sans-serif" font-size="12">Ln 4, Col 43</text>
+  <text x="773" y="642" fill="#94A3B8" font-family="Segoe UI, Arial, sans-serif" font-size="12">JavaScript · Dracula · 16px · Wrap</text>
+  <rect x="1119" y="626" width="72" height="23" rx="11" fill="#4AED88"/>
+  <text x="1141" y="642" fill="#07131A" font-family="Segoe UI, Arial, sans-serif" font-size="11" font-weight="800">RUN</text>
 </svg>

@@ -13,6 +13,17 @@ const sora = Sora({
   variable: "--font-display"
 });
 
+const themeBootstrapScript = `
+  (() => {
+    try {
+      const savedTheme = window.localStorage.getItem("theme");
+      document.documentElement.dataset.theme = savedTheme === "dark" ? "dark" : "light";
+    } catch {
+      document.documentElement.dataset.theme = "light";
+    }
+  })();
+`;
+
 export const metadata: Metadata = {
   title: "Aryan Kumar | Portfolio",
   description:
@@ -28,7 +39,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" data-theme="light">
+    <html lang="en" data-theme="light" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeBootstrapScript }} />
+      </head>
       <body className={`${manrope.variable} ${sora.variable} font-body antialiased`}>
         <a href="#main-content" className="skip-link">
           Skip to main content

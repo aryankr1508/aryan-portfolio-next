@@ -13,8 +13,8 @@ const Spline = dynamic(() => import("@splinetool/react-spline"), {
   loading: () => null
 });
 
-const MAX_CUBES = 110;
-const SPAWN_INTERVAL_MS = 30;
+const MAX_CUBES = 48;
+const SPAWN_INTERVAL_MS = 65;
 const MIN_POINTER_TRAVEL = 0.012;
 const TRAIL_CAMERA_FOV_DEG = 46;
 const TRAIL_CAMERA_Z = 5.6;
@@ -121,6 +121,8 @@ export default function HeroCursorCubesScene({
 }: HeroCursorCubesSceneProps) {
   const [cubes, setCubes] = useState<CursorCube[]>([]);
   const [isPointerInside, setIsPointerInside] = useState(false);
+  const [isSceneVisible, setIsSceneVisible] = useState(false);
+  const rootRef = useRef<HTMLDivElement>(null);
   const cubeIdRef = useRef(0);
   const lastSpawnRef = useRef(0);
   const lastPointerRef = useRef<{ x: number; y: number } | null>(null);
@@ -134,12 +136,33 @@ export default function HeroCursorCubesScene({
   );
 
   useEffect(() => {
+    if (useLiteVisuals) return undefined;
+
     const prune = window.setInterval(() => {
       const now = performance.now();
-      setCubes((previous) => previous.filter((cube) => now - cube.bornAt < cube.ttl * 1000));
-    }, 140);
+      setCubes((previous) => {
+        if (!previous.length) return previous;
+        const active = previous.filter(
+          (cube) => now - cube.bornAt < cube.ttl * 1000
+        );
+        return active.length === previous.length ? previous : active;
+      });
+    }, 260);
 
     return () => window.clearInterval(prune);
+  }, [useLiteVisuals]);
+
+  useEffect(() => {
+    const element = rootRef.current;
+    if (!element) return undefined;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setIsSceneVisible(entry.isIntersecting),
+      { rootMargin: "120px 0px", threshold: 0.01 }
+    );
+    observer.observe(element);
+
+    return () => observer.disconnect();
   }, []);
 
   const spawnCube = (ndcX: number, ndcY: number, aspectRatio: number) => {
@@ -213,8 +236,11 @@ export default function HeroCursorCubesScene({
 
   return (
     <div
+      ref={rootRef}
       className={rootClassName}
-      onPointerEnter={() => setIsPointerInside(true)}
+      onPointerEnter={() => {
+        if (!useLiteVisuals) setIsPointerInside(true);
+      }}
       onPointerLeave={() => {
         setIsPointerInside(false);
         lastPointerRef.current = null;
@@ -230,7 +256,7 @@ export default function HeroCursorCubesScene({
         }`}
       />
 
-      {splineScene && !useLiteVisuals ? (
+      {splineScene && !useLiteVisuals && !isBackground ? (
         <div
           className={`pointer-events-none absolute inset-0 transition-opacity duration-300 ${
             isPointerInside ? "opacity-[0.74]" : "opacity-[0.62]"
@@ -247,33 +273,36 @@ export default function HeroCursorCubesScene({
         }`}
       />
 
-      <Canvas
-        className={canvasClassName}
-        dpr={[1, 1.75]}
-        camera={{ position: [0, 0.2, 5.6], fov: 46 }}
-        gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
-        onCreated={({ gl }) => {
-          gl.toneMapping = ACESFilmicToneMapping;
-          gl.toneMappingExposure = 1.08;
-          gl.outputColorSpace = SRGBColorSpace;
-        }}
-        style={{ pointerEvents: "none" }}
-      >
-        <ambientLight intensity={0.74} />
-        <directionalLight position={[4, 6, 3]} intensity={0.88} />
-        <pointLight position={[-4, 1, 2.2]} intensity={0.78} color={isDark ? "#22d3ee" : "#0f766e"} />
-        <pointLight position={[3.5, -1.6, 2]} intensity={0.72} color={isDark ? "#fb923c" : "#f97316"} />
+      {!useLiteVisuals ? (
+        <Canvas
+          className={canvasClassName}
+          dpr={[1, 1.25]}
+          frameloop={isSceneVisible ? "always" : "demand"}
+          camera={{ position: [0, 0.2, 5.6], fov: 46 }}
+          gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
+          onCreated={({ gl }) => {
+            gl.toneMapping = ACESFilmicToneMapping;
+            gl.toneMappingExposure = 1.08;
+            gl.outputColorSpace = SRGBColorSpace;
+          }}
+          style={{ pointerEvents: "none" }}
+        >
+          <ambientLight intensity={0.74} />
+          <directionalLight position={[4, 6, 3]} intensity={0.88} />
+          <pointLight position={[-4, 1, 2.2]} intensity={0.78} color={isDark ? "#22d3ee" : "#0f766e"} />
+          <pointLight position={[3.5, -1.6, 2]} intensity={0.72} color={isDark ? "#fb923c" : "#f97316"} />
 
-        <Sparkles
-          size={1.35}
-          count={isDark ? 44 : 32}
-          speed={0.22}
-          scale={[5.6, 3.6, 3.4]}
-          color={isDark ? "#67e8f9" : "#0f766e"}
-        />
+          <Sparkles
+            size={1.2}
+            count={isDark ? 24 : 18}
+            speed={0.18}
+            scale={[5.6, 3.6, 3.4]}
+            color={isDark ? "#67e8f9" : "#0f766e"}
+          />
 
-        <CubeTrail cubes={cubes} />
-      </Canvas>
+          <CubeTrail cubes={cubes} />
+        </Canvas>
+      ) : null}
 
       {!isBackground ? (
         <div className="pointer-events-none absolute inset-x-4 bottom-4 z-20">

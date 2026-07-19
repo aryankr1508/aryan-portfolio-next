@@ -23,7 +23,7 @@ export default function SplineScene({ scene, className, fallback }: SplineSceneP
 
   return (
     <div
-      className={`relative h-full min-h-[360px] overflow-hidden rounded-3xl border border-white/80 bg-white/70 shadow-soft backdrop-blur-sm ${className ?? ""}`}
+      className={`relative h-full min-h-[360px] overflow-hidden rounded-3xl border border-white/80 bg-white/78 shadow-soft ${className ?? ""}`}
     >
       <Spline scene={scene} />
     </div>

@@ -14,5 +14,5 @@
   <rect x="216" y="412" width="386" height="96" rx="16" fill="rgba(15,23,42,0.35)"/>
   <rect x="626" y="412" width="438" height="96" rx="16" fill="rgba(14,165,233,0.25)"/>
   <text x="216" y="170" fill="white" font-family="Segoe UI, Arial, sans-serif" font-size="44" font-weight="700">SyncDev</text>
-  <text x="216" y="206" fill="rgba(236,254,255,0.95)" font-family="Segoe UI, Arial, sans-serif" font-size="24">Realtime collaboration workspace</text>
+  <text x="216" y="206" fill="rgba(236,254,255,0.95)" font-family="Segoe UI, Arial, sans-serif" font-size="24">Create · Sync · Run · Preview</text>
 </svg>
