@@ -94,7 +94,7 @@ Vercel deploys the `main` branch to production and creates preview deployments f
 npm run verify
 ```
 
-The Vercel project is `aryankr2104/aryan-portfolio-next`. Contact delivery secrets and optional interactive-scene variables are configured in Vercel Project Settings; never commit their values.
+The Vercel project is `aryankr2104/aryankr1508`. Contact delivery secrets and optional interactive-scene variables are configured in Vercel Project Settings; never commit their values.
 
 ## Project Structure
 
