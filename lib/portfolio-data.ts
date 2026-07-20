@@ -455,12 +455,12 @@ export const projects: Project[] = [
     thumbnail: "/images/projects/syncdev-banner.svg",
     story: {
       problem: "Pair-programming sessions often require repository access, matching local environments, and a separate tool just to share code and confirm who is present.",
-      solution: "Built UUID-based rooms with live code and presence sync, a CodeMirror editing experience, automatic language detection, execution output, and sandboxed previews. Socket.IO powers local or Node deployments, while the Netlify build uses Functions and strongly consistent Blobs with polling, heartbeats, and debounced writes.",
+      solution: "Built UUID-based rooms with live code and presence sync, a CodeMirror editing experience, automatic language detection, execution output, and sandboxed previews. Socket.IO powers local or Node deployments, while Vercel Functions and Supabase provide production polling, heartbeats, debounced writes, and room-state persistence.",
       result: "A shareable browser workspace that supports 25 language modes, remembers each user’s editor setup, reconnects automatically, and removes stale participants and abandoned room code."
     },
     highlights: [
       "Built UUID-based rooms with synchronized code, participant presence, and automatic reconnect handling.",
-      "Designed a transport layer that uses Socket.IO for Node deployments and Netlify Functions with strongly consistent Blobs in production.",
+      "Designed a transport layer that uses Socket.IO for Node deployments and a Vercel Functions API backed by Supabase in production.",
       "Added automatic detection and syntax tooling across 25 editor language modes with persisted preferences.",
       "Implemented sandboxed web previews, in-browser JavaScript execution, validation, and an extensible remote execution proxy."
     ],
@@ -480,10 +480,10 @@ export const projects: Project[] = [
       "Tailwind CSS",
       "Socket.IO",
       "Express",
-      "Netlify Functions",
-      "Netlify Blobs"
+      "Vercel Functions",
+      "Supabase"
     ],
-    liveUrl: "https://syncdev-editor.netlify.app/",
+    liveUrl: "https://syncdev-editor.vercel.app/",
     repoUrl: "https://github.com/aryankr1508/SyncDev.git"
   },
   {

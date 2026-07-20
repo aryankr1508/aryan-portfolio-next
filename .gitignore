@@ -10,11 +10,15 @@ pnpm-debug.log*
 .env*
 !.env.example
 
-# Local Netlify folder
-.netlify
+# Local Vercel project link
+.vercel
+
+# TypeScript incremental build cache
+*.tsbuildinfo
 
 # Local assistant settings
 .claude/settings.local.json
 next-env.d.ts
 package.json
 README.md
+.vercel
