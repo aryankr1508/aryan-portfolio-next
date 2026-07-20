@@ -14,7 +14,7 @@ Never commit passwords, API tokens, mail credentials, webhook secrets, `.env` fi
 - Production application: `https://aryankr1508.vercel.app`
 - Vercel team/scope: `aryankr2104`
 - Vercel organization ID: `team_IK6kA1dRODHNNYq1gX6v1Xtv`
-- Vercel project: `aryan-portfolio-next`
+- Vercel project: `aryankr1508`
 - Vercel project ID: `prj_bV0gEB1hsV7mbEvN7Ip9nyWuh8Zq`
 - Framework: Next.js 16 App Router with React 19 and TypeScript
 - Runtime: Node.js 24
@@ -69,7 +69,7 @@ Reconnect Vercel when infrastructure access is needed:
 
 ```bash
 npx vercel login
-npx vercel link --scope aryankr2104 --project aryan-portfolio-next
+npx vercel link --scope aryankr2104 --project aryankr1508
 npx vercel whoami
 ```
 
