@@ -11,7 +11,7 @@ Never commit passwords, API tokens, mail credentials, webhook secrets, `.env` fi
 - Owner/GitHub account: `aryankr1508`
 - Repository: `https://github.com/aryankr1508/aryan-portfolio-next`
 - Production branch: `main`
-- Production application: `https://aryankr1508-aryankr2104.vercel.app`
+- Production application: `https://aryankr1508.vercel.app`
 - Vercel team/scope: `aryankr2104`
 - Vercel organization ID: `team_IK6kA1dRODHNNYq1gX6v1Xtv`
 - Vercel project: `aryankr1508`
