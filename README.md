@@ -2,6 +2,8 @@
 
 This project is a modern Next.js portfolio with a redesigned UI, rich motion, smooth scrolling, and interactive 3D sections.
 
+Production: [aryan-portfolio-next.vercel.app](https://aryan-portfolio-next.vercel.app)
+
 ## Stack
 
 - Next.js (App Router)
@@ -20,7 +22,7 @@ npm install
 npm run dev
 ```
 
-Then open `http://localhost:3000`.
+Then open `http://localhost:3001`.
 
 ## Contact Form Email Setup (Google Apps Script + SMTP Fallback)
 
@@ -83,6 +85,16 @@ NEXT_PUBLIC_UNICORN_PROJECT_ID=
 npm run build
 npm run start
 ```
+
+## Deployment
+
+Vercel deploys the `main` branch to production and creates preview deployments for pull requests. Both GitHub Actions and Vercel run the repository verification gate:
+
+```bash
+npm run verify
+```
+
+The Vercel project is `aryankr2104/aryan-portfolio-next`. Contact delivery secrets and optional interactive-scene variables are configured in Vercel Project Settings; never commit their values.
 
 ## Project Structure
 
