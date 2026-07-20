@@ -693,7 +693,7 @@ const freelanceShowcaseProjects: ShowcaseProject[] = [
     contributions: [
       "Built a responsive, multi-page Next.js marketing site with reusable content and components for services, industries, projects, leadership, news, and contact.",
       "Implemented the contact and enquiry flow with a NestJS API, validated request DTOs, and PostgreSQL persistence through TypeORM.",
-      "Structured the monorepo for dependable development and release workflows with Turborepo, pnpm workspaces, Docker Compose, Netlify configuration, and GitHub Actions CI/CD."
+      "Structured the monorepo for dependable development and release workflows with Turborepo, pnpm workspaces, Docker Compose, Vercel deployments, and GitHub Actions CI/CD."
     ],
     outcome:
       "Delivered a maintainable web and API foundation that supports the company’s marketing presence and routes prospective customer enquiries into a structured backend workflow.",
@@ -706,11 +706,13 @@ const freelanceShowcaseProjects: ShowcaseProject[] = [
       "PostgreSQL",
       "Turborepo",
       "Docker",
-      "Netlify",
+      "Vercel",
       "GitHub Actions"
     ],
     confidential: false,
-    githubUrl: "https://github.com/aryankr1508/Zenought"
+    githubUrl: "https://github.com/aryankr1508/Zenought",
+    liveUrl: "https://zenought.com",
+    liveLabel: "Visit production site"
   }
 ];
 
