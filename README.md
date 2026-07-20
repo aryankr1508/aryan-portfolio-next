@@ -2,7 +2,7 @@
 
 This project is a modern Next.js portfolio with a redesigned UI, rich motion, smooth scrolling, and interactive 3D sections.
 
-Production: [aryan-portfolio-next.vercel.app](https://aryan-portfolio-next.vercel.app)
+Production: [aryankr1508.vercel.app](https://aryankr1508.vercel.app)
 
 ## Stack
 
