@@ -48,10 +48,12 @@ function doPost(e) {
       });
     }
 
-    var subject = "Portfolio inquiry from " + email;
+    var leadStatus = timeline === "ASAP" ? "NEW | ASAP" : "NEW";
+    var subject = "[PORTFOLIO LEAD | " + leadStatus + "] " + email;
     var textBody = [
       "New portfolio inquiry",
       "",
+      "Status: " + leadStatus,
       "Email: " + email,
       "Phone: " + phone,
       "Budget: " + budget,
@@ -64,6 +66,7 @@ function doPost(e) {
 
     var htmlBody =
       "<h2>New portfolio inquiry</h2>" +
+      "<p><span style=\"display:inline-block;border-radius:999px;background:#ccfbf1;color:#115e59;padding:6px 10px;font-size:12px;font-weight:700;letter-spacing:0.08em\">STATUS: " + escapeHtml(leadStatus) + "</span></p>" +
       "<p><strong>Email:</strong> " + escapeHtml(email) + "</p>" +
       "<p><strong>Phone:</strong> " + escapeHtml(phone) + "</p>" +
       "<p><strong>Budget:</strong> " + escapeHtml(budget) + "</p>" +

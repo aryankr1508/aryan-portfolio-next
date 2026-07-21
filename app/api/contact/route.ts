@@ -169,10 +169,12 @@ async function deliverViaSmtp(submission: ContactSubmission): Promise<void> {
 
   const secure = smtpSecureRaw ? smtpSecureRaw === "true" : smtpPort === 465;
   const fromAddress = smtpFrom || smtpUser || submission.toEmail;
-  const subject = `Portfolio inquiry from ${submission.email}`;
+  const leadStatus = getLeadStatus(submission.timeline);
+  const subject = `[PORTFOLIO LEAD | ${leadStatus}] ${submission.email}`;
   const textBody = [
     "New portfolio inquiry",
     "",
+    `Status: ${leadStatus}`,
     `Email: ${submission.email}`,
     `Phone: ${submission.phone || "Not provided"}`,
     `Budget: ${submission.budget || "Not provided"}`,
@@ -185,6 +187,7 @@ async function deliverViaSmtp(submission: ContactSubmission): Promise<void> {
 
   const htmlBody = [
     "<h2>New portfolio inquiry</h2>",
+    `<p><span style=\"display:inline-block;border-radius:999px;background:#ccfbf1;color:#115e59;padding:6px 10px;font-size:12px;font-weight:700;letter-spacing:0.08em\">STATUS: ${escapeHtml(leadStatus)}</span></p>`,
     `<p><strong>Email:</strong> ${escapeHtml(submission.email)}</p>`,
     `<p><strong>Phone:</strong> ${escapeHtml(submission.phone || "Not provided")}</p>`,
     `<p><strong>Budget:</strong> ${escapeHtml(submission.budget || "Not provided")}</p>`,
@@ -207,8 +210,16 @@ async function deliverViaSmtp(submission: ContactSubmission): Promise<void> {
     replyTo: submission.email,
     subject,
     text: textBody,
-    html: htmlBody
+    html: htmlBody,
+    headers: {
+      "X-Portfolio-Lead": "new",
+      "X-Portfolio-Lead-Status": leadStatus
+    }
   });
+}
+
+function getLeadStatus(timeline: string): string {
+  return timeline === "ASAP" ? "NEW | ASAP" : "NEW";
 }
 
 function parseWebhookResponse(body: string): WebhookResponsePayload {
