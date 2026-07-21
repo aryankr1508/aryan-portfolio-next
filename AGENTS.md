@@ -51,7 +51,7 @@ The contact API validates input, tries the Google webhook first, then SMTP, and 
 | `NEXT_PUBLIC_SPLINE_SCENE_URL` | No | Optional general Spline fallback scene. |
 | `NEXT_PUBLIC_UNICORN_PROJECT_ID` | No | Optional Unicorn Studio project identifier. |
 
-The mail-provider values are not currently present in the legacy deployment and must be supplied through Vercel Project Settings before expecting live contact delivery. Store them in Aryan's password manager under `Portfolio / contact delivery`.
+Gmail SMTP is configured in Vercel Production. Store and rotate its App Password only through Vercel Project Settings and Aryan's password manager under `Portfolio / contact delivery`.
 
 ## New-laptop bootstrap
 
@@ -113,6 +113,6 @@ Production smoke checks should cover `/`, `/projects/syncdev`, `/MNC`, `/prep`, 
 
 ## Current known caveats
 
-- Contact delivery remains unavailable until a Google webhook or SMTP fallback is configured in Vercel.
+- Contact delivery uses Gmail SMTP in Vercel Production. Preview and Development intentionally do not have the complete SMTP configuration, so they cannot send mail.
 - Interactive scenes intentionally fall back when their public configuration variables are empty.
 - Heavy 3D and glass effects require regression testing on mobile and reduced-motion settings when animation code changes.
