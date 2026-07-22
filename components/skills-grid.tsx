@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { memo, useCallback, useState } from "react";
 import { motion } from "framer-motion";
 import type { SkillGroup } from "@/lib/portfolio-data";
 
@@ -76,7 +76,7 @@ interface SkillsGridProps {
   skillGroups: SkillGroup[];
 }
 
-export default function SkillsGrid({ skillGroups }: SkillsGridProps) {
+function SkillsGrid({ skillGroups }: SkillsGridProps) {
   const [highlightedSkills, setHighlightedSkills] = useState<Set<string>>(
     new Set()
   );
@@ -190,3 +190,5 @@ function SkillCard({
     </motion.article>
   );
 }
+
+export default memo(SkillsGrid);

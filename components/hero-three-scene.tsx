@@ -1,8 +1,8 @@
 "use client";
 
-import { Float, Line, OrbitControls, Sparkles } from "@react-three/drei";
+import { Float, Line, Sparkles } from "@react-three/drei";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { useRef } from "react";
+import { memo, useRef } from "react";
 import type { Group } from "three";
 
 const nodePositions: [number, number, number][] = [
@@ -83,29 +83,17 @@ function DataGraph() {
 }
 
 type HeroThreeSceneProps = {
-  mode?: "panel" | "background";
   className?: string;
 };
 
-export default function HeroThreeScene({
-  mode = "panel",
-  className
-}: HeroThreeSceneProps) {
-  const isBackground = mode === "background";
-
+function HeroThreeScene({ className }: HeroThreeSceneProps) {
   return (
-    <div
-      className={
-        isBackground
-          ? `h-full w-full ${className ?? ""}`
-          : `h-[300px] w-full rounded-[2rem] border border-white/70 bg-gradient-to-b from-white/75 via-white/35 to-transparent shadow-soft sm:h-[380px] ${className ?? ""}`
-      }
-    >
+    <div className={`h-full w-full ${className ?? ""}`}>
       <Canvas
         dpr={[1, 1.5]}
         camera={{ position: [0, 0.1, 5.25], fov: 45 }}
         gl={{ antialias: true, alpha: true }}
-        style={{ pointerEvents: isBackground ? "none" : "auto" }}
+        style={{ pointerEvents: "none" }}
       >
         <ambientLight intensity={0.75} />
         <directionalLight position={[5, 8, 3]} intensity={1.1} />
@@ -114,24 +102,16 @@ export default function HeroThreeScene({
 
         <Sparkles
           size={1.65}
-          count={isBackground ? 70 : 95}
+          count={70}
           speed={0.26}
           scale={[4.5, 3.2, 2.6]}
           color="#14b8a6"
         />
 
         <DataGraph />
-
-        {!isBackground ? (
-          <OrbitControls
-            enableZoom={false}
-            enablePan={false}
-            autoRotate={false}
-            maxPolarAngle={Math.PI / 1.8}
-            minPolarAngle={Math.PI / 2.4}
-          />
-        ) : null}
       </Canvas>
     </div>
   );
 }
+
+export default memo(HeroThreeScene);

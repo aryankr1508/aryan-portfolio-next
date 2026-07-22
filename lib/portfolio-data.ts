@@ -73,20 +73,6 @@ export type Internship = {
   website: string;
 };
 
-export type FreelanceService = {
-  title: string;
-  description: string;
-  stack: string[];
-};
-
-export type GraphMetric = {
-  label: string;
-  value: number;
-  suffix?: string;
-  description: string;
-  color: string;
-};
-
 export const personalInfo = {
   name: "Aryan Kumar",
   role: "Software Engineer",
@@ -268,39 +254,6 @@ export const skillGroups: SkillGroup[] = [
       "Remote-first Navigation",
       "Performance-focused Rendering"
     ]
-  }
-];
-
-export const freelanceServices: FreelanceService[] = [
-  {
-    title: "Full Stack Product Development",
-    description:
-      "Build end-to-end product systems across web, mobile, desktop, LMS, and backend platforms with clean UX, scalable APIs, and production-ready deployment.",
-    stack: ["React", "React Native", ".NET", "Node.js", "SQL Server"]
-  },
-  {
-    title: "Backend and API Engineering",
-    description:
-      "Design robust APIs, optimize existing backend performance, and modernize legacy codebases for scale.",
-    stack: [".NET Core", "C#", "REST APIs", "Cosmos DB"]
-  },
-  {
-    title: "E-commerce Customization",
-    description:
-      "Deliver custom storefront and workflow enhancements on platforms like BigCommerce.",
-    stack: ["BigCommerce", "Svelte", "Handlebars", "Node.js"]
-  },
-  {
-    title: "Power BI Reporting Automation",
-    description:
-      "Connect business sources and automate dashboards, reports, and scorecards for decision-making.",
-    stack: ["Power BI", "Power Query", "API Integrations", "Data Modeling"]
-  },
-  {
-    title: "AI Agents and MCP Connectors",
-    description:
-      "Create custom MCP connectors, agentic workflows, and automation layers that connect tools, data, and business processes.",
-    stack: ["MCP", "OpenCLAW", "Python", "Node.js", "API Integrations"]
   }
 ];
 
@@ -620,37 +573,6 @@ export const internships: Internship[] = [
 export const contactAddress =
   "G-632, 1st Avenue, Gaur City 1, Greater Noida West, India";
 
-/* ── Enterprise project helpers ──────────────────────────────────────────── */
-
-export type EnterpriseProjectCard = ExperienceProject & {
-  id: string;
-  company: string;
-  companyDuration: string;
-};
-
-function slugify(text: string): string {
-  return text
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/(^-|-$)/g, "");
-}
-
-export function getEnterpriseProjects(): EnterpriseProjectCard[] {
-  const result: EnterpriseProjectCard[] = [];
-  for (const exp of experienceItems) {
-    if (!exp.companyProjects?.length) continue;
-    for (const project of exp.companyProjects) {
-      result.push({
-        ...project,
-        id: slugify(project.name),
-        company: exp.title,
-        companyDuration: exp.duration,
-      });
-    }
-  }
-  return result;
-}
-
 /* ── Showcase projects (unified master-detail data) ────────────────────── */
 
 export type ShowcaseProject = {
@@ -717,6 +639,13 @@ const freelanceShowcaseProjects: ShowcaseProject[] = [
 ];
 
 const freelanceProjectSlugs = new Set(["telemed"]);
+
+function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+}
 
 export function getShowcaseProjects(): ShowcaseProject[] {
   const showcase: ShowcaseProject[] = [];
