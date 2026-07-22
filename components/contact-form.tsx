@@ -1,7 +1,7 @@
 "use client";
 
 import { Send } from "lucide-react";
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, memo, useMemo, useState } from "react";
 import { trackEvent } from "@/lib/analytics";
 
 type ContactState = "idle" | "submitting" | "success" | "error";
@@ -25,7 +25,7 @@ const initialData: ContactFormData = {
 const budgetOptions = ["Under $3k", "$3k - $8k", "$8k - $15k", "$15k+", "Not sure"];
 const timelineOptions = ["ASAP", "2 - 4 weeks", "1 - 2 months", "Flexible"];
 
-export default function ContactForm() {
+function ContactForm() {
   const [data, setData] = useState<ContactFormData>(initialData);
   const [state, setState] = useState<ContactState>("idle");
   const [feedback, setFeedback] = useState("");
@@ -211,3 +211,5 @@ export default function ContactForm() {
     </form>
   );
 }
+
+export default memo(ContactForm);

@@ -61,6 +61,11 @@ const socialIconMap: Record<string, LucideIcon> = {
 
 const containerClass = "mx-auto w-[min(1180px,calc(100%-2rem))]";
 const primarySocialLabels = new Set(["GitHub", "LinkedIn"]);
+const primarySocialLinks = socialLinks.filter((social) => primarySocialLabels.has(social.label));
+const additionalSocialLinks = socialLinks.filter(
+  (social) => !primarySocialLabels.has(social.label)
+);
+const heroFacts = quickFacts.slice(0, 4);
 const themeChangeEvent = "portfolio-theme-change";
 
 type ThemeMode = "dark" | "light";
@@ -136,20 +141,8 @@ export default function HomePage() {
     []
   );
 
-  const heroSplineScene =
-    process.env.NEXT_PUBLIC_HERO_SPLINE_SCENE_URL ?? process.env.NEXT_PUBLIC_SPLINE_SCENE_URL ?? "";
-  const heroInteractiveSplineScene =
-    process.env.NEXT_PUBLIC_HERO_INTERACTIVE_SPLINE_SCENE_URL ??
-    process.env.NEXT_PUBLIC_HERO_SPLINE_SCENE_URL ??
-    "";
-  const heroSceneInBanner = heroInteractiveSplineScene || heroSplineScene;
   const splineScene = process.env.NEXT_PUBLIC_SPLINE_SCENE_URL;
   const isDark = theme === "dark";
-  const primarySocialLinks = socialLinks.filter((social) => primarySocialLabels.has(social.label));
-  const additionalSocialLinks = socialLinks.filter(
-    (social) => !primarySocialLabels.has(social.label)
-  );
-  const heroFacts = quickFacts.slice(0, 4);
 
   const { scrollYProgress, scrollY } = useScroll();
   const progressScale = useSpring(scrollYProgress, {
@@ -267,7 +260,6 @@ export default function HomePage() {
       {!useLiteVisuals ? (
         <div aria-hidden className="pointer-events-none fixed inset-0 -z-20 overflow-hidden">
           <HeroThreeScene
-            mode="background"
             className={isDark ? "opacity-[0.56]" : "opacity-[0.48]"}
           />
         </div>
@@ -439,9 +431,7 @@ export default function HomePage() {
             >
               <HeroCursorCubesScene
                 theme={theme}
-                splineScene={!useLiteVisuals ? heroSceneInBanner : undefined}
                 useLiteVisuals={useLiteVisuals}
-                variant="background"
                 className="z-[1]"
               />
               {!useLiteVisuals ? (

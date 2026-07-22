@@ -1,17 +1,11 @@
 "use client";
 
-import dynamic from "next/dynamic";
 import { Sparkles } from "@react-three/drei";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { memo, useEffect, useMemo, useRef, useState } from "react";
 import type { PointerEvent as ReactPointerEvent } from "react";
 import type { Mesh, MeshStandardMaterial } from "three";
 import { ACESFilmicToneMapping, SRGBColorSpace } from "three";
-
-const Spline = dynamic(() => import("@splinetool/react-spline"), {
-  ssr: false,
-  loading: () => null
-});
 
 const MAX_CUBES = 48;
 const SPAWN_INTERVAL_MS = 65;
@@ -107,20 +101,15 @@ function CubeTrail({ cubes }: CubeTrailProps) {
 type HeroCursorCubesSceneProps = {
   theme: ThemeMode;
   className?: string;
-  splineScene?: string;
   useLiteVisuals?: boolean;
-  variant?: "panel" | "background";
 };
 
-export default function HeroCursorCubesScene({
+function HeroCursorCubesScene({
   theme,
   className,
-  splineScene,
-  useLiteVisuals = false,
-  variant = "panel"
+  useLiteVisuals = false
 }: HeroCursorCubesSceneProps) {
   const [cubes, setCubes] = useState<CursorCube[]>([]);
-  const [isPointerInside, setIsPointerInside] = useState(false);
   const [isSceneVisible, setIsSceneVisible] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
   const cubeIdRef = useRef(0);
@@ -136,21 +125,24 @@ export default function HeroCursorCubesScene({
   );
 
   useEffect(() => {
-    if (useLiteVisuals) return undefined;
+    if (useLiteVisuals || cubes.length === 0) return undefined;
 
-    const prune = window.setInterval(() => {
+    const now = performance.now();
+    const nextExpiry = Math.min(
+      ...cubes.map((cube) => cube.bornAt + cube.ttl * 1000)
+    );
+    const pruneTimer = window.setTimeout(() => {
       const now = performance.now();
       setCubes((previous) => {
-        if (!previous.length) return previous;
         const active = previous.filter(
           (cube) => now - cube.bornAt < cube.ttl * 1000
         );
         return active.length === previous.length ? previous : active;
       });
-    }, 260);
+    }, Math.max(16, nextExpiry - now + 16));
 
-    return () => window.clearInterval(prune);
-  }, [useLiteVisuals]);
+    return () => window.clearTimeout(pruneTimer);
+  }, [cubes, useLiteVisuals]);
 
   useEffect(() => {
     const element = rootRef.current;
@@ -224,25 +216,12 @@ export default function HeroCursorCubesScene({
   };
 
   const isDark = theme === "dark";
-  const isBackground = variant === "background";
-  const rootClassName = isBackground
-    ? `absolute inset-0 h-full w-full overflow-hidden ${className ?? ""}`
-    : `hero-interactive-shell relative isolate overflow-hidden rounded-[1.9rem] border ${
-        isDark
-          ? "border-cyan-300/25 bg-slate-950/68 shadow-[0_28px_75px_rgba(2,6,23,0.55)]"
-          : "border-slate-300/75 bg-white/72 shadow-[0_24px_60px_rgba(15,23,42,0.18)]"
-      } ${className ?? ""}`;
-  const canvasClassName = isBackground ? "absolute inset-0 h-full w-full" : "relative z-10 h-full w-full";
 
   return (
     <div
       ref={rootRef}
-      className={rootClassName}
-      onPointerEnter={() => {
-        if (!useLiteVisuals) setIsPointerInside(true);
-      }}
+      className={`absolute inset-0 h-full w-full overflow-hidden ${className ?? ""}`}
       onPointerLeave={() => {
-        setIsPointerInside(false);
         lastPointerRef.current = null;
       }}
       onPointerMove={handlePointerMove}
@@ -256,16 +235,6 @@ export default function HeroCursorCubesScene({
         }`}
       />
 
-      {splineScene && !useLiteVisuals && !isBackground ? (
-        <div
-          className={`pointer-events-none absolute inset-0 transition-opacity duration-300 ${
-            isPointerInside ? "opacity-[0.74]" : "opacity-[0.62]"
-          }`}
-        >
-          <Spline scene={splineScene} renderOnDemand />
-        </div>
-      ) : null}
-
       <div
         aria-hidden
         className={`hero-interactive-grid pointer-events-none absolute inset-0 ${
@@ -275,7 +244,7 @@ export default function HeroCursorCubesScene({
 
       {!useLiteVisuals ? (
         <Canvas
-          className={canvasClassName}
+          className="absolute inset-0 h-full w-full"
           dpr={[1, 1.25]}
           frameloop={isSceneVisible ? "always" : "demand"}
           camera={{ position: [0, 0.2, 5.6], fov: 46 }}
@@ -304,24 +273,8 @@ export default function HeroCursorCubesScene({
         </Canvas>
       ) : null}
 
-      {!isBackground ? (
-        <div className="pointer-events-none absolute inset-x-4 bottom-4 z-20">
-          <div
-            className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] ${
-              isDark
-                ? "border-cyan-300/35 bg-slate-950/72 text-cyan-100"
-                : "border-slate-300/80 bg-white/82 text-slate-700"
-            }`}
-          >
-            <span
-              className={`h-2.5 w-2.5 rounded-full ${isPointerInside ? "animate-pulse" : ""} ${
-                isDark ? "bg-cyan-300" : "bg-teal-500"
-              }`}
-            />
-            Cursor cube trail
-          </div>
-        </div>
-      ) : null}
     </div>
   );
 }
+
+export default memo(HeroCursorCubesScene);

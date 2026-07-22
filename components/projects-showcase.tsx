@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { memo, useEffect, useMemo, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
@@ -124,7 +124,7 @@ function projectGroups(
   ].filter((group) => group.projects.length > 0);
 }
 
-export default function ProjectsShowcase({
+function ProjectsShowcase({
   projects,
   isDark,
   requestedProjectId = null
@@ -751,3 +751,5 @@ function ProjectActions({
     </div>
   );
 }
+
+export default memo(ProjectsShowcase);

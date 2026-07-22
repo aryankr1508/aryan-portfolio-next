@@ -46,10 +46,7 @@ The contact API validates input, tries the Google webhook first, then SMTP, and 
 | `SMTP_PASS` | Yes | SMTP/App Password; never use a normal Google password. |
 | `SMTP_FROM` | No | Contact-message sender identity. |
 | `SMTP_SECURE` | No | `true` for implicit TLS, normally port 465. |
-| `NEXT_PUBLIC_HERO_SPLINE_SCENE_URL` | No | Optional hero Spline scene. |
-| `NEXT_PUBLIC_HERO_INTERACTIVE_SPLINE_SCENE_URL` | No | Optional interactive hero Spline scene. |
 | `NEXT_PUBLIC_SPLINE_SCENE_URL` | No | Optional general Spline fallback scene. |
-| `NEXT_PUBLIC_UNICORN_PROJECT_ID` | No | Optional Unicorn Studio project identifier. |
 
 Gmail SMTP is configured in Vercel Production. Store and rotate its App Password only through Vercel Project Settings and Aryan's password manager under `Portfolio / contact delivery`.
 
