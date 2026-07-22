@@ -61,6 +61,8 @@ const socialIconMap: Record<string, LucideIcon> = {
 const containerClass = "mx-auto w-[min(1180px,calc(100%-2rem))]";
 const primarySocialLabels = new Set(["GitHub", "LinkedIn"]);
 const themeChangeEvent = "portfolio-theme-change";
+const defaultHeroSplineScene =
+  "https://prod.spline.design/6Wq1Q7YGyM-iab9i/scene.splinecode";
 
 type ThemeMode = "dark" | "light";
 
@@ -136,7 +138,9 @@ export default function HomePage() {
   );
 
   const heroSplineScene =
-    process.env.NEXT_PUBLIC_HERO_SPLINE_SCENE_URL ?? process.env.NEXT_PUBLIC_SPLINE_SCENE_URL ?? "";
+    process.env.NEXT_PUBLIC_HERO_SPLINE_SCENE_URL ??
+    process.env.NEXT_PUBLIC_SPLINE_SCENE_URL ??
+    defaultHeroSplineScene;
   const heroInteractiveSplineScene =
     process.env.NEXT_PUBLIC_HERO_INTERACTIVE_SPLINE_SCENE_URL ??
     process.env.NEXT_PUBLIC_HERO_SPLINE_SCENE_URL ??
