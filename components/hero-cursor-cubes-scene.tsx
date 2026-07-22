@@ -119,10 +119,6 @@ export default function HeroCursorCubesScene({
   useLiteVisuals = false,
   variant = "panel"
 }: HeroCursorCubesSceneProps) {
-  const isBackground = variant === "background";
-  const activeSplineScene = useLiteVisuals ? undefined : splineScene;
-  const hasSplineScene = Boolean(activeSplineScene);
-  const usesBackgroundSpline = isBackground && hasSplineScene;
   const [cubes, setCubes] = useState<CursorCube[]>([]);
   const [isPointerInside, setIsPointerInside] = useState(false);
   const [isSceneVisible, setIsSceneVisible] = useState(false);
@@ -140,7 +136,7 @@ export default function HeroCursorCubesScene({
   );
 
   useEffect(() => {
-    if (useLiteVisuals || usesBackgroundSpline) return undefined;
+    if (useLiteVisuals) return undefined;
 
     const prune = window.setInterval(() => {
       const now = performance.now();
@@ -154,7 +150,7 @@ export default function HeroCursorCubesScene({
     }, 260);
 
     return () => window.clearInterval(prune);
-  }, [useLiteVisuals, usesBackgroundSpline]);
+  }, [useLiteVisuals]);
 
   useEffect(() => {
     const element = rootRef.current;
@@ -207,7 +203,7 @@ export default function HeroCursorCubesScene({
   };
 
   const handlePointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
-    if (useLiteVisuals || usesBackgroundSpline) return;
+    if (useLiteVisuals) return;
 
     const bounds = event.currentTarget.getBoundingClientRect();
     if (!bounds.width || !bounds.height) return;
@@ -228,6 +224,7 @@ export default function HeroCursorCubesScene({
   };
 
   const isDark = theme === "dark";
+  const isBackground = variant === "background";
   const rootClassName = isBackground
     ? `absolute inset-0 h-full w-full overflow-hidden ${className ?? ""}`
     : `hero-interactive-shell relative isolate overflow-hidden rounded-[1.9rem] border ${
@@ -242,7 +239,7 @@ export default function HeroCursorCubesScene({
       ref={rootRef}
       className={rootClassName}
       onPointerEnter={() => {
-        if (!useLiteVisuals && !usesBackgroundSpline) setIsPointerInside(true);
+        if (!useLiteVisuals) setIsPointerInside(true);
       }}
       onPointerLeave={() => {
         setIsPointerInside(false);
@@ -259,17 +256,13 @@ export default function HeroCursorCubesScene({
         }`}
       />
 
-      {activeSplineScene ? (
+      {splineScene && !useLiteVisuals && !isBackground ? (
         <div
           className={`pointer-events-none absolute inset-0 transition-opacity duration-300 ${
-            isBackground
-              ? "opacity-[0.82]"
-              : isPointerInside
-                ? "opacity-[0.74]"
-                : "opacity-[0.62]"
+            isPointerInside ? "opacity-[0.74]" : "opacity-[0.62]"
           }`}
         >
-          <Spline scene={activeSplineScene} renderOnDemand />
+          <Spline scene={splineScene} renderOnDemand />
         </div>
       ) : null}
 
@@ -280,7 +273,7 @@ export default function HeroCursorCubesScene({
         }`}
       />
 
-      {!useLiteVisuals && !usesBackgroundSpline ? (
+      {!useLiteVisuals ? (
         <Canvas
           className={canvasClassName}
           dpr={[1, 1.25]}
