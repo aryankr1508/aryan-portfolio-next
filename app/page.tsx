@@ -27,6 +27,7 @@ import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from 
 import CollapsibleCard from "@/components/collapsible-card";
 import ContactForm from "@/components/contact-form";
 import HeroCursorCubesScene from "@/components/hero-cursor-cubes-scene";
+import HeroThreeScene from "@/components/hero-three-scene";
 import ProjectsShowcase from "@/components/projects-showcase";
 import Reveal from "@/components/reveal";
 import SectionTitle from "@/components/section-title";
@@ -262,6 +263,15 @@ export default function HomePage() {
       />
 
       <AuroraBackground />
+
+      {!useLiteVisuals ? (
+        <div aria-hidden className="pointer-events-none fixed inset-0 -z-20 overflow-hidden">
+          <HeroThreeScene
+            mode="background"
+            className={isDark ? "opacity-[0.56]" : "opacity-[0.48]"}
+          />
+        </div>
+      ) : null}
 
       <header className="fixed inset-x-0 top-0 z-50">
         <div className={`${containerClass} pt-4`}>
