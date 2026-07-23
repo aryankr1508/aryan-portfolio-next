@@ -457,34 +457,44 @@ function QuestionCard({ q, idx, done, color, onToggle, onOpen, hasAnswer }: {
 export default function PrepPage() {
   const { isDark, toggleTheme } = useThemeMode();
   const useLiteVisuals = useLiteVisualMode();
-  const [active, setActive] = useState(() => {
-    if (typeof window !== "undefined") {
-      const saved = localStorage.getItem("prep-active-tab");
-      if (saved === "SQL") return "SQL & Databases";
-      if (saved === "JPA & SQL") return "JPA / Hibernate";
-      if (saved && data[saved]) return saved;
-    }
-    return "Java Core";
-  });
-  const [checked, setChecked] = useState<Record<string, boolean>>(() => {
-    if (typeof window !== "undefined") {
-      try {
-        const saved = localStorage.getItem("prep-checked");
-        if (saved) return JSON.parse(saved);
-      } catch { /* ignore */ }
-    }
-    return {};
-  });
+  const [active, setActive] = useState("Java Core");
+  const [checked, setChecked] = useState<Record<string, boolean>>({});
+  const [storageLoaded, setStorageLoaded] = useState(false);
   const [search, setSearch] = useState("");
   const [selectedQ, setSelectedQ] = useState<{ cat: string; idx: number } | null>(null);
 
   useEffect(() => {
-    localStorage.setItem("prep-checked", JSON.stringify(checked));
-  }, [checked]);
+    const restoreTimer = window.setTimeout(() => {
+      try {
+        const saved = localStorage.getItem("prep-active-tab");
+        const migrated = saved === "SQL"
+          ? "SQL & Databases"
+          : saved === "JPA & SQL"
+            ? "JPA / Hibernate"
+            : saved;
+        if (migrated && data[migrated]) setActive(migrated);
+
+        const savedChecked = localStorage.getItem("prep-checked");
+        if (savedChecked) setChecked(JSON.parse(savedChecked));
+      } catch {
+        // Ignore unavailable or malformed browser storage and use page defaults.
+      } finally {
+        setStorageLoaded(true);
+      }
+    }, 0);
+
+    return () => window.clearTimeout(restoreTimer);
+  }, []);
 
   useEffect(() => {
+    if (!storageLoaded) return;
+    localStorage.setItem("prep-checked", JSON.stringify(checked));
+  }, [checked, storageLoaded]);
+
+  useEffect(() => {
+    if (!storageLoaded) return;
     localStorage.setItem("prep-active-tab", active);
-  }, [active]);
+  }, [active, storageLoaded]);
 
   const toggle = (cat: string, i: number) => {
     const key = `${cat}-${i}`;

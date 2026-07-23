@@ -1,13 +1,15 @@
 import { PrepCategory } from "./prep-types";
 import { q } from "./prep-types";
+import { springBootRapidFireSection } from "./spring-boot-rapid-fire";
 
 export const springRestCategory: PrepCategory = {
   name: "Spring & REST",
   color: "#6db33f",
   bg: "#11200d",
   icon: "🍃",
-  description: "Spring Core, Boot, MVC, REST design, and HTTP",
+  description: "50 transcript-style Spring Boot questions, plus deeper Spring, MVC, REST, and HTTP",
   sections: [
+    springBootRapidFireSection,
     {
       label: "🌱 Spring Core",
       questions: [
