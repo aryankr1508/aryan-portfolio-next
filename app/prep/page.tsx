@@ -504,6 +504,9 @@ export default function PrepPage() {
   const catDone = (cat: string) => data[cat].questions.filter((_, i) => checked[`${cat}-${i}`]).length;
   const totalDone = categoryOrder.reduce((sum, cat) => sum + catDone(cat), 0);
   const totalAll = categoryOrder.reduce((sum, cat) => sum + data[cat].questions.length, 0);
+  const activeDone = catDone(active);
+  const activeTotal = data[active].questions.length;
+  const activeProgress = Math.round((activeDone / activeTotal) * 100);
 
   return (
     <>
@@ -576,56 +579,104 @@ export default function PrepPage() {
         </div>
         </div>
 
-        {/* Tabs */}
-        <div style={{ display: "grid", gap: 14, marginBottom: 20 }}>
-          {categoryGroups.map(group => (
-            <div key={group.label}>
-              <div style={{ color: "var(--text-muted)", fontSize: 10, fontWeight: 800, letterSpacing: 1.1, marginBottom: 7, textTransform: "uppercase" }}>
-                {group.label}
-              </div>
-              <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                {group.categories.map(cat => {
-                  const done = catDone(cat);
-                  const total = data[cat].questions.length;
-                  const pct = Math.round((done / total) * 100);
-                  const isActive = active === cat;
-                  return (
-                    <button key={cat} onClick={() => { setActive(cat); setSearch(""); }}
-                      style={{
-                        padding: "8px 14px", borderRadius: 12,
-                        border: `2px solid ${isActive ? data[cat].color : "var(--line)"}`,
-                        background: isActive ? `${data[cat].color}1f` : "var(--surface-muted)",
-                        color: isActive ? data[cat].color : "var(--text-muted)",
-                        fontWeight: 600, fontSize: 11, cursor: "pointer", transition: "all 0.2s",
-                        display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 4, minWidth: 106
-                      }}>
-                      <span>{data[cat].icon} {cat}</span>
-                      <div style={{ width: "100%", background: "var(--line)", borderRadius: 99, height: 3 }}>
-                        <div style={{ width: `${pct}%`, background: data[cat].color, height: "100%", borderRadius: 99, transition: "width 0.3s", opacity: 0.8 }} />
-                      </div>
-                      <span style={{ fontSize: 10, opacity: 0.6 }}>{done}/{total}</span>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {data[active].description && (
-          <div style={{
-            background: `${data[active].color}12`,
-            border: `1px solid ${data[active].color}33`,
-            borderRadius: 12,
-            padding: "9px 13px",
+        {/* Compact topic browser */}
+        <div
+          className="surface-panel"
+          style={{
+            display: "flex",
+            alignItems: "stretch",
+            gap: 14,
+            flexWrap: "wrap",
+            padding: 12,
             marginBottom: 10,
-            color: "var(--text-muted)",
-            fontSize: 12,
-          }}>
-            <strong style={{ color: data[active].color }}>{data[active].questions.length} questions</strong>
-            <span> · {data[active].description}</span>
+            borderRadius: 14,
+            background: "var(--surface-base)",
+          }}
+        >
+          <div style={{ flex: "1 1 260px", minWidth: 0 }}>
+            <label
+              htmlFor="prep-topic"
+              style={{
+                display: "block",
+                marginBottom: 6,
+                color: "var(--text-muted)",
+                fontSize: 10,
+                fontWeight: 800,
+                letterSpacing: 1,
+                textTransform: "uppercase",
+              }}
+            >
+              Choose a topic
+            </label>
+            <select
+              id="prep-topic"
+              value={active}
+              onChange={event => {
+                setActive(event.target.value);
+                setSearch("");
+              }}
+              style={{
+                width: "100%",
+                minHeight: 40,
+                padding: "8px 12px",
+                borderRadius: 10,
+                border: `1px solid ${data[active].color}66`,
+                background: "var(--surface-muted)",
+                color: "var(--text-heading)",
+                fontSize: 13,
+                fontWeight: 700,
+                outline: "none",
+                cursor: "pointer",
+                colorScheme: isDark ? "dark" : "light",
+              }}
+            >
+              {categoryGroups.map(group => (
+                <optgroup key={group.label} label={group.label}>
+                  {group.categories.map(category => (
+                    <option key={category} value={category}>
+                      {data[category].icon} {category} · {catDone(category)}/{data[category].questions.length}
+                    </option>
+                  ))}
+                </optgroup>
+              ))}
+            </select>
           </div>
-        )}
+
+          <div
+            style={{
+              flex: "2 1 360px",
+              minWidth: 0,
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              gap: 7,
+              padding: "2px 4px",
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
+              <strong style={{ color: data[active].color, fontSize: 13 }}>
+                {data[active].icon} {active}
+              </strong>
+              <span style={{ color: "var(--text-muted)", fontSize: 11, whiteSpace: "nowrap" }}>
+                {activeDone}/{activeTotal} reviewed
+              </span>
+            </div>
+            <div style={{ color: "var(--text-muted)", fontSize: 11.5, lineHeight: 1.45 }}>
+              {data[active].description}
+            </div>
+            <div style={{ height: 4, overflow: "hidden", borderRadius: 99, background: "var(--line)" }}>
+              <div
+                style={{
+                  width: `${activeProgress}%`,
+                  height: "100%",
+                  borderRadius: 99,
+                  background: data[active].color,
+                  transition: "width 0.3s ease",
+                }}
+              />
+            </div>
+          </div>
+        </div>
 
         {/* Search */}
         <input value={search} onChange={e => setSearch(e.target.value)}
