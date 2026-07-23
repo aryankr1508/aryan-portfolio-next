@@ -101,7 +101,7 @@ Production smoke checks should cover `/`, `/projects/syncdev`, `/MNC`, `/prep`, 
 ## Change safety
 
 - Preserve unrelated local changes and inspect `git status` before staging.
-- Use an `agent/<description>` branch, stage explicit files, run `npm run verify`, push, and open a draft pull request.
+- Use an `Aryan/<description>` branch, stage explicit files, run `npm run verify`, push, and open a draft pull request.
 - Keep portfolio claims synchronized with the actual sister repositories and live URLs.
 - Do not remove Tailwind, PostCSS, Three.js, Spline, Lenis, or React Three Fiber based only on a basic dependency scan; they are used by configuration or dynamic UI paths.
 - Do not expose server mail secrets through `NEXT_PUBLIC_` variables.
