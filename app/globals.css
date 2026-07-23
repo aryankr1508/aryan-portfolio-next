@@ -867,10 +867,10 @@ html[data-theme="dark"] [class*="text-teal-700"] {
 .prep-markdown h3 {
   font-size: 15px;
   font-weight: 700;
-  color: #e8e8e8;
+  color: var(--text-heading);
   margin: 28px 0 10px;
   padding-bottom: 6px;
-  border-bottom: 1px solid #1e1e1e;
+  border-bottom: 1px solid var(--line);
 }
 .prep-markdown h3:first-child {
   margin-top: 0;
@@ -878,14 +878,14 @@ html[data-theme="dark"] [class*="text-teal-700"] {
 .prep-markdown h4 {
   font-size: 13.5px;
   font-weight: 700;
-  color: #d0d0d0;
+  color: var(--text-heading);
   margin: 20px 0 8px;
 }
 .prep-markdown p {
   margin: 8px 0;
 }
 .prep-markdown strong {
-  color: #e8e8e8;
+  color: var(--text-heading);
   font-weight: 700;
 }
 .prep-markdown ul, .prep-markdown ol {
@@ -896,23 +896,23 @@ html[data-theme="dark"] [class*="text-teal-700"] {
   margin: 4px 0;
 }
 .prep-markdown li::marker {
-  color: #555;
+  color: var(--text-muted);
 }
 .prep-markdown code {
   font-family: 'Cascadia Code', 'Fira Code', 'JetBrains Mono', monospace;
   font-size: 12.5px;
 }
 .prep-markdown :not(pre) > code {
-  background: #1a1a1a;
-  border: 1px solid #2a2a2a;
+  background: var(--surface-muted);
+  border: 1px solid var(--line);
   border-radius: 5px;
   padding: 1px 6px;
-  color: #e0a0ff;
+  color: var(--brand);
   font-size: 12px;
 }
 .prep-markdown pre {
-  background: #0a0a0a;
-  border: 1px solid #1e1e1e;
+  background: var(--surface-muted);
+  border: 1px solid var(--line);
   border-radius: 10px;
   padding: 14px 18px;
   overflow-x: auto;
@@ -920,7 +920,7 @@ html[data-theme="dark"] [class*="text-teal-700"] {
   line-height: 1.6;
 }
 .prep-markdown pre code {
-  color: #b8d4b8;
+  color: var(--text-body);
   background: none;
   border: none;
   padding: 0;
@@ -932,31 +932,31 @@ html[data-theme="dark"] [class*="text-teal-700"] {
   font-size: 12.5px;
 }
 .prep-markdown th {
-  background: #1a1a1a;
-  color: #e0e0e0;
+  background: var(--surface-muted);
+  color: var(--text-heading);
   font-weight: 700;
   text-align: left;
   padding: 8px 12px;
-  border: 1px solid #2a2a2a;
+  border: 1px solid var(--line);
 }
 .prep-markdown td {
   padding: 7px 12px;
-  border: 1px solid #1e1e1e;
-  color: #b0b0b0;
+  border: 1px solid var(--line);
+  color: var(--text-body);
 }
 .prep-markdown tr:nth-child(even) {
-  background: #0f0f0f;
+  background: rgba(148, 163, 184, 0.08);
 }
 .prep-markdown hr {
   border: none;
-  border-top: 1px solid #1e1e1e;
+  border-top: 1px solid var(--line);
   margin: 20px 0;
 }
 .prep-markdown blockquote {
-  border-left: 3px solid #333;
+  border-left: 3px solid var(--brand);
   padding-left: 14px;
   margin: 12px 0;
-  color: #999;
+  color: var(--text-muted);
 }
 
 @keyframes hero-grid-shift {

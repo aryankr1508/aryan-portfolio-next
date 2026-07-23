@@ -48,33 +48,33 @@ export default function AnswerModal({ title, content, accentColor, onClose }: An
     >
       <div
         style={{
-          background: "#111111", borderRadius: 16,
-          border: `1px solid ${accentColor}33`,
+          background: "var(--bg-mid)", borderRadius: 16,
+          border: `1px solid ${accentColor}44`,
           maxWidth: 780, width: "100%",
           maxHeight: "88vh", display: "flex", flexDirection: "column",
-          boxShadow: `0 32px 80px rgba(0,0,0,0.6), 0 0 40px ${accentColor}15`,
+          boxShadow: `0 32px 80px rgba(2,6,23,0.45), 0 0 40px ${accentColor}22`,
           animation: "modalSlideUp 0.25s ease",
           overflow: "hidden"
         }}
       >
         {/* Header */}
         <div style={{
-          padding: "18px 24px", borderBottom: "1px solid #222",
+          padding: "18px 24px", borderBottom: "1px solid var(--line)",
           display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16,
           flexShrink: 0
         }}>
-          <h2 style={{ fontSize: 15, fontWeight: 700, color: "#e8e8e8", margin: 0, lineHeight: 1.5, flex: 1 }}>
+          <h2 style={{ fontSize: 15, fontWeight: 700, color: "var(--text-heading)", margin: 0, lineHeight: 1.5, flex: 1 }}>
             {title}
           </h2>
           <button
             onClick={onClose}
             style={{
-              background: "#1e1e1e", border: "1px solid #333", borderRadius: 8,
-              color: "#888", fontSize: 13, fontWeight: 600, padding: "4px 10px",
+              background: "var(--surface-muted)", border: "1px solid var(--line)", borderRadius: 8,
+              color: "var(--text-muted)", fontSize: 13, fontWeight: 600, padding: "4px 10px",
               cursor: "pointer", flexShrink: 0, transition: "all 0.15s"
             }}
-            onMouseEnter={e => { e.currentTarget.style.color = "#fff"; e.currentTarget.style.borderColor = "#555"; }}
-            onMouseLeave={e => { e.currentTarget.style.color = "#888"; e.currentTarget.style.borderColor = "#333"; }}
+            onMouseEnter={e => { e.currentTarget.style.color = "var(--text-heading)"; e.currentTarget.style.borderColor = accentColor; }}
+            onMouseLeave={e => { e.currentTarget.style.color = "var(--text-muted)"; e.currentTarget.style.borderColor = "var(--line)"; }}
           >
             ESC
           </button>
@@ -87,7 +87,7 @@ export default function AnswerModal({ title, content, accentColor, onClose }: An
           className="prep-markdown scrollbar-thin"
           style={{
             padding: "20px 24px 28px", overflowY: "auto", flex: 1,
-            fontSize: 14, lineHeight: 1.75, color: "#c8c8c8",
+            fontSize: 14, lineHeight: 1.75, color: "var(--text-body)",
             minHeight: 0,
             overscrollBehavior: "contain",
             WebkitOverflowScrolling: "touch",

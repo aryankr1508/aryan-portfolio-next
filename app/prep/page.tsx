@@ -1,12 +1,26 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
+import { ArrowLeft, Moon, Sun } from "lucide-react";
 import AnswerModal from "../../components/answer-modal";
+import AuroraBackground from "@/components/aurora-background";
+import HeroThreeScene from "@/components/hero-three-scene";
+import { useLiteVisualMode, useThemeMode } from "@/lib/use-theme";
 import { dotnetAnswers } from "./dotnet-answers";
 import { javascriptAnswers, nodeAnswers, reactAnswers } from "./frontend-answers";
+import { javaPrepCategories } from "./java-prep-data";
 import { sqlAnswers } from "./sql-answers";
 
-const answers: Record<string, string[]> = {
+type CategoryData = {
+  color: string;
+  bg: string;
+  icon: string;
+  description?: string;
+  questions: string[];
+};
+
+const legacyAnswers: Record<string, string[]> = {
   React: reactAnswers,
   JavaScript: javascriptAnswers,
   "Node.js": nodeAnswers,
@@ -14,9 +28,10 @@ const answers: Record<string, string[]> = {
   SQL: sqlAnswers,
 };
 
-const data: Record<string, { color: string; bg: string; icon: string; questions: string[] }> = {
+const legacyData: Record<string, CategoryData> = {
   React: {
     color: "#61DAFB", bg: "#0d1f2d", icon: "⚛️",
+    description: "React components, hooks, rendering, state, forms, and performance",
     questions: [
       "Explain the component lifecycle in React. How does it differ between class and functional components?",
       "What are React Hooks? Why were they introduced and what problems do they solve?",
@@ -46,6 +61,7 @@ const data: Record<string, { color: string; bg: string; icon: string; questions:
   },
   JavaScript: {
     color: "#F7DF1E", bg: "#1a1a0d", icon: "🟡",
+    description: "JavaScript language fundamentals, async behavior, and browser concepts",
     questions: [
       "What is debouncing and throttling? Explain with use cases and implement both from scratch.",
       "What is callback hell? How do Promises and async/await solve it?",
@@ -73,6 +89,7 @@ const data: Record<string, { color: string; bg: string; icon: string; questions:
   },
   "Node.js": {
     color: "#68A063", bg: "#0d1a0d", icon: "🟢",
+    description: "Node.js runtime, Express APIs, security, scaling, and background work",
     questions: [
       "What are Node.js clusters? How do they help scale a Node application across CPU cores?",
       "How would you scale a Node.js server to handle high traffic?",
@@ -98,6 +115,7 @@ const data: Record<string, { color: string; bg: string; icon: string; questions:
   },
   Redux: {
     color: "#764ABC", bg: "#150d1f", icon: "🔄",
+    description: "Redux fundamentals, Toolkit, async state, and frontend data flows",
     questions: [
       "What are the three core principles of Redux?",
       "Explain the flow: Action → Reducer → Store. How does a state update happen?",
@@ -115,6 +133,7 @@ const data: Record<string, { color: string; bg: string; icon: string; questions:
   },
   ".NET / C#": {
     color: "#9B59B6", bg: "#1a0d1f", icon: "🟣",
+    description: "C#, ASP.NET Core, LINQ, Entity Framework, and application architecture",
     questions: [
       "What is Dependency Injection (DI)? What problem does it solve and how is it implemented in ASP.NET Core?",
       "Explain the three DI lifetimes: Singleton, Scoped, and Transient. Give real-world examples for each.",
@@ -170,6 +189,7 @@ const data: Record<string, { color: string; bg: string; icon: string; questions:
   },
   SQL: {
     color: "#F39C12", bg: "#1a1200", icon: "🗃️",
+    description: "SQL queries, indexing, transactions, modeling, and database architecture",
     questions: [
       "What is the difference between WHERE and HAVING clauses?",
       "Explain the different types of JOINs: INNER, LEFT, RIGHT, FULL OUTER, CROSS, SELF.",
@@ -207,6 +227,7 @@ const data: Record<string, { color: string; bg: string; icon: string; questions:
   },
   "Backend & Systems": {
     color: "#E74C3C", bg: "#1f0d0d", icon: "🖥️",
+    description: "Networking, API performance, MongoDB, messaging, auth, Docker, and CI/CD",
     questions: [
       // Networking
       "What is the difference between TCP and UDP? When would you choose UDP over TCP?",
@@ -308,9 +329,72 @@ const data: Record<string, { color: string; bg: string; icon: string; questions:
   }
 };
 
-const categoryOrder = ["React", "JavaScript", "Node.js", "Redux", ".NET / C#", "SQL", "Backend & Systems"];
+const structuredData: Record<string, CategoryData> = Object.fromEntries(
+  javaPrepCategories.map(category => [
+    category.name,
+    {
+      color: category.color,
+      bg: category.bg,
+      icon: category.icon,
+      description: category.description,
+      questions: [
+        ...category.sections.flatMap(section =>
+          section.questions.map(question => question.question)
+        ),
+        ...(category.name === "SQL & Databases" ? legacyData.SQL.questions : []),
+      ],
+    },
+  ])
+);
 
-const sections: Record<string, { label: string; range: [number, number] }[]> = {
+const structuredAnswers: Record<string, string[]> = Object.fromEntries(
+  javaPrepCategories.map(category => [
+    category.name,
+    [
+      ...category.sections.flatMap(section =>
+        section.questions.map(question => question.answer)
+      ),
+      ...(category.name === "SQL & Databases" ? legacyAnswers.SQL : []),
+    ],
+  ])
+);
+
+const data: Record<string, CategoryData> = { ...legacyData, ...structuredData };
+const answers: Record<string, string[]> = { ...legacyAnswers, ...structuredAnswers };
+const categoryGroups = [
+  { label: "Languages & runtimes", categories: ["Java Core", "JavaScript", ".NET / C#"] },
+  { label: "Frontend & state", categories: ["React", "Redux"] },
+  { label: "Backend frameworks & APIs", categories: ["Spring & REST", "Node.js", "JPA / Hibernate"] },
+  { label: "Data & persistence", categories: ["SQL & Databases"] },
+  { label: "Architecture & delivery", categories: ["Microservices", "Backend & Systems", "Testing & Design"] },
+  { label: "Interview practice", categories: ["Experience"] },
+];
+const categoryOrder = categoryGroups.flatMap(group => group.categories);
+
+const structuredSections: Record<string, { label: string; range: [number, number] }[]> = Object.fromEntries(
+  javaPrepCategories.map(category => {
+    let cursor = 0;
+    const categorySections = category.sections.map(section => {
+      const start = cursor;
+      cursor += section.questions.length;
+      return {
+        label: section.label,
+        range: [start, cursor - 1] as [number, number],
+      };
+    });
+
+    if (category.name === "SQL & Databases") {
+      categorySections.push({
+        label: "🧠 Advanced SQL & database architecture",
+        range: [cursor, cursor + legacyData.SQL.questions.length - 1],
+      });
+    }
+
+    return [category.name, categorySections];
+  })
+);
+
+const legacySections: Record<string, { label: string; range: [number, number] }[]> = {
   "Backend & Systems": [
     { label: "🌐 Networking & Protocols", range: [0, 7] },
     { label: "⚖️ Load Balancing & Nginx", range: [8, 16] },
@@ -323,7 +407,7 @@ const sections: Record<string, { label: string; range: [number, number] }[]> = {
   ]
 };
 
-/* ── Markdown renderer ─────────────────────────────────────────── */
+const sections = { ...structuredSections, ...legacySections };
 
 /* ── QuestionCard ──────────────────────────────────────────────── */
 
@@ -334,11 +418,13 @@ function QuestionCard({ q, idx, done, color, onToggle, onOpen, hasAnswer }: {
 
   return (
     <div onClick={canOpen ? onOpen : undefined}
+      className="surface-panel"
       style={{
         display: "flex", alignItems: "flex-start", gap: 14,
-        padding: "12px 16px", borderRadius: 12,
-        background: done ? "#121212" : "#161616",
-        border: `1px solid ${done ? "#262626" : "#242424"}`,
+        padding: "12px 16px", borderRadius: 14,
+        background: "var(--surface-muted)",
+        borderColor: done ? "var(--line)" : `${color}33`,
+        opacity: done ? 0.72 : 1,
         cursor: canOpen ? "pointer" : "default",
         transition: "all 0.15s"
       }}>
@@ -348,7 +434,7 @@ function QuestionCard({ q, idx, done, color, onToggle, onOpen, hasAnswer }: {
         onClick={(e) => { e.stopPropagation(); onToggle(); }}
         style={{
           width: 20, height: 20, borderRadius: 6, flexShrink: 0, marginTop: 1,
-          border: `2px solid ${done ? color : "#3a3a3a"}`,
+          border: `2px solid ${done ? color : "var(--line)"}`,
           background: done ? color : "transparent",
           display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.15s",
           padding: 0, cursor: "pointer"
@@ -356,12 +442,12 @@ function QuestionCard({ q, idx, done, color, onToggle, onOpen, hasAnswer }: {
         {done && <span style={{ color: "#000", fontSize: 11, fontWeight: 900 }}>✓</span>}
       </button>
       <div style={{ flex: 1 }}>
-        <span style={{ fontSize: 11, color, fontWeight: 700, marginRight: 6, opacity: 0.55 }}>Q{idx + 1}</span>
-        <span style={{ fontSize: 13.5, lineHeight: 1.65, color: done ? "#8b8b8b" : "#d8d8d8", textDecoration: done ? "line-through" : "none" }}>
+        <span style={{ fontSize: 11, color, fontWeight: 700, marginRight: 6, opacity: 0.75 }}>Q{idx + 1}</span>
+        <span style={{ fontSize: 13.5, lineHeight: 1.65, color: "var(--text-body)", textDecoration: done ? "line-through" : "none" }}>
           {q}
         </span>
       </div>
-      {hasAnswer && <span style={{ fontSize: 10, color: "#4ade80", opacity: 0.5, marginTop: 3, flexShrink: 0 }}>VIEW</span>}
+      {hasAnswer && <span style={{ fontSize: 10, color: "var(--brand)", fontWeight: 700, opacity: 0.75, marginTop: 3, flexShrink: 0 }}>ANSWER</span>}
     </div>
   );
 }
@@ -369,11 +455,16 @@ function QuestionCard({ q, idx, done, color, onToggle, onOpen, hasAnswer }: {
 /* ── Main Page ─────────────────────────────────────────────────── */
 
 export default function PrepPage() {
+  const { isDark, toggleTheme } = useThemeMode();
+  const useLiteVisuals = useLiteVisualMode();
   const [active, setActive] = useState(() => {
     if (typeof window !== "undefined") {
-      return localStorage.getItem("prep-active-tab") || "Backend & Systems";
+      const saved = localStorage.getItem("prep-active-tab");
+      if (saved === "SQL") return "SQL & Databases";
+      if (saved === "JPA & SQL") return "JPA / Hibernate";
+      if (saved && data[saved]) return saved;
     }
-    return "Backend & Systems";
+    return "Java Core";
   });
   const [checked, setChecked] = useState<Record<string, boolean>>(() => {
     if (typeof window !== "undefined") {
@@ -400,64 +491,148 @@ export default function PrepPage() {
     setChecked(prev => ({ ...prev, [key]: !prev[key] }));
   };
 
-  const filtered = data[active].questions.filter(q =>
-    q.toLowerCase().includes(search.toLowerCase())
-  );
+  const normalizedSearch = search.trim().toLowerCase();
+  const filtered = data[active].questions
+    .map((question, index) => ({ question, index }))
+    .filter(({ question, index }) =>
+      !normalizedSearch
+      || question.toLowerCase().includes(normalizedSearch)
+      || answers[active]?.[index]?.toLowerCase().includes(normalizedSearch)
+    );
   const selectedAnswer = selectedQ ? answers[selectedQ.cat]?.[selectedQ.idx] : null;
 
-  const totalDone = Object.values(checked).filter(Boolean).length;
-  const totalAll = categoryOrder.reduce((s, c) => s + data[c].questions.length, 0);
   const catDone = (cat: string) => data[cat].questions.filter((_, i) => checked[`${cat}-${i}`]).length;
+  const totalDone = categoryOrder.reduce((sum, cat) => sum + catDone(cat), 0);
+  const totalAll = categoryOrder.reduce((sum, cat) => sum + data[cat].questions.length, 0);
 
   return (
-    <div style={{ fontFamily: "'Segoe UI', sans-serif", background: "#0e0e0e", minHeight: "100vh", color: "#e0e0e0", padding: "24px 16px" }}>
-      <div style={{ maxWidth: 860, margin: "0 auto" }}>
+    <>
+      <AuroraBackground />
+
+      {!useLiteVisuals ? (
+        <div aria-hidden className="pointer-events-none fixed inset-0 -z-20 overflow-hidden">
+          <HeroThreeScene className={isDark ? "opacity-[0.56]" : "opacity-[0.48]"} />
+        </div>
+      ) : null}
+
+      {/* Top navigation — mirrors the portfolio glass nav */}
+      <header className="fixed inset-x-0 top-0 z-50">
+        <div className="mx-auto w-[min(900px,calc(100%-2rem))] pt-4">
+          <div
+            className={`glass-top-nav flex items-center justify-between gap-3 rounded-full border px-3 py-2 shadow-[0_12px_30px_rgba(2,6,23,0.18)] backdrop-blur-md sm:px-4 ${
+              isDark ? "border-slate-600/55 bg-slate-950/82" : "border-slate-200/85 bg-white/78"
+            }`}
+          >
+            <Link
+              href="/"
+              className={`inline-flex items-center gap-2 rounded-full px-2 py-1.5 text-sm font-semibold transition ${
+                isDark ? "text-slate-200 hover:text-white" : "text-slate-700 hover:text-slate-900"
+              }`}
+            >
+              <ArrowLeft size={16} />
+              <span className="hidden sm:inline">Back to portfolio</span>
+              <span className="sm:hidden">Back</span>
+            </Link>
+
+            <span
+              className={`hidden text-sm font-semibold sm:inline ${isDark ? "text-slate-100" : "text-slate-900"}`}
+            >
+              Interview Prep
+            </span>
+
+            <button
+              type="button"
+              onClick={toggleTheme}
+              className={`inline-flex items-center gap-2 rounded-full border px-3 py-2 text-sm font-semibold transition ${
+                isDark
+                  ? "border-slate-600/55 bg-slate-900/82 text-slate-100 hover:border-slate-400/65 hover:text-white"
+                  : "border-slate-300/85 bg-white/90 text-slate-700 hover:border-teal-500/45 hover:text-slate-900"
+              }`}
+              aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+            >
+              {isDark ? <Sun size={16} /> : <Moon size={16} />}
+              <span className="hidden sm:inline">{isDark ? "Light" : "Dark"}</span>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <div style={{ fontFamily: "var(--font-body), 'Segoe UI', sans-serif", minHeight: "100vh", color: "var(--text-body)", padding: "104px 16px 40px" }}>
+        <div style={{ maxWidth: 980, margin: "0 auto" }}>
 
         {/* Header */}
         <div style={{ marginBottom: 24 }}>
-          <h1 style={{ fontSize: 22, fontWeight: 700, margin: 0, color: "#fff" }}>🧑‍💻 Interview Question Bank</h1>
-          <p style={{ color: "#666", margin: "4px 0 0", fontSize: 12 }}>3 Years Experience · Backend-Inclined Full Stack</p>
+          <h1 className="font-display" style={{ fontSize: 24, fontWeight: 700, margin: 0, color: "var(--text-heading)" }}>Full-Stack Interview Prep</h1>
+          <p style={{ color: "var(--text-muted)", margin: "5px 0 0", fontSize: 12 }}>
+            Java · .NET · MERN · SQL · APIs · System Design · Project Defense
+          </p>
           <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 10 }}>
-            <div style={{ flex: 1, background: "#1e1e1e", borderRadius: 99, height: 6, overflow: "hidden" }}>
-              <div style={{ width: `${(totalDone / totalAll) * 100}%`, background: "#4ade80", height: "100%", borderRadius: 99, transition: "width 0.4s" }} />
+            <div style={{ flex: 1, background: "var(--surface-muted)", borderRadius: 99, height: 6, overflow: "hidden" }}>
+              <div style={{ width: `${(totalDone / totalAll) * 100}%`, background: "var(--brand)", height: "100%", borderRadius: 99, transition: "width 0.4s" }} />
             </div>
-            <span style={{ fontSize: 12, color: "#666", whiteSpace: "nowrap" }}>{totalDone} / {totalAll} reviewed</span>
+            <span style={{ fontSize: 12, color: "var(--text-muted)", whiteSpace: "nowrap" }}>
+              {totalDone}/{totalAll} reviewed
+            </span>
         </div>
         </div>
 
         {/* Tabs */}
-        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 20 }}>
-          {categoryOrder.map(cat => {
-            const done = catDone(cat);
-            const total = data[cat].questions.length;
-            const pct = Math.round((done / total) * 100);
-            const isActive = active === cat;
-            return (
-              <button key={cat} onClick={() => { setActive(cat); setSearch(""); }}
-                style={{
-                  padding: "8px 14px", borderRadius: 10,
-                  border: `2px solid ${isActive ? data[cat].color : "#2a2a2a"}`,
-                  background: isActive ? data[cat].bg : "#141414",
-                  color: isActive ? data[cat].color : "#666",
-                  fontWeight: 600, fontSize: 11, cursor: "pointer", transition: "all 0.2s",
-                  display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 4, minWidth: 90
-                }}>
-                <span>{data[cat].icon} {cat}</span>
-                <div style={{ width: "100%", background: "#2a2a2a", borderRadius: 99, height: 3 }}>
-                  <div style={{ width: `${pct}%`, background: data[cat].color, height: "100%", borderRadius: 99, transition: "width 0.3s", opacity: 0.8 }} />
-                </div>
-                <span style={{ fontSize: 10, opacity: 0.5 }}>{done}/{total}</span>
-              </button>
-            );
-          })}
+        <div style={{ display: "grid", gap: 14, marginBottom: 20 }}>
+          {categoryGroups.map(group => (
+            <div key={group.label}>
+              <div style={{ color: "var(--text-muted)", fontSize: 10, fontWeight: 800, letterSpacing: 1.1, marginBottom: 7, textTransform: "uppercase" }}>
+                {group.label}
+              </div>
+              <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                {group.categories.map(cat => {
+                  const done = catDone(cat);
+                  const total = data[cat].questions.length;
+                  const pct = Math.round((done / total) * 100);
+                  const isActive = active === cat;
+                  return (
+                    <button key={cat} onClick={() => { setActive(cat); setSearch(""); }}
+                      style={{
+                        padding: "8px 14px", borderRadius: 12,
+                        border: `2px solid ${isActive ? data[cat].color : "var(--line)"}`,
+                        background: isActive ? `${data[cat].color}1f` : "var(--surface-muted)",
+                        color: isActive ? data[cat].color : "var(--text-muted)",
+                        fontWeight: 600, fontSize: 11, cursor: "pointer", transition: "all 0.2s",
+                        display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 4, minWidth: 106
+                      }}>
+                      <span>{data[cat].icon} {cat}</span>
+                      <div style={{ width: "100%", background: "var(--line)", borderRadius: 99, height: 3 }}>
+                        <div style={{ width: `${pct}%`, background: data[cat].color, height: "100%", borderRadius: 99, transition: "width 0.3s", opacity: 0.8 }} />
+                      </div>
+                      <span style={{ fontSize: 10, opacity: 0.6 }}>{done}/{total}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
         </div>
+
+        {data[active].description && (
+          <div style={{
+            background: `${data[active].color}12`,
+            border: `1px solid ${data[active].color}33`,
+            borderRadius: 12,
+            padding: "9px 13px",
+            marginBottom: 10,
+            color: "var(--text-muted)",
+            fontSize: 12,
+          }}>
+            <strong style={{ color: data[active].color }}>{data[active].questions.length} questions</strong>
+            <span> · {data[active].description}</span>
+          </div>
+        )}
 
         {/* Search */}
         <input value={search} onChange={e => setSearch(e.target.value)}
-          placeholder={`Search in ${active}...`}
+          placeholder={`Search questions and answers in ${active}...`}
           style={{
-            width: "100%", padding: "10px 14px", borderRadius: 10,
-            border: "1px solid #2a2a2a", background: "#161616", color: "#e0e0e0",
+            width: "100%", padding: "10px 14px", borderRadius: 12,
+            border: "1px solid var(--line)", background: "var(--surface-base)", color: "var(--text-body)",
             fontSize: 13, marginBottom: 14, boxSizing: "border-box", outline: "none"
           }}
         />
@@ -493,12 +668,11 @@ export default function PrepPage() {
 
           return (
             <div style={{ display: "flex", flexDirection: "column", gap: 7 }}>
-              {filtered.map(q => {
-                const realIdx = data[active].questions.indexOf(q);
+              {filtered.map(({ question, index: realIdx }) => {
                 const key = `${active}-${realIdx}`;
                 const done = !!checked[key];
                 return (
-                  <QuestionCard key={key} q={q} idx={realIdx} done={done} color={data[active].color}
+                  <QuestionCard key={key} q={question} idx={realIdx} done={done} color={data[active].color}
                     onToggle={() => toggle(active, realIdx)}
                     onOpen={answers[active]?.[realIdx] ? () => setSelectedQ({ cat: active, idx: realIdx }) : undefined}
                     hasAnswer={!!answers[active]?.[realIdx]} />
@@ -521,10 +695,11 @@ export default function PrepPage() {
           />
         )}
 
-        <div style={{ marginTop: 32, paddingTop: 16, borderTop: "1px solid #1e1e1e", fontSize: 11, color: "#3a3a3a", textAlign: "center" }}>
-          Click a question with a VIEW badge to open the answer · Use checkbox to mark as reviewed · Progress saved in browser
+        <div style={{ marginTop: 32, paddingTop: 16, borderTop: "1px solid var(--line)", fontSize: 11, color: "var(--text-muted)", textAlign: "center" }}>
+          Open any ANSWER card · Mark reviewed with the checkbox · Search includes answer text · Progress stays in this browser
+        </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
