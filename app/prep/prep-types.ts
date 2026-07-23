@@ -18,6 +18,7 @@ export type PrepCategory = {
 };
 
 type AnswerOptions = {
+  quick?: string;
   idea: string;
   example?: string;
   details?: string;
@@ -28,6 +29,7 @@ type AnswerOptions = {
 };
 
 export function humanAnswer({
+  quick,
   idea,
   example,
   details,
@@ -37,6 +39,7 @@ export function humanAnswer({
   trap,
 }: AnswerOptions): string {
   const parts = [
+    quick ? `### Quick answer\n\n${quick}` : "",
     `### Understand it\n\n${idea}`,
     example ? `### Picture it\n\n${example}` : "",
     details ? `### Go one level deeper\n\n${details}` : "",
