@@ -23,7 +23,7 @@ import {
 import type { LucideIcon } from "lucide-react";
 import { AnimatePresence, motion, useScroll, useSpring, useTransform } from "framer-motion";
 import Image from "next/image";
-import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import CollapsibleCard from "@/components/collapsible-card";
 import ContactForm from "@/components/contact-form";
 import HeroCursorCubesScene from "@/components/hero-cursor-cubes-scene";
@@ -36,6 +36,7 @@ import StageSection from "@/components/stage-section";
 import SplineScene from "@/components/spline-scene";
 import AuroraBackground from "@/components/aurora-background";
 import { trackEvent } from "@/lib/analytics";
+import { useLiteVisualMode, useThemeMode } from "@/lib/use-theme";
 import {
   aboutHighlights,
   contactAddress,
@@ -66,47 +67,16 @@ const additionalSocialLinks = socialLinks.filter(
   (social) => !primarySocialLabels.has(social.label)
 );
 const heroFacts = quickFacts.slice(0, 4);
-const themeChangeEvent = "portfolio-theme-change";
-
-type ThemeMode = "dark" | "light";
-
-function getThemeSnapshot(): ThemeMode {
-  return document.documentElement.dataset.theme === "dark" ? "dark" : "light";
-}
-
-function getServerThemeSnapshot(): ThemeMode {
-  return "light";
-}
-
-function subscribeToTheme(onStoreChange: () => void) {
-  const handleStorage = (event: StorageEvent) => {
-    if (event.key !== "theme") return;
-    document.documentElement.dataset.theme = event.newValue === "dark" ? "dark" : "light";
-    onStoreChange();
-  };
-
-  window.addEventListener(themeChangeEvent, onStoreChange);
-  window.addEventListener("storage", handleStorage);
-
-  return () => {
-    window.removeEventListener(themeChangeEvent, onStoreChange);
-    window.removeEventListener("storage", handleStorage);
-  };
-}
 
 export default function HomePage() {
   const [activeSection, setActiveSection] = useState("home");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [useLiteVisuals, setUseLiteVisuals] = useState(false);
   const [showcaseRequest, setShowcaseRequest] = useState<{
     id: string;
     sequence: number;
   } | null>(null);
-  const theme = useSyncExternalStore(
-    subscribeToTheme,
-    getThemeSnapshot,
-    getServerThemeSnapshot
-  );
+  const { theme, isDark, toggleTheme } = useThemeMode();
+  const useLiteVisuals = useLiteVisualMode();
   const showcaseProjects = useMemo(() => getShowcaseProjects(), []);
 
   const handleViewProject = useCallback(
@@ -142,7 +112,6 @@ export default function HomePage() {
   );
 
   const splineScene = process.env.NEXT_PUBLIC_SPLINE_SCENE_URL;
-  const isDark = theme === "dark";
 
   const { scrollYProgress, scrollY } = useScroll();
   const progressScale = useSpring(scrollYProgress, {
@@ -151,23 +120,6 @@ export default function HomePage() {
     mass: 0.32
   });
   const heroY = useTransform(scrollY, [0, 560], [0, 44]);
-
-  useEffect(() => {
-    const mediaQuery = window.matchMedia(
-      "(max-width: 1024px), (prefers-reduced-motion: reduce)"
-    );
-
-    const updateVisualMode = () => {
-      setUseLiteVisuals(mediaQuery.matches);
-    };
-
-    updateVisualMode();
-    mediaQuery.addEventListener("change", updateVisualMode);
-
-    return () => {
-      mediaQuery.removeEventListener("change", updateVisualMode);
-    };
-  }, []);
 
   useEffect(() => {
     const sections = navItems
@@ -239,13 +191,6 @@ export default function HomePage() {
 
     setActiveSection(id);
     setIsMobileMenuOpen(false);
-  };
-
-  const toggleTheme = () => {
-    const nextTheme = getThemeSnapshot() === "dark" ? "light" : "dark";
-    document.documentElement.dataset.theme = nextTheme;
-    window.localStorage.setItem("theme", nextTheme);
-    window.dispatchEvent(new Event(themeChangeEvent));
   };
 
   return (
