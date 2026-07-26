@@ -30,15 +30,24 @@ const uploadPayloadSchema = z.object({
 });
 
 export async function POST(request: Request) {
-  const body = (await request.json()) as HandleUploadBody;
-
   try {
+    const body = (await request.json()) as HandleUploadBody;
+    const tokenAdmin =
+      body.type === "blob.generate-client-token"
+        ? await getOptionalAdminIdentity()
+        : null;
+    if (body.type === "blob.generate-client-token" && !tokenAdmin) {
+      return NextResponse.json(
+        { error: "Authentication is required to upload portfolio media." },
+        { status: 401 }
+      );
+    }
+
     const response = await handleUpload({
       body,
       request,
       onBeforeGenerateToken: async (_pathname, clientPayload) => {
-        const admin = await getOptionalAdminIdentity();
-        if (!admin) {
+        if (!tokenAdmin) {
           throw new Error("Unauthorized upload request");
         }
 
@@ -46,7 +55,7 @@ export async function POST(request: Request) {
           clientPayload ? JSON.parse(clientPayload) : null
         );
 
-        if (payload.actor !== admin.actor) {
+        if (payload.actor !== tokenAdmin.actor) {
           throw new Error("Upload actor does not match the authenticated admin");
         }
 
