@@ -1,7 +1,7 @@
 "use client";
 
 import { upload } from "@vercel/blob/client";
-import { FileUp, ImagePlus } from "lucide-react";
+import { FileUp, ImagePlus, LoaderCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 
@@ -11,6 +11,10 @@ export default function MediaUploadForm({ actor }: { actor: string }) {
   const [pending, setPending] = useState(false);
   const [progress, setProgress] = useState(0);
   const [message, setMessage] = useState("");
+  const [messageTone, setMessageTone] = useState<"success" | "error" | null>(
+    null
+  );
+  const [kind, setKind] = useState<"image" | "resume">("image");
 
   return (
     <form
@@ -20,18 +24,29 @@ export default function MediaUploadForm({ actor }: { actor: string }) {
         event.preventDefault();
         const form = new FormData(event.currentTarget);
         const file = form.get("file");
-        const kind = String(form.get("kind") ?? "image");
         const altText = String(form.get("altText") ?? "").trim();
         const setAsResume = form.get("setAsResume") === "on";
 
         if (!(file instanceof File) || !file.size) {
           setMessage("Choose an image or PDF first.");
+          setMessageTone("error");
+          return;
+        }
+        if (kind === "resume" && file.type !== "application/pdf") {
+          setMessage("Resume uploads must be PDF files.");
+          setMessageTone("error");
+          return;
+        }
+        if (kind === "image" && !file.type.startsWith("image/")) {
+          setMessage("Choose a JPG, PNG, WebP, or AVIF image.");
+          setMessageTone("error");
           return;
         }
 
         setPending(true);
         setProgress(0);
         setMessage("");
+        setMessageTone(null);
 
         try {
           const folder = kind === "resume" ? "portfolio/resume" : "portfolio/images";
@@ -56,11 +71,14 @@ export default function MediaUploadForm({ actor }: { actor: string }) {
               ? "Upload complete and selected in the private resume draft."
               : `Upload complete: ${blob.pathname}`
           );
+          setMessageTone("success");
           formRef.current?.reset();
+          setKind("image");
           router.refresh();
         } catch (error) {
           console.error(error);
           setMessage("Upload failed. Check the Blob configuration and file limits.");
+          setMessageTone("error");
         } finally {
           setPending(false);
         }
@@ -72,27 +90,22 @@ export default function MediaUploadForm({ actor }: { actor: string }) {
           Upload media
         </h2>
       </div>
+      <p className="mt-2 text-sm leading-relaxed text-slate-500">
+        Choose the asset type first. Files upload directly to storage and never
+        block the public portfolio.
+      </p>
 
       <div className="mt-5 grid gap-4 md:grid-cols-2">
         <label className="grid gap-2">
           <span className="text-xs font-bold uppercase tracking-[0.13em] text-slate-500">
-            File
-          </span>
-          <input
-            required
-            name="file"
-            type="file"
-            accept="image/jpeg,image/png,image/webp,image/avif,application/pdf"
-            className="rounded-xl border border-slate-700 bg-slate-950 px-3 py-2.5 text-sm text-slate-300 file:mr-3 file:rounded-lg file:border-0 file:bg-slate-800 file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-white"
-          />
-        </label>
-
-        <label className="grid gap-2">
-          <span className="text-xs font-bold uppercase tracking-[0.13em] text-slate-500">
-            Media type
+            1. Asset type
           </span>
           <select
             name="kind"
+            value={kind}
+            onChange={(event) =>
+              setKind(event.target.value as "image" | "resume")
+            }
             className="rounded-xl border border-slate-700 bg-slate-950 px-3 py-2.5 text-sm text-white"
           >
             <option value="image">Portfolio image</option>
@@ -100,26 +113,57 @@ export default function MediaUploadForm({ actor }: { actor: string }) {
           </select>
         </label>
 
-        <label className="grid gap-2 md:col-span-2">
+        <label className="grid gap-2">
           <span className="text-xs font-bold uppercase tracking-[0.13em] text-slate-500">
-            Alt text
+            2. Choose file
           </span>
           <input
-            name="altText"
-            placeholder="Describe the image for accessibility"
-            className="rounded-xl border border-slate-700 bg-slate-950 px-3 py-2.5 text-sm text-white outline-none focus:border-emerald-400"
+            required
+            name="file"
+            type="file"
+            accept={
+              kind === "resume"
+                ? "application/pdf"
+                : "image/jpeg,image/png,image/webp,image/avif"
+            }
+            className="rounded-xl border border-slate-700 bg-slate-950 px-3 py-2.5 text-sm text-slate-300 file:mr-3 file:rounded-lg file:border-0 file:bg-slate-800 file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-white"
           />
         </label>
+
+        {kind === "image" ? (
+          <label className="grid gap-2 md:col-span-2">
+            <span className="text-xs font-bold uppercase tracking-[0.13em] text-slate-500">
+              3. Image description
+            </span>
+            <input
+              name="altText"
+              placeholder="Example: Aryan presenting the DRaaS architecture"
+              className="rounded-xl border border-slate-700 bg-slate-950 px-3 py-2.5 text-sm text-white outline-none focus:border-emerald-400"
+            />
+          </label>
+        ) : null}
       </div>
 
-      <label className="mt-4 flex items-center gap-3 rounded-xl border border-slate-800 bg-slate-950/60 px-3 py-3 text-sm text-slate-300">
-        <input
-          type="checkbox"
-          name="setAsResume"
-          className="h-4 w-4 rounded border-slate-600 bg-slate-900 text-emerald-400"
-        />
-        Select this PDF as the resume in the private draft
-      </label>
+      {kind === "resume" ? (
+        <label className="mt-4 flex items-center gap-3 rounded-xl border border-slate-800 bg-slate-950/60 px-3 py-3 text-sm text-slate-300">
+          <input
+            type="checkbox"
+            name="setAsResume"
+            defaultChecked
+            className="h-4 w-4 rounded border-slate-600 bg-slate-900 text-emerald-400"
+          />
+          Use this PDF as the resume in the private draft
+        </label>
+      ) : null}
+
+      {pending ? (
+        <div className="mt-5 overflow-hidden rounded-full bg-slate-800">
+          <div
+            className="h-1.5 rounded-full bg-emerald-400 transition-[width]"
+            style={{ width: `${Math.max(4, progress)}%` }}
+          />
+        </div>
+      ) : null}
 
       <div className="mt-5 flex flex-wrap items-center gap-4">
         <button
@@ -127,11 +171,24 @@ export default function MediaUploadForm({ actor }: { actor: string }) {
           disabled={pending}
           className="inline-flex items-center gap-2 rounded-xl bg-emerald-400 px-4 py-2.5 text-sm font-bold text-slate-950 transition hover:bg-emerald-300 disabled:cursor-wait disabled:opacity-60"
         >
-          <FileUp size={15} />
+          {pending ? (
+            <LoaderCircle size={15} className="animate-spin" />
+          ) : (
+            <FileUp size={15} />
+          )}
           {pending ? `Uploading ${Math.round(progress)}%` : "Upload"}
         </button>
         {message ? (
-          <p className="text-sm text-slate-400" role="status">
+          <p
+            className={`text-sm ${
+              messageTone === "success"
+                ? "text-emerald-300"
+                : messageTone === "error"
+                  ? "text-rose-300"
+                  : "text-slate-400"
+            }`}
+            role="status"
+          >
             {message}
           </p>
         ) : null}

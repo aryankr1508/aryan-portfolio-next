@@ -1,14 +1,19 @@
 "use client";
 
 import {
+  AlertCircle,
   ArrowDown,
   ArrowUp,
-  ChevronDown,
+  CheckCircle2,
   CopyPlus,
+  Eye,
+  RotateCcw,
   Save,
   Trash2
 } from "lucide-react";
-import { useActionState, useMemo, useState } from "react";
+import { useActionState, useEffect, useMemo, useState } from "react";
+import { useFormStatus } from "react-dom";
+import Link from "next/link";
 import type { AdminActionState } from "@/app/admin/(protected)/actions";
 import { saveDraftAction } from "@/app/admin/(protected)/actions";
 import AdminSubmitButton from "@/components/admin/admin-submit-button";
@@ -28,6 +33,40 @@ function labelFor(key: string) {
     .replace(/([a-z0-9])([A-Z])/g, "$1 $2")
     .replace(/[_-]+/g, " ")
     .replace(/\b\w/g, (letter) => letter.toUpperCase());
+}
+
+const sectionDescriptions: Partial<Record<keyof PortfolioSnapshot, string>> = {
+  personalInfo: "Name, profile image, contact details and current resume",
+  siteCopy: "Page metadata, hero messaging and section headings",
+  navItems: "Public navigation labels and section order",
+  socialLinks: "Profile links and which ones appear prominently",
+  aboutHighlights: "The key points shown in the About section",
+  toolsAndTechnologies: "Core-stack badges shown beside your profile",
+  quickFacts: "Compact facts displayed in the hero and About area",
+  skillGroups: "Grouped technical capabilities and descriptions",
+  experienceItems: "Companies, roles and nested client projects",
+  educationItems: "Degrees, institutions and education highlights",
+  projects: "Detailed personal and freelance case-study pages",
+  internships: "Internship roles, dates and outcomes",
+  contactAddress: "The location/address shown in Contact",
+  freelanceShowcaseProjects: "Freelance cards without dedicated case-study pages",
+  featuredProjectIds: "Project IDs and their order in Featured Work"
+};
+
+function itemSummary(item: JsonValue, index: number, fieldKey: string) {
+  if (!item || typeof item !== "object" || Array.isArray(item)) {
+    return `${labelFor(fieldKey)} ${index + 1}`;
+  }
+
+  const preferredKeys = ["title", "name", "company", "label", "slug", "id"];
+  for (const key of preferredKeys) {
+    const value = item[key];
+    if (typeof value === "string" && value.trim()) {
+      return value;
+    }
+  }
+
+  return `${labelFor(fieldKey)} ${index + 1}`;
 }
 
 function cloneForNewItem(value: JsonValue, key = ""): JsonValue {
@@ -171,7 +210,7 @@ function PrimitiveField({
 
   const fieldType = /email/i.test(fieldKey)
     ? "email"
-    : /url|website|file|thumbnail|diagram/i.test(fieldKey)
+    : /url$|website/i.test(fieldKey)
       ? "url"
       : /phone/i.test(fieldKey)
         ? "tel"
@@ -265,71 +304,115 @@ function ValueEditor({
         </div>
 
         <div className="mt-4 space-y-3">
-          {value.map((item, index) => (
-            <div
-              key={`${path.join(".")}-${index}`}
-              className={`rounded-xl border border-slate-800 ${
-                item !== null && typeof item === "object"
-                  ? "bg-slate-900/75 p-4"
-                  : "bg-slate-950/70 p-3"
-              }`}
-            >
-              <div className="mb-3 flex items-center justify-between gap-2">
-                <span className="text-xs font-bold text-slate-500">
-                  {objectItems ? `${labelFor(fieldKey)} ${index + 1}` : `Item ${index + 1}`}
-                </span>
-                <div className="flex items-center gap-1">
-                  <button
-                    type="button"
-                    aria-label="Move item up"
-                    disabled={index === 0}
-                    onClick={() => {
-                      const next = [...value];
-                      [next[index - 1], next[index]] = [next[index], next[index - 1]];
-                      onUpdate(path, next);
-                    }}
-                    className="rounded-md p-1.5 text-slate-500 hover:bg-slate-800 hover:text-white disabled:opacity-25"
-                  >
-                    <ArrowUp size={13} />
-                  </button>
-                  <button
-                    type="button"
-                    aria-label="Move item down"
-                    disabled={index === value.length - 1}
-                    onClick={() => {
-                      const next = [...value];
-                      [next[index], next[index + 1]] = [next[index + 1], next[index]];
-                      onUpdate(path, next);
-                    }}
-                    className="rounded-md p-1.5 text-slate-500 hover:bg-slate-800 hover:text-white disabled:opacity-25"
-                  >
-                    <ArrowDown size={13} />
-                  </button>
-                  <button
-                    type="button"
-                    aria-label="Remove item"
-                    disabled={objectItems && value.length === 1}
-                    onClick={() =>
-                      onUpdate(
-                        path,
-                        value.filter((_, itemIndex) => itemIndex !== index)
-                      )
-                    }
-                    className="rounded-md p-1.5 text-slate-500 hover:bg-rose-500/15 hover:text-rose-300 disabled:cursor-not-allowed disabled:opacity-25"
-                  >
-                    <Trash2 size={13} />
-                  </button>
-                </div>
+          {value.map((item, index) => {
+            const controls = (
+              <div className="flex items-center gap-1">
+                <button
+                  type="button"
+                  aria-label="Move item up"
+                  disabled={index === 0}
+                  onClick={() => {
+                    const next = [...value];
+                    [next[index - 1], next[index]] = [
+                      next[index],
+                      next[index - 1]
+                    ];
+                    onUpdate(path, next);
+                  }}
+                  className="rounded-md p-1.5 text-slate-500 hover:bg-slate-800 hover:text-white disabled:opacity-25"
+                >
+                  <ArrowUp size={13} />
+                </button>
+                <button
+                  type="button"
+                  aria-label="Move item down"
+                  disabled={index === value.length - 1}
+                  onClick={() => {
+                    const next = [...value];
+                    [next[index], next[index + 1]] = [
+                      next[index + 1],
+                      next[index]
+                    ];
+                    onUpdate(path, next);
+                  }}
+                  className="rounded-md p-1.5 text-slate-500 hover:bg-slate-800 hover:text-white disabled:opacity-25"
+                >
+                  <ArrowDown size={13} />
+                </button>
+                <button
+                  type="button"
+                  aria-label="Remove item"
+                  disabled={objectItems && value.length === 1}
+                  onClick={() =>
+                    onUpdate(
+                      path,
+                      value.filter((_, itemIndex) => itemIndex !== index)
+                    )
+                  }
+                  className="rounded-md p-1.5 text-slate-500 hover:bg-rose-500/15 hover:text-rose-300 disabled:cursor-not-allowed disabled:opacity-25"
+                >
+                  <Trash2 size={13} />
+                </button>
               </div>
+            );
 
-              <ValueEditor
-                fieldKey={String(index)}
-                value={item}
-                path={[...path, index]}
-                onUpdate={onUpdate}
-              />
-            </div>
-          ))}
+            if (objectItems) {
+              return (
+                <details
+                  key={`${path.join(".")}-${index}`}
+                  className="group overflow-hidden rounded-xl border border-slate-800 bg-slate-900/75 open:border-slate-700"
+                >
+                  <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3.5 marker:hidden">
+                    <span className="min-w-0">
+                      <span className="block truncate text-sm font-bold text-slate-200">
+                        {itemSummary(item, index, fieldKey)}
+                      </span>
+                      <span className="mt-0.5 block text-[11px] text-slate-600">
+                        Click to edit · Item {index + 1} of {value.length}
+                      </span>
+                    </span>
+                    <span className="rounded-lg border border-slate-700 px-2 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-slate-500 transition group-open:border-emerald-400/30 group-open:text-emerald-300">
+                      Details
+                    </span>
+                  </summary>
+                  <div className="border-t border-slate-800 p-4">
+                    <div className="mb-4 flex items-center justify-between gap-2">
+                      <span className="text-xs text-slate-500">
+                        Reorder or remove this item
+                      </span>
+                      {controls}
+                    </div>
+                    <ValueEditor
+                      fieldKey={String(index)}
+                      value={item}
+                      path={[...path, index]}
+                      onUpdate={onUpdate}
+                    />
+                  </div>
+                </details>
+              );
+            }
+
+            return (
+              <div
+                key={`${path.join(".")}-${index}`}
+                className="rounded-xl border border-slate-800 bg-slate-950/70 p-3"
+              >
+                <div className="mb-3 flex items-center justify-between gap-2">
+                  <span className="text-xs font-bold text-slate-500">
+                    Item {index + 1}
+                  </span>
+                  {controls}
+                </div>
+                <ValueEditor
+                  fieldKey={String(index)}
+                  value={item}
+                  path={[...path, index]}
+                  onUpdate={onUpdate}
+                />
+              </div>
+            );
+          })}
         </div>
       </section>
     );
@@ -346,6 +429,67 @@ function ValueEditor({
           onUpdate={onUpdate}
         />
       ))}
+    </div>
+  );
+}
+
+function DraftSaveControls({
+  hasUnsavedChanges,
+  onDiscard
+}: {
+  hasUnsavedChanges: boolean;
+  onDiscard: () => void;
+}) {
+  const { pending } = useFormStatus();
+
+  return (
+    <div className="sticky top-[84px] z-30 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-700 bg-slate-900/95 p-3.5 shadow-xl shadow-black/20 backdrop-blur-xl">
+      <div className="flex items-center gap-3">
+        <span
+          className={`inline-flex h-9 w-9 items-center justify-center rounded-xl ${
+            pending || hasUnsavedChanges
+              ? "bg-amber-400/15 text-amber-300"
+              : "bg-emerald-400/15 text-emerald-300"
+          }`}
+        >
+          {hasUnsavedChanges ? (
+            <AlertCircle size={17} />
+          ) : (
+            <CheckCircle2 size={17} />
+          )}
+        </span>
+        <div>
+          <p className="text-sm font-bold text-white">
+            {pending
+              ? "Saving your draft…"
+              : hasUnsavedChanges
+                ? "You have unsaved changes"
+                : "Draft is saved"}
+          </p>
+          <p className="mt-0.5 text-[11px] text-slate-500">
+            Saving never changes the public preview
+          </p>
+        </div>
+      </div>
+      <div className="flex items-center gap-2">
+        <button
+          type="button"
+          disabled={!hasUnsavedChanges || pending}
+          onClick={onDiscard}
+          className="inline-flex items-center gap-2 rounded-xl border border-slate-700 px-3.5 py-2.5 text-xs font-bold text-slate-300 transition hover:border-slate-500 hover:text-white disabled:cursor-not-allowed disabled:opacity-35"
+        >
+          <RotateCcw size={14} />
+          Discard
+        </button>
+        <span className="inline-flex items-center gap-2">
+          <Save size={15} className="text-emerald-300" />
+          <AdminSubmitButton
+            idleLabel="Save draft"
+            pendingLabel="Saving…"
+            disabled={!hasUnsavedChanges}
+          />
+        </span>
+      </div>
     </div>
   );
 }
@@ -372,6 +516,34 @@ export default function ContentMasterEditor({
     initialActionState
   );
   const serializedDraft = useMemo(() => JSON.stringify(draft), [draft]);
+  const savedContent =
+    actionState.savedContent ?? JSON.stringify(initialContent);
+  const hasUnsavedChanges = serializedDraft !== savedContent;
+  const selectedValue = valueAtPath(
+    draft as unknown as JsonValue,
+    [openKey]
+  );
+
+  useEffect(() => {
+    const adminWindow = window as Window & {
+      __portfolioAdminDirty?: boolean;
+    };
+    adminWindow.__portfolioAdminDirty = hasUnsavedChanges;
+    if (!hasUnsavedChanges) {
+      return () => {
+        adminWindow.__portfolioAdminDirty = false;
+      };
+    }
+
+    const warnBeforeLeaving = (event: BeforeUnloadEvent) => {
+      event.preventDefault();
+    };
+    window.addEventListener("beforeunload", warnBeforeLeaving);
+    return () => {
+      adminWindow.__portfolioAdminDirty = false;
+      window.removeEventListener("beforeunload", warnBeforeLeaving);
+    };
+  }, [hasUnsavedChanges]);
 
   const updateValue = (path: (string | number)[], value: JsonValue) => {
     setDraft((current) =>
@@ -385,91 +557,152 @@ export default function ContentMasterEditor({
 
   return (
     <div className="space-y-6">
-      <header>
-        <p className="text-xs font-bold uppercase tracking-[0.18em] text-emerald-300">
-          Draft content
-        </p>
-        <h1 className="mt-2 font-display text-3xl font-semibold">{title}</h1>
-        <p className="mt-2 max-w-3xl text-sm leading-relaxed text-slate-400">
-          {description}
-        </p>
+      <header className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
+        <div>
+          <p className="text-xs font-bold uppercase tracking-[0.18em] text-emerald-300">
+            Private draft
+          </p>
+          <h1 className="mt-2 font-display text-3xl font-semibold">{title}</h1>
+          <p className="mt-2 max-w-3xl text-sm leading-relaxed text-slate-400">
+            {description}
+          </p>
+        </div>
+        <Link
+          href="/"
+          target="_blank"
+          className="inline-flex items-center gap-2 self-start rounded-xl border border-slate-700 bg-slate-900 px-3.5 py-2.5 text-xs font-bold text-slate-300 transition hover:border-emerald-400/40 hover:text-white"
+        >
+          <Eye size={14} />
+          Open public preview
+        </Link>
       </header>
 
-      <form action={formAction} className="space-y-5">
+      <form
+        action={formAction}
+        className="space-y-5"
+      >
         <input type="hidden" name="content" value={serializedDraft} />
 
-        <div className="grid gap-3">
-          {visibleKeys.map((key) => {
-            const isOpen = openKey === key;
-            const value = valueAtPath(
-              draft as unknown as JsonValue,
-              [key]
-            );
+        <DraftSaveControls
+          hasUnsavedChanges={hasUnsavedChanges}
+          onDiscard={() =>
+            setDraft(JSON.parse(savedContent) as PortfolioSnapshot)
+          }
+        />
 
-            return (
-              <section
-                key={key}
-                className="overflow-hidden rounded-2xl border border-slate-800 bg-slate-900"
-              >
-                <button
-                  type="button"
-                  onClick={() => setOpenKey(key)}
-                  className="flex w-full items-center justify-between gap-3 px-5 py-4 text-left"
-                >
-                  <span className="font-display text-lg font-semibold">
-                    {labelFor(key)}
-                  </span>
-                  <ChevronDown
-                    size={17}
-                    className={`text-slate-500 transition ${isOpen ? "rotate-180" : ""}`}
-                  />
-                </button>
-
-                {isOpen ? (
-                  <div className="border-t border-slate-800 p-5">
-                    <ValueEditor
-                      fieldKey={key}
-                      value={value}
-                      path={[key]}
-                      onUpdate={updateValue}
-                    />
-                  </div>
-                ) : null}
-              </section>
-            );
-          })}
-        </div>
-
-        <div className="sticky bottom-4 z-20 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-700 bg-slate-900/95 p-4 shadow-2xl shadow-black/30 backdrop-blur">
-          <div>
-            {actionState.message ? (
-              <p
-                className={`text-sm font-semibold ${
-                  actionState.ok ? "text-emerald-300" : "text-rose-300"
-                }`}
-              >
-                {actionState.message}
-              </p>
-            ) : (
-              <p className="text-sm text-slate-400">
-                Saving updates the private draft only.
-              </p>
-            )}
+        {actionState.message ? (
+          <div
+            role="status"
+            className={`rounded-2xl border p-4 ${
+              actionState.ok
+                ? "border-emerald-400/25 bg-emerald-400/10"
+                : "border-rose-400/25 bg-rose-400/10"
+            }`}
+          >
+            <p
+              className={`text-sm font-semibold ${
+                actionState.ok ? "text-emerald-200" : "text-rose-200"
+              }`}
+            >
+              {actionState.message}
+            </p>
             {actionState.issues?.length ? (
-              <ul className="mt-2 max-w-3xl space-y-1 text-xs text-rose-200">
+              <ul className="mt-2 max-w-3xl space-y-1 text-xs text-rose-200/80">
                 {actionState.issues.map((issue) => (
-                  <li key={issue}>{issue}</li>
+                  <li key={issue}>• {issue}</li>
                 ))}
               </ul>
             ) : null}
           </div>
-          <span className="inline-flex items-center gap-2">
-            <Save size={15} className="text-emerald-300" />
-            <AdminSubmitButton
-              idleLabel="Save draft"
-              pendingLabel="Saving…"
-            />
-          </span>
+        ) : null}
+
+        <div className="grid gap-5 xl:grid-cols-[260px_minmax(0,1fr)]">
+          <aside className="self-start rounded-2xl border border-slate-800 bg-slate-900 p-2 xl:sticky xl:top-[176px]">
+            <p className="px-3 pb-2 pt-1 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-600">
+              Choose what to edit
+            </p>
+            <div className="grid gap-1.5 sm:grid-cols-2 xl:grid-cols-1">
+              {visibleKeys.map((key) => {
+                const active = openKey === key;
+                const value = valueAtPath(
+                  draft as unknown as JsonValue,
+                  [key]
+                );
+                const itemCount = Array.isArray(value) ? value.length : null;
+
+                return (
+                  <button
+                    key={key}
+                    type="button"
+                    onClick={() => setOpenKey(key)}
+                    className={`rounded-xl border px-3 py-3 text-left transition ${
+                      active
+                        ? "border-emerald-400/30 bg-emerald-400/10"
+                        : "border-transparent hover:border-slate-700 hover:bg-slate-800/70"
+                    }`}
+                  >
+                    <span
+                      className={`block text-sm font-bold ${
+                        active ? "text-white" : "text-slate-300"
+                      }`}
+                    >
+                      {labelFor(key)}
+                      {itemCount !== null ? (
+                        <span className="ml-2 text-[10px] text-slate-600">
+                          {itemCount}
+                        </span>
+                      ) : null}
+                    </span>
+                    <span className="mt-1 block text-[11px] leading-relaxed text-slate-600">
+                      {sectionDescriptions[key]}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </aside>
+
+          <section className="min-w-0 overflow-hidden rounded-2xl border border-slate-800 bg-slate-900">
+            <header className="border-b border-slate-800 px-5 py-4">
+              <p className="font-display text-xl font-semibold">
+                {labelFor(openKey)}
+              </p>
+              <p className="mt-1 text-xs leading-relaxed text-slate-500">
+                {sectionDescriptions[openKey]}
+              </p>
+            </header>
+            <div className="p-4 sm:p-5">
+              <ValueEditor
+                fieldKey={openKey}
+                value={selectedValue}
+                path={[openKey]}
+                onUpdate={updateValue}
+              />
+            </div>
+          </section>
+        </div>
+
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-800 bg-slate-900/60 p-4 text-xs text-slate-500">
+          <p>
+            Finished editing? Save the draft, review it, then publish from the
+            Dashboard.
+          </p>
+          <Link
+            href="/admin"
+            onClick={(event) => {
+              if (
+                hasUnsavedChanges &&
+                !window.confirm(
+                  "You have unsaved draft changes. Leave this page and discard them?"
+                )
+              ) {
+                event.preventDefault();
+              }
+            }}
+            className="font-bold text-emerald-300 hover:text-emerald-200"
+          >
+            Go to Dashboard
+          </Link>
         </div>
       </form>
     </div>

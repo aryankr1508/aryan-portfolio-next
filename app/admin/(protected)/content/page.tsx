@@ -23,8 +23,8 @@ export default async function ContentMastersPage() {
     <ContentMasterEditor
       initialContent={document.draftContent}
       visibleKeys={visibleKeys}
-      title="Site content masters"
-      description="Manage profile details, navigation, social links, highlights, skills, education, internships, and contact information. Changes remain private until published."
+      title="Site content"
+      description="Choose a section, edit only what you need, and save it as a private draft. Nothing appears publicly until you publish from the Dashboard."
     />
   );
 }

@@ -22,6 +22,7 @@ Never commit passwords, API tokens, mail credentials, webhook secrets, `.env` fi
 - Neon resource: `aryan-portfolio-content`
 - Neon Vercel resource ID: `store_jZoeXPx3kLFaoeEN`
 - Neon project/region: `long-night-57824262`, `sin1`
+- Vercel Function region: `sin1` through `vercel.json`, colocated with Neon
 - Framework: Next.js 16 App Router with React 19 and TypeScript
 - Runtime: Node.js 24
 
@@ -33,6 +34,8 @@ Do not create a replacement Vercel project when this exact project exists. Recon
 - `components/portfolio-page-client.tsx`: main interactive portfolio experience and scene selection
 - `app/projects/[slug]/page.tsx`: dynamic project case studies
 - `app/admin`: owner-only content administration, draft/publish, media, revisions, and audit history
+- `app/admin/(protected)/loading.tsx`: instant admin route skeleton while dynamic data streams
+- `components/admin/admin-navigation.tsx`: active/pending-aware admin navigation
 - `lib/content/repository.ts`: cached published-content reads and admin content mutations
 - `lib/content/schema.ts`: full portfolio snapshot validation
 - `lib/db/schema.ts`: Neon PostgreSQL content, revision, media, and audit tables

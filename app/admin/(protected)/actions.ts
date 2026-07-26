@@ -17,6 +17,7 @@ export type AdminActionState = {
   ok: boolean;
   message: string;
   issues?: string[];
+  savedContent?: string;
 };
 
 const revisionIdSchema = z.uuid();
@@ -29,14 +30,22 @@ export async function saveDraftAction(
   const serializedContent = formData.get("content");
 
   if (typeof serializedContent !== "string") {
-    return { ok: false, message: "The draft payload is missing." };
+    return {
+      ok: false,
+      message: "The draft payload is missing.",
+      savedContent: _previousState.savedContent
+    };
   }
 
   let payload: unknown;
   try {
     payload = JSON.parse(serializedContent);
   } catch {
-    return { ok: false, message: "The draft contains invalid JSON." };
+    return {
+      ok: false,
+      message: "The draft contains invalid JSON.",
+      savedContent: _previousState.savedContent
+    };
   }
 
   const validated = portfolioSnapshotSchema.safeParse(payload);
@@ -44,6 +53,7 @@ export async function saveDraftAction(
     return {
       ok: false,
       message: "Fix the validation issues before saving.",
+      savedContent: _previousState.savedContent,
       issues: validated.error.issues.slice(0, 12).map((issue) => {
         const path = issue.path.join(".");
         return path ? `${path}: ${issue.message}` : issue.message;
@@ -59,13 +69,15 @@ export async function saveDraftAction(
     revalidatePath("/admin", "layout");
     return {
       ok: true,
-      message: `Draft version ${result.version} saved. Public content is unchanged.`
+      message: `Draft version ${result.version} saved. Public content is unchanged.`,
+      savedContent: JSON.stringify(validated.data)
     };
   } catch (error) {
     console.error("Unable to save portfolio draft", error);
     return {
       ok: false,
-      message: error instanceof Error ? error.message : "Unable to save the draft."
+      message: error instanceof Error ? error.message : "Unable to save the draft.",
+      savedContent: _previousState.savedContent
     };
   }
 }

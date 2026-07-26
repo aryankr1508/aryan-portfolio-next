@@ -1,4 +1,4 @@
-import { FileText, ImageIcon } from "lucide-react";
+import { ExternalLink, FileText, ImageIcon } from "lucide-react";
 import CopyMediaUrlButton from "@/components/admin/copy-media-url-button";
 import MediaUploadForm from "@/components/admin/media-upload-form";
 import { requireAdmin } from "@/lib/admin/auth";
@@ -24,27 +24,38 @@ export default async function AdminMediaPage() {
           Media and resume
         </h1>
         <p className="mt-2 max-w-3xl text-sm leading-relaxed text-slate-400">
-          Files upload directly to Vercel Blob through a short-lived,
-          admin-authorized token. Uploaded URLs can be copied into any image
-          field in the content masters.
+          Upload a file, then copy its URL into the relevant content field.
+          Resume PDFs can be selected automatically during upload.
         </p>
       </header>
 
-      <section className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
-        <p className="text-xs font-bold uppercase tracking-[0.13em] text-slate-500">
-          Draft resume
-        </p>
-        <p className="mt-2 break-all text-sm text-slate-300">
-          {document.draftContent.personalInfo.resumeFile}
-        </p>
+      <section className="flex flex-col gap-3 rounded-2xl border border-slate-800 bg-slate-900 p-5 sm:flex-row sm:items-center sm:justify-between">
+        <div className="min-w-0">
+          <p className="text-xs font-bold uppercase tracking-[0.13em] text-slate-500">
+            Resume selected in draft
+          </p>
+          <p className="mt-2 truncate text-sm text-slate-300">
+            {document.draftContent.personalInfo.resumeFile}
+          </p>
+        </div>
+        <a
+          href={document.draftContent.personalInfo.resumeFile}
+          target="_blank"
+          rel="noreferrer"
+          className="inline-flex shrink-0 items-center gap-2 self-start rounded-xl border border-slate-700 px-3 py-2 text-xs font-bold text-slate-300 hover:border-emerald-400/40 hover:text-white"
+        >
+          <ExternalLink size={14} />
+          Open resume
+        </a>
       </section>
 
       <MediaUploadForm actor={admin.actor} />
 
       <section>
         <h2 className="font-display text-2xl font-semibold">Media library</h2>
-        <div className="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {media.map((asset) => {
+        {media.length ? (
+          <div className="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {media.map((asset) => {
             const isPdf = asset.contentType === "application/pdf";
             return (
               <article
@@ -89,8 +100,19 @@ export default async function AdminMediaPage() {
                 </div>
               </article>
             );
-          })}
-        </div>
+            })}
+          </div>
+        ) : (
+          <div className="mt-4 rounded-2xl border border-dashed border-slate-700 bg-slate-900/50 p-8 text-center">
+            <ImageIcon size={25} className="mx-auto text-slate-600" />
+            <p className="mt-3 text-sm font-bold text-slate-300">
+              No uploaded media yet
+            </p>
+            <p className="mt-1 text-xs text-slate-600">
+              Your first upload will appear here with a reusable URL.
+            </p>
+          </div>
+        )}
       </section>
     </div>
   );

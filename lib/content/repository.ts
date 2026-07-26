@@ -100,7 +100,10 @@ export async function savePortfolioDraft(
   const parsedContent = portfolioSnapshotSchema.parse(content) as PortfolioSnapshot;
   const database = getDatabase();
   const [document] = await database
-    .select({ draftVersion: portfolioDocuments.draftVersion })
+    .select({
+      draftVersion: portfolioDocuments.draftVersion,
+      publishedVersion: portfolioDocuments.publishedVersion
+    })
     .from(portfolioDocuments)
     .where(eq(portfolioDocuments.id, PORTFOLIO_DOCUMENT_ID))
     .limit(1);
@@ -109,7 +112,8 @@ export async function savePortfolioDraft(
     throw new Error("The portfolio content document has not been seeded");
   }
 
-  const nextVersion = document.draftVersion + 1;
+  const nextVersion =
+    Math.max(document.draftVersion, document.publishedVersion) + 1;
   const now = new Date();
 
   const [updated] = await database.batch([
@@ -124,7 +128,8 @@ export async function savePortfolioDraft(
       .where(
         and(
           eq(portfolioDocuments.id, PORTFOLIO_DOCUMENT_ID),
-          eq(portfolioDocuments.draftVersion, document.draftVersion)
+          eq(portfolioDocuments.draftVersion, document.draftVersion),
+          eq(portfolioDocuments.publishedVersion, document.publishedVersion)
         )
       )
       .returning({ version: portfolioDocuments.draftVersion }),
@@ -158,6 +163,7 @@ export async function publishPortfolioDraft(actor: string) {
     .select({
       draftContent: portfolioDocuments.draftContent,
       draftVersion: portfolioDocuments.draftVersion,
+      publishedContent: portfolioDocuments.publishedContent,
       publishedVersion: portfolioDocuments.publishedVersion
     })
     .from(portfolioDocuments)
@@ -171,10 +177,23 @@ export async function publishPortfolioDraft(actor: string) {
   const content = portfolioSnapshotSchema.parse(
     document.draftContent
   ) as PortfolioSnapshot;
-  const nextVersion = Math.max(
-    document.publishedVersion + 1,
-    document.draftVersion
-  );
+  if (
+    JSON.stringify(content) ===
+    JSON.stringify(
+      portfolioSnapshotSchema.parse(document.publishedContent)
+    )
+  ) {
+    return {
+      version: document.publishedVersion,
+      publishedAt: null,
+      unchanged: true
+    };
+  }
+
+  const nextVersion =
+    document.draftVersion > document.publishedVersion
+      ? document.draftVersion
+      : document.publishedVersion + 1;
   const now = new Date();
 
   await database.batch([
@@ -182,6 +201,7 @@ export async function publishPortfolioDraft(actor: string) {
       .update(portfolioDocuments)
       .set({
         publishedContent: content,
+        draftVersion: nextVersion,
         publishedVersion: nextVersion,
         publishedBy: actor,
         publishedAt: now
@@ -204,7 +224,7 @@ export async function publishPortfolioDraft(actor: string) {
     })
   ]);
 
-  return { version: nextVersion, publishedAt: now };
+  return { version: nextVersion, publishedAt: now, unchanged: false };
 }
 
 export async function restorePortfolioRevisionToDraft(

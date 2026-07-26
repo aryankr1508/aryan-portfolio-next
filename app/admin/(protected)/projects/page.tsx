@@ -16,8 +16,8 @@ export default async function ProjectMastersPage() {
     <ContentMasterEditor
       initialContent={document.draftContent}
       visibleKeys={visibleKeys}
-      title="Companies and project masters"
-      description="Add or reorder companies, nested company projects, personal case studies, and freelance engagements while preserving the current public project experience."
+      title="Experience and projects"
+      description="Manage companies, nested client projects, detailed case studies, freelance work, and the Featured Work order from one place."
     />
   );
 }

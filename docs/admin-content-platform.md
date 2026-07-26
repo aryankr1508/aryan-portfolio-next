@@ -17,6 +17,9 @@ MongoDB.
 
 The provisioned preview resource is `aryan-portfolio-content`
 (`store_jZoeXPx3kLFaoeEN`, Neon project `long-night-57824262`) in `sin1`.
+Vercel Functions also execute in `sin1`, avoiding a cross-continent round trip
+for every authenticated admin read and write. Static public output remains
+served globally from Vercel's CDN.
 
 The portfolio is read-heavy, edited by one owner, and published atomically. A
 single typed JSONB document is a better fit than dozens of runtime joins:
@@ -92,6 +95,11 @@ Masters:
 - Education and internships
 - Media library, profile/project images, and resume
 - Revision history and audit log
+
+The admin shell prefetches its primary routes, exposes active and pending
+navigation states, and streams route-level skeletons during uncached work.
+Editors show one content area at a time, collapse large record collections, and
+keep unsaved/saved state visible while the owner works.
 
 Editors operate on the draft document. Saving never changes the public site.
 Publishing validates the full document and atomically promotes it.

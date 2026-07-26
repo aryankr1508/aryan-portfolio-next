@@ -27,32 +27,44 @@ export default async function RevisionsPage() {
         </p>
       </header>
 
-      <section className="overflow-hidden rounded-2xl border border-slate-800 bg-slate-900">
-        <div className="grid grid-cols-[90px_110px_minmax(180px,1fr)_180px] gap-3 border-b border-slate-800 px-4 py-3 text-xs font-bold uppercase tracking-[0.12em] text-slate-500">
-          <span>Version</span>
-          <span>Event</span>
-          <span>Actor</span>
-          <span>Action</span>
+      <section>
+        <div className="mb-3 flex items-center justify-between gap-3">
+          <h2 className="font-display text-xl font-semibold">Saved versions</h2>
+          <span className="text-xs text-slate-600">
+            Newest first · {revisions.length} shown
+          </span>
         </div>
+        <div className="grid gap-3">
         {revisions.map((revision) => (
-          <div
+          <article
             key={revision.id}
-            className="grid grid-cols-[90px_110px_minmax(180px,1fr)_180px] items-center gap-3 border-b border-slate-800 px-4 py-3 last:border-b-0"
+            className="flex flex-col gap-4 rounded-2xl border border-slate-800 bg-slate-900 p-4 sm:flex-row sm:items-center sm:justify-between"
           >
-            <span className="font-semibold">v{revision.version}</span>
-            <span className="text-sm capitalize text-slate-400">
-              {revision.event}
-            </span>
-            <span className="text-sm text-slate-400">
-              {revision.actor}
-              <span className="mt-0.5 block text-xs text-slate-600">
+            <div className="flex min-w-0 items-start gap-3">
+              <span className="inline-flex h-10 min-w-10 items-center justify-center rounded-xl bg-slate-950 px-2 text-sm font-black text-emerald-300">
+                v{revision.version}
+              </span>
+              <div className="min-w-0">
+                <div className="flex flex-wrap items-center gap-2">
+                  <p className="text-sm font-bold capitalize">
+                    {revision.event} revision
+                  </p>
+                  <span className="rounded-full bg-slate-800 px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.1em] text-slate-500">
+                    Private snapshot
+                  </span>
+                </div>
+                <p className="mt-1 truncate text-xs text-slate-500">
+                  Saved by {revision.actor}
+                </p>
+                <time className="mt-1 block text-[11px] text-slate-600">
                 {revision.createdAt.toLocaleString("en-IN", {
                   dateStyle: "medium",
                   timeStyle: "short",
                   timeZone: "Asia/Kolkata"
                 })}
-              </span>
-            </span>
+                </time>
+              </div>
+            </div>
             <form action={restoreRevisionAction}>
               <input type="hidden" name="revisionId" value={revision.id} />
               <span className="inline-flex items-center gap-2">
@@ -61,11 +73,13 @@ export default async function RevisionsPage() {
                   idleLabel="Restore to draft"
                   pendingLabel="Restoring…"
                   tone="neutral"
+                  confirmation={`Restore version ${revision.version} into your private draft? Your published preview will not change.`}
                 />
               </span>
             </form>
-          </div>
+          </article>
         ))}
+        </div>
       </section>
 
       <section>
