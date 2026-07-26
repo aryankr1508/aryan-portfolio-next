@@ -15,6 +15,9 @@ services are temporarily unavailable.
 Use managed PostgreSQL (Neon through the existing Vercel project) rather than
 MongoDB.
 
+The provisioned preview resource is `aryan-portfolio-content`
+(`store_jZoeXPx3kLFaoeEN`, Neon project `long-night-57824262`) in `sin1`.
+
 The portfolio is read-heavy, edited by one owner, and published atomically. A
 single typed JSONB document is a better fit than dozens of runtime joins:
 

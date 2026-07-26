@@ -19,6 +19,9 @@ Never commit passwords, API tokens, mail credentials, webhook secrets, `.env` fi
 - Vercel Blob store: `aryan-portfolio-media`
 - Vercel Blob store ID: `store_jYu3bmcmdXXODw9x`
 - Vercel Blob region/access: `sin1`, public
+- Neon resource: `aryan-portfolio-content`
+- Neon Vercel resource ID: `store_jZoeXPx3kLFaoeEN`
+- Neon project/region: `long-night-57824262`, `sin1`
 - Framework: Next.js 16 App Router with React 19 and TypeScript
 - Runtime: Node.js 24
 
@@ -113,6 +116,7 @@ npm run verify
 npm run start
 npm run db:migrate
 npm run db:seed
+npm run db:verify
 ```
 
 Production smoke checks should cover `/`, `/projects/syncdev`, `/MNC`, `/prep`, static images/resume, and an invalid `/api/contact` request. Do not send a real contact message during automated smoke testing.
@@ -135,5 +139,6 @@ Production smoke checks should cover `/`, `/projects/syncdev`, `/MNC`, `/prep`, 
 - Contact delivery uses Gmail SMTP in Vercel Production. Preview and Development intentionally do not have the complete SMTP configuration, so they cannot send mail.
 - Interactive scenes intentionally fall back when their public configuration variables are empty.
 - The public portfolio has a checked-in content fallback. Database errors must not turn into a public outage.
+- The `Aryan/admin-content-platform` preview branch overrides `PORTFOLIO_CONTENT_SOURCE=database`; Production remains `static` until explicit promotion approval.
 - Admin authentication requires a separately registered GitHub OAuth application; Vercel, Neon, and Blob provisioning do not create it.
 - Heavy 3D and glass effects require regression testing on mobile and reduced-motion settings when animation code changes.

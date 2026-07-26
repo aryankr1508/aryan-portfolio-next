@@ -12,8 +12,15 @@ if (!databaseUrl) {
 
 const database = drizzle({ client: neon(databaseUrl) });
 
-await migrate(database, {
-  migrationsFolder: "./drizzle"
-});
+async function main() {
+  await migrate(database, {
+    migrationsFolder: "./drizzle"
+  });
 
-console.log("Portfolio database migrations completed.");
+  console.log("Portfolio database migrations completed.");
+}
+
+main().catch((error) => {
+  console.error("Portfolio database migration failed.", error);
+  process.exitCode = 1;
+});
