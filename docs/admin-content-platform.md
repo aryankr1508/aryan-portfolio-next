@@ -66,6 +66,8 @@ The production OAuth callback is:
 
 Use a public Vercel Blob store for portfolio images and downloadable resumes.
 
+- Production store: `aryan-portfolio-media` (`store_jYu3bmcmdXXODw9x`) in
+  `sin1`.
 - Upload tokens are issued only after a verified admin session.
 - File type and size are checked before a token is issued.
 - Blob paths are versioned instead of overwritten, avoiding stale CDN objects.

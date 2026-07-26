@@ -16,6 +16,9 @@ Never commit passwords, API tokens, mail credentials, webhook secrets, `.env` fi
 - Vercel organization ID: `team_IK6kA1dRODHNNYq1gX6v1Xtv`
 - Vercel project: `aryankr1508`
 - Vercel project ID: `prj_bV0gEB1hsV7mbEvN7Ip9nyWuh8Zq`
+- Vercel Blob store: `aryan-portfolio-media`
+- Vercel Blob store ID: `store_jYu3bmcmdXXODw9x`
+- Vercel Blob region/access: `sin1`, public
 - Framework: Next.js 16 App Router with React 19 and TypeScript
 - Runtime: Node.js 24
 
