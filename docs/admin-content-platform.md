@@ -153,7 +153,7 @@ Append-only security and mutation history:
 
 ## Cache behavior
 
-- Cache key: `portfolio:published:v2`
+- Cache key: `portfolio:published:v3`
 - Cache tag: `portfolio:published`
 - Normal reads reuse the persistent server cache across requests and deployments.
 - Publish calls `updateTag("portfolio:published")` for immediate

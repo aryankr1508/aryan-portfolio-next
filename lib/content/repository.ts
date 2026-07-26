@@ -42,7 +42,7 @@ async function loadPublishedPortfolioFromDatabase(): Promise<PortfolioSnapshot> 
 
 const loadCachedPublishedPortfolio = unstable_cache(
   loadPublishedPortfolioFromDatabase,
-  ["portfolio:published:v2"],
+  ["portfolio:published:v3"],
   {
     revalidate: 86_400,
     tags: [PORTFOLIO_CACHE_TAG]
