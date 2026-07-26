@@ -43,6 +43,7 @@ export type ExperienceProject = {
 
 export type Project = {
   slug: string;
+  category: "personal" | "freelance";
   title: string;
   subtitle: string;
   role: string;
@@ -75,9 +76,16 @@ export type Internship = {
   website: string;
 };
 
+export type SectionCopy = {
+  eyebrow: string;
+  title: string;
+  description: string;
+};
+
 export const personalInfo = {
   name: "Aryan Kumar",
   role: "Software Engineer",
+  profileImage: "/images/aryan.jpg",
   summary:
     "I build scalable product and cloud-orchestration systems across backend, web, mobile, desktop, data, and AI-agent workflows with a strong focus on API design, performance, and reliable delivery.",
   location: "Noida, India",
@@ -87,6 +95,69 @@ export const personalInfo = {
   degree: "B.Tech, Computer Science Engineering",
   university: "Vellore Institute of Technology",
   resumeFile: "/resume/Aryan_Kumar_Resume.pdf"
+};
+
+export const siteCopy = {
+  metadata: {
+    title: "Aryan Kumar | Portfolio",
+    description:
+      "Interactive portfolio with full stack, cloud, and data engineering projects using motion-rich modern UI."
+  },
+  hero: {
+    availability: "Open to freelance and full-time roles",
+    greeting: "Hi, I’m Aryan.",
+    headline: "A Full Stack Developer building cross-platform product systems.",
+    viewWorkLabel: "View Work",
+    contactLabel: "Contact Me",
+    resumeLabel: "Resume"
+  },
+  about: {
+    eyebrow: "About",
+    title: "Focused On Impact, Not Resume Clutter",
+    description:
+      "I build practical product systems that improve speed, reliability, and developer flow across apps, APIs, data, and AI-agent workflows.",
+    highlightsTitle: "What I bring",
+    stackTitle: "Core Stack",
+    educationSummary:
+      "B.Tech in Computer Science Engineering (2019-2023), Vellore Institute of Technology."
+  },
+  skills: {
+    eyebrow: "Skills",
+    title: "Backend-First, Full-Spectrum Skill Set",
+    description:
+      "A practical overview of my core backend strengths plus frontend, mobile, desktop, LMS, cloud, DevOps, data engineering, BI, MCP, and AI capabilities."
+  } satisfies SectionCopy,
+  resume: {
+    eyebrow: "Resume",
+    title: "Recent Professional Experience",
+    description:
+      "A concise timeline of roles, responsibilities, and engineering impact. Follow a project link to explore the full case study in Selected Work.",
+    downloadTitle: "Download Resume",
+    downloadDescription: "Latest PDF with project and role details.",
+    experienceTitle: "Professional Experience",
+    educationTitle: "Education"
+  },
+  internships: {
+    eyebrow: "Internships",
+    title: "Early Ownership, Real Deliverables",
+    description:
+      "Internship projects where I shipped production features, handled integrations, and worked directly on outcomes."
+  } satisfies SectionCopy,
+  projects: {
+    eyebrow: "Projects",
+    title: "Selected Work",
+    description:
+      "Production systems delivered in full-time roles and products built from the ground up."
+  } satisfies SectionCopy,
+  contact: {
+    eyebrow: "Contact",
+    title: "Let’s Build Something Useful",
+    description:
+      "If you need a full-stack developer for product delivery, cross-platform apps, API integrations, MCP connectors, agentic workflows, or reporting automation, send me your brief.",
+    availability: "Available for freelance and full-time opportunities",
+    briefTitle: "Send a project brief",
+    responseTime: "Replies within 24h"
+  }
 };
 
 export const navItems: NavItem[] = [
@@ -100,11 +171,11 @@ export const navItems: NavItem[] = [
 ];
 
 export const socialLinks = [
-  { label: "GitHub", url: "https://github.com/aryankr1508" },
-  { label: "LinkedIn", url: "https://www.linkedin.com/in/aryankr1508/" },
-  { label: "Instagram", url: "https://www.instagram.com/aryankr1508/" },
-  { label: "Twitter", url: "https://twitter.com/aryankr1508" },
-  { label: "Facebook", url: "https://www.facebook.com/aryankr1508" }
+  { label: "GitHub", url: "https://github.com/aryankr1508", primary: true },
+  { label: "LinkedIn", url: "https://www.linkedin.com/in/aryankr1508/", primary: true },
+  { label: "Instagram", url: "https://www.instagram.com/aryankr1508/", primary: false },
+  { label: "Twitter", url: "https://twitter.com/aryankr1508", primary: false },
+  { label: "Facebook", url: "https://www.facebook.com/aryankr1508", primary: false }
 ];
 
 export const aboutHighlights = [
@@ -467,6 +538,7 @@ export const educationItems: ResumeItem[] = [
 export const projects: Project[] = [
   {
     slug: "syncdev",
+    category: "personal",
     title: "SyncDev",
     subtitle: "Real-Time Collaborative Code Workspace",
     role: "Creator & Full Stack Developer",
@@ -513,6 +585,7 @@ export const projects: Project[] = [
   },
   {
     slug: "placement-roadmap-chatbot",
+    category: "personal",
     title: "Placement Roadmap Chatbot",
     subtitle: "AI Assistant for Placement Queries",
     role: "AI Developer · Team of 3",
@@ -550,6 +623,7 @@ export const projects: Project[] = [
   },
   {
     slug: "telemed",
+    category: "freelance",
     title: "TeleMed",
     subtitle: "Medicine Delivery Application",
     role: "Full Stack Developer",
@@ -584,6 +658,7 @@ export const projects: Project[] = [
   },
   {
     slug: "alexa-skills",
+    category: "personal",
     title: "Alexa Skills",
     subtitle: "Voice-Driven Automation Skills",
     role: "Creator & Developer",
@@ -669,7 +744,7 @@ export type ShowcaseProject = {
   liveLabel?: string;
 };
 
-const freelanceShowcaseProjects: ShowcaseProject[] = [
+export const freelanceShowcaseProjects: ShowcaseProject[] = [
   {
     id: "zenought-renewables",
     title: "Zenought Renewables",
@@ -710,7 +785,48 @@ const freelanceShowcaseProjects: ShowcaseProject[] = [
   }
 ];
 
-const freelanceProjectSlugs = new Set(["telemed"]);
+export const featuredProjectIds = [
+  "multi-cloud-draas-platform-for-airtel",
+  "trade-automation-portal",
+  "zenought-renewables",
+  "syncdev"
+];
+
+export type PortfolioSnapshot = {
+  personalInfo: typeof personalInfo;
+  siteCopy: typeof siteCopy;
+  navItems: NavItem[];
+  socialLinks: typeof socialLinks;
+  aboutHighlights: string[];
+  toolsAndTechnologies: string[];
+  quickFacts: Fact[];
+  skillGroups: SkillGroup[];
+  experienceItems: ResumeItem[];
+  educationItems: ResumeItem[];
+  projects: Project[];
+  internships: Internship[];
+  contactAddress: string;
+  freelanceShowcaseProjects: ShowcaseProject[];
+  featuredProjectIds: string[];
+};
+
+export const staticPortfolioSnapshot: PortfolioSnapshot = {
+  personalInfo,
+  siteCopy,
+  navItems,
+  socialLinks,
+  aboutHighlights,
+  toolsAndTechnologies,
+  quickFacts,
+  skillGroups,
+  experienceItems,
+  educationItems,
+  projects,
+  internships,
+  contactAddress,
+  freelanceShowcaseProjects,
+  featuredProjectIds
+};
 
 function slugify(text: string): string {
   return text
@@ -719,11 +835,13 @@ function slugify(text: string): string {
     .replace(/(^-|-$)/g, "");
 }
 
-export function getShowcaseProjects(): ShowcaseProject[] {
+export function getShowcaseProjects(
+  source: PortfolioSnapshot = staticPortfolioSnapshot
+): ShowcaseProject[] {
   const showcase: ShowcaseProject[] = [];
 
   // Company projects from full-time experience
-  for (const exp of experienceItems) {
+  for (const exp of source.experienceItems) {
     if (!exp.companyProjects?.length) continue;
     const yearMatch = exp.duration.match(/\d{4}/);
     const company = exp.title.replace(/\s*\([^)]*\)\s*$/, "");
@@ -749,17 +867,16 @@ export function getShowcaseProjects(): ShowcaseProject[] {
   }
 
   // Personal / independent projects
-  for (const p of projects) {
+  for (const p of source.projects) {
     const yearMatch = p.period.match(/\d{4}/);
-    const isFreelance = freelanceProjectSlugs.has(p.slug);
     showcase.push({
       id: p.slug,
       title: p.title,
       subtitle: p.subtitle,
-      category: isFreelance ? "freelance" : "personal",
+      category: p.category,
       year: yearMatch?.[0] ?? p.period,
       role: p.role,
-      engagement: isFreelance
+      engagement: p.category === "freelance"
         ? "Freelance client project"
         : p.period.toLowerCase().includes("team")
           ? "Team project"
@@ -784,7 +901,7 @@ export function getShowcaseProjects(): ShowcaseProject[] {
     });
   }
 
-  showcase.push(...freelanceShowcaseProjects);
+  showcase.push(...source.freelanceShowcaseProjects);
 
   return showcase;
 }

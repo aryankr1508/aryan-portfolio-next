@@ -1,21 +1,39 @@
 import { ArrowLeft, ExternalLink, Github } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import SectionTitle from "@/components/section-title";
-import { projects } from "@/lib/portfolio-data";
+import { getPublishedPortfolio } from "@/lib/content/repository";
 
 type ProjectPageProps = {
   params: Promise<{ slug: string }>;
 };
 
-export function generateStaticParams() {
-  return projects.map((project) => ({ slug: project.slug }));
+export async function generateStaticParams() {
+  const portfolio = await getPublishedPortfolio();
+  return portfolio.projects.map((project) => ({ slug: project.slug }));
+}
+
+export async function generateMetadata({
+  params
+}: ProjectPageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const portfolio = await getPublishedPortfolio();
+  const project = portfolio.projects.find((item) => item.slug === slug);
+
+  return project
+    ? {
+        title: `${project.title} | ${portfolio.personalInfo.name}`,
+        description: project.description
+      }
+    : {};
 }
 
 export default async function ProjectDetailsPage({ params }: ProjectPageProps) {
   const { slug } = await params;
-  const project = projects.find((item) => item.slug === slug);
+  const portfolio = await getPublishedPortfolio();
+  const project = portfolio.projects.find((item) => item.slug === slug);
 
   if (!project) {
     notFound();

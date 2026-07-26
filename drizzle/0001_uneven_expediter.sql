@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX "portfolio_revisions_document_version_event_uidx" ON "portfolio_revisions" USING btree ("document_id","version","event");

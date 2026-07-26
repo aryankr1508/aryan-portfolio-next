@@ -9,6 +9,9 @@ Production: [aryankr1508.vercel.app](https://aryankr1508.vercel.app)
 - Next.js (App Router)
 - Tailwind CSS
 - TypeScript
+- Neon PostgreSQL + Drizzle ORM
+- Better Auth with GitHub OAuth
+- Vercel Blob
 - Framer Motion
 - Lenis (smooth scrolling)
 - Three.js + React Three Fiber + Drei
@@ -82,9 +85,65 @@ NEXT_PUBLIC_UNICORN_PROJECT_ID=
 ## Build
 
 ```bash
+npm test
 npm run build
 npm run start
 ```
+
+## Private Content Administration
+
+The owner-only admin application is available at `/admin`. It manages a private
+draft and a separately published portfolio snapshot, including:
+
+- profile details, site copy, navigation, social links, facts, and skills;
+- companies, experience, nested company projects, personal projects, and
+  freelance projects;
+- education and internships;
+- featured-project ordering;
+- profile/project images and resume PDFs;
+- revision history, restore-to-draft, publishing, and an audit log.
+
+Public routes do not fetch content from the browser. They receive a cached,
+validated snapshot from the server, so the existing animations and layout do not
+gain a loading state. If the database is disabled or unavailable, the checked-in
+snapshot in `lib/portfolio-data.ts` is used automatically.
+
+### Local content-platform setup
+
+Copy `.env.example` to `.env.local`, configure the private values, and then run:
+
+```bash
+npm run db:migrate
+npm run db:seed
+npm run dev
+```
+
+Keep `PORTFOLIO_CONTENT_SOURCE=static` until the database is migrated and
+seeded. Set it to `database` only after verifying the admin draft/publish flow.
+
+Register a GitHub OAuth application with:
+
+- Homepage URL: `http://localhost:3001` for a local-only app, or the production
+  portfolio URL.
+- Local callback: `http://localhost:3001/api/auth/callback/github`
+- Production callback:
+  `https://aryankr1508.vercel.app/api/auth/callback/github`
+
+The application authorizes the immutable numeric GitHub ID in
+`ADMIN_GITHUB_ID`; signing in with any other GitHub account does not grant admin
+access.
+
+Database and migration commands:
+
+```bash
+npm run db:generate
+npm run db:migrate
+npm run db:seed
+npm run db:studio
+```
+
+See [`docs/admin-content-platform.md`](docs/admin-content-platform.md) for the
+architecture, caching behavior, environment variables, and production rollout.
 
 ## Deployment
 
@@ -98,9 +157,13 @@ The Vercel project is `aryankr2104/aryankr1508`. Contact delivery secrets and op
 
 ## Project Structure
 
-- `app/page.tsx`: main portfolio page
+- `app/page.tsx`: cached server entry for the main portfolio
+- `components/portfolio-page-client.tsx`: existing interactive portfolio UI
 - `app/projects/[slug]/page.tsx`: dynamic project detail route
-- `lib/portfolio-data.ts`: portfolio content rendered dynamically
+- `app/admin`: owner-only content administration
+- `lib/content`: validation and cached content repository
+- `lib/db`: Drizzle schema and Neon connection
+- `lib/portfolio-data.ts`: typed checked-in content fallback and seed source
 - `components/`: reusable UI components
 - `public/images`: profile images
 - `public/resume`: resume PDF

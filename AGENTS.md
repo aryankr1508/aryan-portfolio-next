@@ -23,9 +23,14 @@ Do not create a replacement Vercel project when this exact project exists. Recon
 
 ## Product architecture
 
-- `app/page.tsx`: main portfolio experience and interactive scene selection
+- `app/page.tsx`: cached server entry for the public portfolio
+- `components/portfolio-page-client.tsx`: main interactive portfolio experience and scene selection
 - `app/projects/[slug]/page.tsx`: dynamic project case studies
-- `lib/portfolio-data.ts`: canonical portfolio, experience, freelance, and project content
+- `app/admin`: owner-only content administration, draft/publish, media, revisions, and audit history
+- `lib/content/repository.ts`: cached published-content reads and admin content mutations
+- `lib/content/schema.ts`: full portfolio snapshot validation
+- `lib/db/schema.ts`: Neon PostgreSQL content, revision, media, and audit tables
+- `lib/portfolio-data.ts`: typed static fallback and initial database seed content
 - `components/`: reusable UI, motion, scrolling, 3D, and project components
 - `app/api/contact/route.ts`: Node.js contact endpoint using a Google Apps Script webhook with SMTP fallback
 - `google-apps-script/contact-webhook.gs`: optional Google Apps Script mail relay
@@ -47,6 +52,14 @@ The contact API validates input, tries the Google webhook first, then SMTP, and 
 | `SMTP_FROM` | No | Contact-message sender identity. |
 | `SMTP_SECURE` | No | `true` for implicit TLS, normally port 465. |
 | `NEXT_PUBLIC_SPLINE_SCENE_URL` | No | Optional general Spline fallback scene. |
+| `DATABASE_URL` | Yes | Neon PostgreSQL connection used by the admin platform and database content source. |
+| `PORTFOLIO_CONTENT_SOURCE` | No | `static` for guarded rollout/fallback; `database` for cached published content. |
+| `BETTER_AUTH_SECRET` | Yes | Encrypts and signs Better Auth state/session cookies. |
+| `BETTER_AUTH_URL` | No | Canonical application origin used by Better Auth. |
+| `GITHUB_CLIENT_ID` | Private | GitHub OAuth application client ID. |
+| `GITHUB_CLIENT_SECRET` | Yes | GitHub OAuth application client secret. |
+| `ADMIN_GITHUB_ID` | Private | Immutable numeric GitHub account ID allowlisted for admin access. |
+| `BLOB_READ_WRITE_TOKEN` | Yes | Vercel Blob token for admin-managed images and resume PDFs. |
 
 Gmail SMTP is configured in Vercel Production. Store and rotate its App Password only through Vercel Project Settings and Aryan's password manager under `Portfolio / contact delivery`.
 
@@ -83,7 +96,7 @@ gh auth status
 
 - Vercel watches `main`, deploys it to production, and creates pull-request previews.
 - GitHub Actions runs `npm ci` and `npm run verify` on pushes and pull requests targeting `main`.
-- `npm run verify` runs ESLint with zero warnings, then a full Next.js production build.
+- `npm run verify` runs ESLint with zero warnings, content tests, then a full Next.js production build.
 - A migration or release is complete only when GitHub CI, the Vercel check, the production alias, primary routes, and the contact API validation path pass.
 
 Useful commands:
@@ -91,9 +104,12 @@ Useful commands:
 ```bash
 npm run dev
 npm run lint
+npm test
 npm run build
 npm run verify
 npm run start
+npm run db:migrate
+npm run db:seed
 ```
 
 Production smoke checks should cover `/`, `/projects/syncdev`, `/MNC`, `/prep`, static images/resume, and an invalid `/api/contact` request. Do not send a real contact message during automated smoke testing.
@@ -105,6 +121,9 @@ Production smoke checks should cover `/`, `/projects/syncdev`, `/MNC`, `/prep`, 
 - Keep portfolio claims synchronized with the actual sister repositories and live URLs.
 - Do not remove Tailwind, PostCSS, Three.js, Spline, Lenis, or React Three Fiber based only on a basic dependency scan; they are used by configuration or dynamic UI paths.
 - Do not expose server mail secrets through `NEXT_PUBLIC_` variables.
+- Do not enable `PORTFOLIO_CONTENT_SOURCE=database` before migrations, seeding, and draft/publish smoke tests pass.
+- The production GitHub OAuth callback is `https://aryankr1508.vercel.app/api/auth/callback/github`.
+- Public content mutations must preserve full-snapshot validation, immutable revisions, audit events, and cache-tag invalidation on publish.
 - Do not delete or replace infrastructure without explicit authorization and an exact project-ID check.
 - Update this file when production URLs, project IDs, runtime versions, or environment requirements change.
 
@@ -112,4 +131,6 @@ Production smoke checks should cover `/`, `/projects/syncdev`, `/MNC`, `/prep`, 
 
 - Contact delivery uses Gmail SMTP in Vercel Production. Preview and Development intentionally do not have the complete SMTP configuration, so they cannot send mail.
 - Interactive scenes intentionally fall back when their public configuration variables are empty.
+- The public portfolio has a checked-in content fallback. Database errors must not turn into a public outage.
+- Admin authentication requires a separately registered GitHub OAuth application; Vercel, Neon, and Blob provisioning do not create it.
 - Heavy 3D and glass effects require regression testing on mobile and reduced-motion settings when animation code changes.
