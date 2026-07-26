@@ -15,6 +15,7 @@ const optionalAssetUrl = z.preprocess(
   (value) => value === "" ? undefined : value,
   assetUrl.optional()
 );
+const isActive = z.boolean().default(true);
 
 export const navItemSchema = z.object({
   id: requiredText,
@@ -33,6 +34,7 @@ export const skillGroupSchema = z.object({
 });
 
 export const experienceProjectSchema = z.object({
+  isActive,
   name: requiredText,
   shortTitle: optionalText,
   subtitle: optionalText,
@@ -52,6 +54,7 @@ export const experienceProjectSchema = z.object({
 });
 
 export const resumeItemSchema = z.object({
+  isActive,
   title: requiredText,
   subtitle: requiredText,
   duration: requiredText,
@@ -60,6 +63,7 @@ export const resumeItemSchema = z.object({
 });
 
 export const projectSchema = z.object({
+  isActive,
   slug: z.string().trim().min(1).regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
   category: z.enum(["personal", "freelance"]),
   title: requiredText,
@@ -87,6 +91,7 @@ export const projectSchema = z.object({
 });
 
 export const internshipSchema = z.object({
+  isActive,
   company: requiredText,
   role: requiredText,
   duration: requiredText,
@@ -95,6 +100,7 @@ export const internshipSchema = z.object({
 });
 
 export const showcaseProjectSchema = z.object({
+  isActive,
   id: requiredText,
   title: requiredText,
   subtitle: requiredText,

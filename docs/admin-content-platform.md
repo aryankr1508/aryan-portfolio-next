@@ -104,6 +104,13 @@ keep unsaved/saved state visible while the owner works.
 Editors operate on the draft document. Saving never changes the public site.
 Publishing validates the full document and atomically promotes it.
 
+Experience entries, nested company projects, detailed projects, freelance
+cards, education entries, and internships have an `isActive` master switch.
+Missing flags default to active for backward compatibility. Inactive records
+remain available in the private draft, immutable revisions, and audit history,
+while `lib/content/visibility.ts` removes them from the public snapshot,
+Featured Work order, and direct project routes.
+
 ## Data model
 
 ### `portfolio_documents`
@@ -146,7 +153,7 @@ Append-only security and mutation history:
 
 ## Cache behavior
 
-- Cache key: `portfolio:published:v1`
+- Cache key: `portfolio:published:v2`
 - Cache tag: `portfolio:published`
 - Normal reads reuse the persistent server cache across requests and deployments.
 - Publish calls `updateTag("portfolio:published")` for immediate

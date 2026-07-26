@@ -14,6 +14,7 @@ import {
   type PortfolioSnapshot
 } from "@/lib/portfolio-data";
 import { portfolioSnapshotSchema } from "@/lib/content/schema";
+import { getPublicPortfolioSnapshot } from "@/lib/content/visibility";
 
 export const PORTFOLIO_DOCUMENT_ID = "main";
 export const PORTFOLIO_CACHE_TAG = "portfolio:published";
@@ -34,12 +35,14 @@ async function loadPublishedPortfolioFromDatabase(): Promise<PortfolioSnapshot> 
     throw new Error("The portfolio content document has not been seeded");
   }
 
-  return portfolioSnapshotSchema.parse(document.content) as PortfolioSnapshot;
+  return getPublicPortfolioSnapshot(
+    portfolioSnapshotSchema.parse(document.content) as PortfolioSnapshot
+  );
 }
 
 const loadCachedPublishedPortfolio = unstable_cache(
   loadPublishedPortfolioFromDatabase,
-  ["portfolio:published:v1"],
+  ["portfolio:published:v2"],
   {
     revalidate: 86_400,
     tags: [PORTFOLIO_CACHE_TAG]
@@ -48,14 +51,14 @@ const loadCachedPublishedPortfolio = unstable_cache(
 
 export async function getPublishedPortfolio(): Promise<PortfolioSnapshot> {
   if (!databaseContentEnabled() || !isDatabaseConfigured()) {
-    return staticPortfolioSnapshot;
+    return getPublicPortfolioSnapshot(staticPortfolioSnapshot);
   }
 
   try {
     return await loadCachedPublishedPortfolio();
   } catch (error) {
     console.error("Falling back to checked-in portfolio content", error);
-    return staticPortfolioSnapshot;
+    return getPublicPortfolioSnapshot(staticPortfolioSnapshot);
   }
 }
 

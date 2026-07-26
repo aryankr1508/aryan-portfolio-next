@@ -7,6 +7,7 @@ import {
   CheckCircle2,
   CopyPlus,
   Eye,
+  EyeOff,
   RotateCcw,
   Save,
   Trash2
@@ -46,10 +47,10 @@ const sectionDescriptions: Partial<Record<keyof PortfolioSnapshot, string>> = {
   skillGroups: "Grouped technical capabilities and descriptions",
   experienceItems: "Companies, roles and nested client projects",
   educationItems: "Degrees, institutions and education highlights",
-  projects: "Detailed personal and freelance case-study pages",
-  internships: "Internship roles, dates and outcomes",
+  projects: "Detailed personal and freelance case studies, including visibility",
+  internships: "Internship roles, dates, outcomes and visibility",
   contactAddress: "The location/address shown in Contact",
-  freelanceShowcaseProjects: "Freelance cards without dedicated case-study pages",
+  freelanceShowcaseProjects: "Freelance cards, links and public visibility",
   featuredProjectIds: "Project IDs and their order in Featured Work"
 };
 
@@ -67,6 +68,19 @@ function itemSummary(item: JsonValue, index: number, fieldKey: string) {
   }
 
   return `${labelFor(fieldKey)} ${index + 1}`;
+}
+
+function itemVisibility(item: JsonValue) {
+  if (
+    !item ||
+    typeof item !== "object" ||
+    Array.isArray(item) ||
+    !("isActive" in item)
+  ) {
+    return null;
+  }
+
+  return item.isActive !== false;
 }
 
 function cloneForNewItem(value: JsonValue, key = ""): JsonValue {
@@ -157,6 +171,57 @@ function PrimitiveField({
   onChange: (value: JsonPrimitive) => void;
 }) {
   if (typeof value === "boolean") {
+    if (fieldKey === "isActive") {
+      return (
+        <label
+          className={`flex cursor-pointer items-center justify-between gap-4 rounded-xl border px-4 py-3.5 transition ${
+            value
+              ? "border-emerald-400/30 bg-emerald-400/10"
+              : "border-amber-400/25 bg-amber-400/10"
+          }`}
+        >
+          <span className="flex min-w-0 items-center gap-3">
+            <span
+              className={`inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${
+                value
+                  ? "bg-emerald-400/15 text-emerald-300"
+                  : "bg-amber-400/15 text-amber-300"
+              }`}
+            >
+              {value ? <Eye size={17} /> : <EyeOff size={17} />}
+            </span>
+            <span className="min-w-0">
+              <span className="block text-sm font-bold text-slate-100">
+                {value ? "Visible on portfolio" : "Hidden from portfolio"}
+              </span>
+              <span className="mt-0.5 block text-xs leading-relaxed text-slate-500">
+                {value
+                  ? "Visitors can see this after the draft is published."
+                  : "It stays in admin and revision history, but public pages exclude it."}
+              </span>
+            </span>
+          </span>
+          <span
+            className={`relative inline-flex h-6 w-11 shrink-0 rounded-full transition ${
+              value ? "bg-emerald-400" : "bg-slate-700"
+            }`}
+          >
+            <span
+              className={`absolute top-1 h-4 w-4 rounded-full bg-white shadow transition ${
+                value ? "translate-x-6" : "translate-x-1"
+              }`}
+            />
+          </span>
+          <input
+            type="checkbox"
+            checked={value}
+            onChange={(event) => onChange(event.target.checked)}
+            className="sr-only"
+          />
+        </label>
+      );
+    }
+
     return (
       <label className="flex items-center gap-3 rounded-xl border border-slate-800 bg-slate-950/55 px-3 py-3">
         <input
@@ -305,6 +370,7 @@ function ValueEditor({
 
         <div className="mt-4 space-y-3">
           {value.map((item, index) => {
+            const visibility = itemVisibility(item);
             const controls = (
               <div className="flex items-center gap-1">
                 <button
@@ -371,8 +437,21 @@ function ValueEditor({
                         Click to edit · Item {index + 1} of {value.length}
                       </span>
                     </span>
-                    <span className="rounded-lg border border-slate-700 px-2 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-slate-500 transition group-open:border-emerald-400/30 group-open:text-emerald-300">
-                      Details
+                    <span className="flex shrink-0 items-center gap-2">
+                      {visibility !== null ? (
+                        <span
+                          className={`rounded-full px-2 py-1 text-[9px] font-bold uppercase tracking-[0.12em] ${
+                            visibility
+                              ? "bg-emerald-400/10 text-emerald-300"
+                              : "bg-amber-400/10 text-amber-300"
+                          }`}
+                        >
+                          {visibility ? "Public" : "Hidden"}
+                        </span>
+                      ) : null}
+                      <span className="rounded-lg border border-slate-700 px-2 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-slate-500 transition group-open:border-emerald-400/30 group-open:text-emerald-300">
+                        Details
+                      </span>
                     </span>
                   </summary>
                   <div className="border-t border-slate-800 p-4">

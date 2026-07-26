@@ -38,6 +38,7 @@ Do not create a replacement Vercel project when this exact project exists. Recon
 - `components/admin/admin-navigation.tsx`: active/pending-aware admin navigation
 - `lib/content/repository.ts`: cached published-content reads and admin content mutations
 - `lib/content/schema.ts`: full portfolio snapshot validation
+- `lib/content/visibility.ts`: centralized active/inactive projection for every public route
 - `lib/db/schema.ts`: Neon PostgreSQL content, revision, media, and audit tables
 - `lib/portfolio-data.ts`: typed static fallback and initial database seed content
 - `components/`: reusable UI, motion, scrolling, 3D, and project components
@@ -134,6 +135,7 @@ Production smoke checks should cover `/`, `/projects/syncdev`, `/MNC`, `/prep`, 
 - Do not enable `PORTFOLIO_CONTENT_SOURCE=database` before migrations, seeding, and draft/publish smoke tests pass.
 - The production GitHub OAuth callback is `https://aryankr1508.vercel.app/api/auth/callback/github`.
 - Public content mutations must preserve full-snapshot validation, immutable revisions, audit events, and cache-tag invalidation on publish.
+- Public list records use backward-compatible `isActive` flags. Admin reads retain inactive records, while public routes consume the centralized filtered projection so hidden content cannot leak through cards, featured IDs, or direct project routes.
 - Do not delete or replace infrastructure without explicit authorization and an exact project-ID check.
 - Update this file when production URLs, project IDs, runtime versions, or environment requirements change.
 

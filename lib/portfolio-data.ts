@@ -15,6 +15,7 @@ export type SkillGroup = {
 };
 
 export type ResumeItem = {
+  isActive?: boolean;
   title: string;
   subtitle: string;
   duration: string;
@@ -23,6 +24,7 @@ export type ResumeItem = {
 };
 
 export type ExperienceProject = {
+  isActive?: boolean;
   name: string;
   shortTitle?: string;
   subtitle?: string;
@@ -42,6 +44,7 @@ export type ExperienceProject = {
 };
 
 export type Project = {
+  isActive?: boolean;
   slug: string;
   category: "personal" | "freelance";
   title: string;
@@ -69,6 +72,7 @@ export type Project = {
 };
 
 export type Internship = {
+  isActive?: boolean;
   company: string;
   role: string;
   duration: string;
@@ -339,7 +343,7 @@ export const experienceItems: ResumeItem[] = [
     subtitle: "Software Engineer | Full-time | Noida, Uttar Pradesh, India (On-site)",
     duration: "May 2024 - Present",
     details: [
-      "Developed a multi-cloud DRaaS proof of concept for an Airtel client engagement, orchestrating AWS/Azure VM protection, block-level replication, and warm recovery into OpenStack.",
+      "Developed a multi-cloud DRaaS platform for Bharti Airtel through TechCompiler, orchestrating AWS/Azure VM protection, block-level replication, and warm recovery into OpenStack.",
       "Architected a six-module Trade Automation Portal backend in .NET 8, moving the trade lifecycle to Kafka events and securing 10+ REST endpoints with JWT, RBAC, and Redis-backed concurrency controls.",
       "Migrated a product tool from Node.js to .NET, improving performance and optimizing SQL Server queries while leading client interactions.",
       "Developed and maintained projects for a US-based e-commerce client, enabling full customization in BigCommerce with Svelte, Handlebars, and Node.js.",
@@ -351,16 +355,16 @@ export const experienceItems: ResumeItem[] = [
       {
         name: "Multi-Cloud DRaaS Platform for Airtel",
         shortTitle: "Multi-Cloud DRaaS Platform",
-        subtitle: "Airtel client engagement · AWS/Azure to OpenStack disaster recovery",
+        subtitle: "Bharti Airtel client project · AWS/Azure to OpenStack disaster recovery",
         role: "Full Stack and Cloud Engineer",
-        engagement: "Airtel client project",
-        status: "Proof of concept",
+        engagement: "Bharti Airtel client project delivered through TechCompiler",
+        status: "Client project",
         summary:
           "Multi-user disaster-recovery control plane that protects AWS and Azure virtual machines through baseline and incremental block replication into warm OpenStack Cinder volumes, with live monitoring and recovery orchestration.",
         challenge:
           "The client needed a provider-neutral way to discover cloud VMs, maintain recoverable block-level replicas outside the source cloud, and coordinate health-triggered or manual recovery without storing complete VM disks on the control-plane host.",
         outcome:
-          "Delivered a cloud-orchestration proof of concept with live-proven AWS-to-OpenStack baseline and recovery boot, transfer-appliance delta writes, and a complete 30 GiB Azure ranged export. The default 15-minute RPO remains a configurable target, not a guarantee; diff-based AWS/Azure failback is implemented and locally checked but not yet live-cloud validated end to end.",
+          "Delivered the core disaster-recovery platform with live-proven AWS-to-OpenStack baseline and recovery boot, transfer-appliance delta writes, and a complete 30 GiB Azure ranged export. The default 15-minute RPO is a configurable target rather than a guarantee; diff-based AWS/Azure failback is implemented and locally checked but not yet live-cloud validated end to end.",
         stack: [
           "Python",
           "FastAPI",
@@ -380,7 +384,7 @@ export const experienceItems: ResumeItem[] = [
           "Implemented and locally checked diff-based AWS/Azure failback workflows while keeping the feature explicitly scoped as not yet live-cloud validated end to end."
         ],
         confidentialityNote:
-          "Airtel client engagement delivered through TechCompiler; source code, infrastructure details, and internal visuals remain confidential. This is a sanitized proof-of-concept summary."
+          "Bharti Airtel client project delivered through TechCompiler; source code, infrastructure details, and internal visuals remain confidential. This is a sanitized project summary."
       },
       {
         name: "Trade Automation Portal",
@@ -540,26 +544,28 @@ export const projects: Project[] = [
     slug: "syncdev",
     category: "personal",
     title: "SyncDev",
-    subtitle: "Real-Time Collaborative Code Workspace",
+    subtitle: "Replayable Collaborative Engineering Rooms",
     role: "Creator & Full Stack Developer",
     period: "2023 - Present",
     location: "India",
     description:
-      "A browser-based coding workspace where developers create or join shareable rooms, edit code together, see participant presence, and run or preview code without configuring a local project.",
+      "A browser-based collaborative engineering workspace for replayable interview, training, and debugging sessions, combining live code editing with roles, checkpoints, evaluation evidence, and downloadable session reports.",
     impact:
-      "Delivered a production-ready collaboration flow with automatic reconnects, 25 editor language modes, persisted editor preferences, sandboxed web previews, in-browser JavaScript execution, and ephemeral room cleanup.",
-    resultMetric: "25 editor language modes",
+      "Deployed a production collaboration flow with host, participant, and observer permissions; guided room modes; replayable revision history; visible and hidden evaluation cases; seven-day evidence retention; and 25 editor language modes.",
+    resultMetric: "3 guided engineering room modes",
     thumbnail: "/images/projects/syncdev-banner.svg",
     story: {
-      problem: "Pair-programming sessions often require repository access, matching local environments, and a separate tool just to share code and confirm who is present.",
-      solution: "Built UUID-based rooms with live code and presence sync, a CodeMirror editing experience, automatic language detection, execution output, and sandboxed previews. Socket.IO powers local or Node deployments, while Vercel Functions and Supabase provide production polling, heartbeats, debounced writes, and room-state persistence.",
-      result: "A shareable browser workspace that supports 25 language modes, remembers each user’s editor setup, reconnects automatically, and removes stale participants and abandoned room code."
+      problem: "Technical interviews, training exercises, and debugging sessions often lose the reasoning behind code changes because editors, execution output, evaluation notes, and decisions live in separate tools.",
+      solution: "Built private collaborative rooms with host-controlled roles and editing permissions, revision-linked runs, named checkpoints, hidden or visible tests, a replay timeline, and Markdown evidence reports. Socket.IO supports local development, while Vercel Functions and Supabase provide the deployed room protocol, persistence, heartbeats, and bounded retention.",
+      result: "A production-deployed workspace where teams can collaborate live and then review who participated, what changed, which checks ran, and how the session reached its outcome."
     },
     highlights: [
-      "Built UUID-based rooms with synchronized code, participant presence, and automatic reconnect handling.",
-      "Designed a transport layer that uses Socket.IO for Node deployments and a Vercel Functions API backed by Supabase in production.",
-      "Added automatic detection and syntax tooling across 25 editor language modes with persisted preferences.",
-      "Implemented sandboxed web previews, in-browser JavaScript execution, validation, and an extensible remote execution proxy."
+      "Created private rooms with host, participant, and observer roles, live permission changes, host-only or collaborative editing, and automatic reconnect handling.",
+      "Implemented replayable session evidence through revision-linked runs, named checkpoints, decision notes, event navigation, source snapshots, and host-controlled restore.",
+      "Added interview, training, and debugging modes with distinct guided workflows, terminology, evaluation labels, and report outcomes.",
+      "Built visible and hidden evaluation cases with participant-safe redaction plus downloadable Markdown reports that exclude hidden test data.",
+      "Designed one room protocol for local Socket.IO and deployed Vercel/Supabase transports, including heartbeats, debounced persistence, stale-presence cleanup, and seven-day evidence retention.",
+      "Delivered syntax tooling for 25 editor language modes, sandboxed web previews, in-browser JavaScript execution, and JSON/YAML validation."
     ],
     screenshots: [
       "/images/projects/syncdev-screen-1.svg",
@@ -567,9 +573,9 @@ export const projects: Project[] = [
     ],
     architectureDiagram: "/images/projects/syncdev-architecture.svg",
     nextImprovements: [
-      "Add CRDT conflict handling for offline edits and reconnect flows.",
-      "Connect the validated execution proxy to an isolated compiler provider for more server-side runtimes.",
-      "Add optional authenticated, persistent projects with room roles and access controls."
+      "Add CRDT-based conflict resolution for concurrent offline edits and reconnect flows.",
+      "Connect the provider-neutral execution proxy to an isolated compiler service for remote server-side runtimes.",
+      "Upgrade React and React Router together while preserving the replayable session protocol and regression coverage."
     ],
     technologies: [
       "React",
@@ -578,12 +584,15 @@ export const projects: Project[] = [
       "Socket.IO",
       "Express",
       "Vercel Functions",
-      "Supabase"
+      "Supabase",
+      "PostgreSQL",
+      "Web Workers"
     ],
     liveUrl: "https://syncdev-editor.vercel.app/",
     repoUrl: "https://github.com/aryankr1508/SyncDev.git"
   },
   {
+    isActive: false,
     slug: "placement-roadmap-chatbot",
     category: "personal",
     title: "Placement Roadmap Chatbot",
@@ -723,6 +732,7 @@ export const contactAddress =
 /* ── Showcase projects (unified master-detail data) ────────────────────── */
 
 export type ShowcaseProject = {
+  isActive?: boolean;
   id: string;
   title: string;
   subtitle: string;
@@ -842,10 +852,12 @@ export function getShowcaseProjects(
 
   // Company projects from full-time experience
   for (const exp of source.experienceItems) {
+    if (exp.isActive === false) continue;
     if (!exp.companyProjects?.length) continue;
     const yearMatch = exp.duration.match(/\d{4}/);
     const company = exp.title.replace(/\s*\([^)]*\)\s*$/, "");
     for (const p of exp.companyProjects) {
+      if (p.isActive === false) continue;
       showcase.push({
         id: slugify(p.name),
         title: p.shortTitle ?? p.name,
@@ -868,6 +880,7 @@ export function getShowcaseProjects(
 
   // Personal / independent projects
   for (const p of source.projects) {
+    if (p.isActive === false) continue;
     const yearMatch = p.period.match(/\d{4}/);
     showcase.push({
       id: p.slug,
@@ -901,7 +914,11 @@ export function getShowcaseProjects(
     });
   }
 
-  showcase.push(...source.freelanceShowcaseProjects);
+  showcase.push(
+    ...source.freelanceShowcaseProjects.filter(
+      (project) => project.isActive !== false
+    )
+  );
 
   return showcase;
 }
