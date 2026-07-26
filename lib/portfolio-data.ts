@@ -27,6 +27,8 @@ export type ExperienceProject = {
   shortTitle?: string;
   subtitle?: string;
   role?: string;
+  engagement?: string;
+  status?: string;
   summary: string;
   challenge?: string;
   outcome?: string;
@@ -77,7 +79,7 @@ export const personalInfo = {
   name: "Aryan Kumar",
   role: "Software Engineer",
   summary:
-    "I build scalable product systems across web, mobile, desktop, LMS, backend, data, and AI-agent workflows with a strong focus on API design, performance, and reliable delivery.",
+    "I build scalable product and cloud-orchestration systems across backend, web, mobile, desktop, data, and AI-agent workflows with a strong focus on API design, performance, and reliable delivery.",
   location: "Noida, India",
   email: "aryankumar15082002@gmail.com",
   phone: "+91 8210236605",
@@ -107,6 +109,7 @@ export const socialLinks = [
 
 export const aboutHighlights = [
   "Lead backend-first product delivery across .NET, Java Spring Boot, Python, and Node.js services.",
+  "Design multi-cloud orchestration and disaster-recovery workflows across AWS, Azure, and OpenStack.",
   "Design and ship REST, GraphQL, SOAP, and integration-heavy APIs for production systems.",
   "Build full-stack web, mobile, desktop, LMS, and TV applications based on business and platform needs.",
   "Work on custom MCP connectors, agentic workflows, and OpenCLAW-style automation systems.",
@@ -127,7 +130,7 @@ export const toolsAndTechnologies = [
 export const quickFacts: Fact[] = [
   { label: "Built Projects", value: "18+ delivered" },
   { label: "Experience", value: "3+ years" },
-  { label: "Domains", value: "E-commerce, BI, AI, Collaboration" },
+  { label: "Domains", value: "Cloud DR, E-commerce, BI, AI" },
   { label: "Open To", value: "Freelance + Full-time" },
   { label: "Focus", value: "Product Systems, APIs, AI, and Data" },
   { label: "Core Stack", value: ".NET, Java, Python, Node.js, SQL" },
@@ -183,6 +186,8 @@ export const skillGroups: SkillGroup[] = [
       "Azure",
       "AWS",
       "GCP",
+      "OpenStack",
+      "Disaster Recovery Orchestration",
       "Jenkins",
       "Azure DevOps",
       "CI/CD Pipelines",
@@ -263,6 +268,8 @@ export const experienceItems: ResumeItem[] = [
     subtitle: "Software Engineer | Full-time | Noida, Uttar Pradesh, India (On-site)",
     duration: "May 2024 - Present",
     details: [
+      "Developed a multi-cloud DRaaS proof of concept for an Airtel client engagement, orchestrating AWS/Azure VM protection, block-level replication, and warm recovery into OpenStack.",
+      "Architected a six-module Trade Automation Portal backend in .NET 8, moving the trade lifecycle to Kafka events and securing 10+ REST endpoints with JWT, RBAC, and Redis-backed concurrency controls.",
       "Migrated a product tool from Node.js to .NET, improving performance and optimizing SQL Server queries while leading client interactions.",
       "Developed and maintained projects for a US-based e-commerce client, enabling full customization in BigCommerce with Svelte, Handlebars, and Node.js.",
       "Implemented CI/CD pipelines for .NET and Node.js applications to streamline deployments.",
@@ -270,6 +277,71 @@ export const experienceItems: ResumeItem[] = [
       "Developed Power Query (M) scripts and Advanced Editor business logic for automated reporting and insights."
     ],
     companyProjects: [
+      {
+        name: "Multi-Cloud DRaaS Platform for Airtel",
+        shortTitle: "Multi-Cloud DRaaS Platform",
+        subtitle: "Airtel client engagement · AWS/Azure to OpenStack disaster recovery",
+        role: "Full Stack and Cloud Engineer",
+        engagement: "Airtel client project",
+        status: "Proof of concept",
+        summary:
+          "Multi-user disaster-recovery control plane that protects AWS and Azure virtual machines through baseline and incremental block replication into warm OpenStack Cinder volumes, with live monitoring and recovery orchestration.",
+        challenge:
+          "The client needed a provider-neutral way to discover cloud VMs, maintain recoverable block-level replicas outside the source cloud, and coordinate health-triggered or manual recovery without storing complete VM disks on the control-plane host.",
+        outcome:
+          "Delivered a cloud-orchestration proof of concept with live-proven AWS-to-OpenStack baseline and recovery boot, transfer-appliance delta writes, and a complete 30 GiB Azure ranged export. The default 15-minute RPO remains a configurable target, not a guarantee; diff-based AWS/Azure failback is implemented and locally checked but not yet live-cloud validated end to end.",
+        stack: [
+          "Python",
+          "FastAPI",
+          "React",
+          "MySQL",
+          "AWS EC2/EBS",
+          "Azure",
+          "OpenStack",
+          "SQLAlchemy"
+        ],
+        highlights: [
+          "Developed multi-user workflows for AWS/Azure VM discovery, baseline replication into OpenStack Cinder, recovery-point tracking, and protection monitoring.",
+          "Engineered sparse, order-preserving disk streams with 16 concurrent Azure range requests and AWS EBS Direct APIs, uploading raw disks into Glance without storing the complete disk locally.",
+          "Implemented configurable changed-block replication and a transfer appliance that applies deltas at exact byte offsets while tracking changed bytes, RPO metadata, retention, and replication history.",
+          "Automated health monitoring, three-check failover triggering, recovery verification, Nova VM creation, floating-IP assignment, optional SSH forwarding, cancellation, and cleanup.",
+          "Secured the control plane with Argon2id password hashing, signed JWT authentication, per-user isolation, AES-256-GCM credential encryption, Pydantic validation, restricted CORS, and sanitized errors.",
+          "Implemented and locally checked diff-based AWS/Azure failback workflows while keeping the feature explicitly scoped as not yet live-cloud validated end to end."
+        ],
+        confidentialityNote:
+          "Airtel client engagement delivered through TechCompiler; source code, infrastructure details, and internal visuals remain confidential. This is a sanitized proof-of-concept summary."
+      },
+      {
+        name: "Trade Automation Portal",
+        subtitle: "Event-driven trade lifecycle and exchange-submission platform",
+        role: "Backend Engineer",
+        engagement: "Full-time company project",
+        status: "Delivered",
+        summary:
+          "Six-module backend platform automating trade creation, allocation, CME/ICE exchange submission, audit, email notifications, and reporting through secure APIs and event-driven workflows.",
+        challenge:
+          "A synchronous trade-processing flow coupled lifecycle stages together, limiting resilience and scalability while concurrent cache misses and sensitive exchange operations required stronger coordination and access control.",
+        outcome:
+          "Delivered an event-driven trade lifecycle with 10+ JWT- and RBAC-secured REST endpoints, Redis cache-aside backed by Redisson distributed locking to prevent thundering-herd loads, and 99.95% uptime.",
+        stack: [
+          "C# 12",
+          ".NET 8",
+          "ASP.NET Core",
+          "Kafka",
+          "Redis",
+          "Redisson",
+          "FIX/FIXML",
+          "JWT/RBAC"
+        ],
+        highlights: [
+          "Architected six backend modules from scratch for trade creation, allocation, CME/ICE submission, audit, email notifications, and reporting.",
+          "Redesigned the synchronous workflow as a Kafka event pipeline spanning trade creation, allocation completion, exchange-submission requests, audit, and notification processing.",
+          "Secured more than 10 REST endpoints with JWT authentication and role-based access control.",
+          "Implemented Redis cache-aside with Redisson distributed locking to prevent thundering-herd behavior while supporting 99.95% uptime."
+        ],
+        confidentialityNote:
+          "Delivered through TechCompiler; client identity, source code, exchange configuration, and internal visuals remain confidential."
+      },
       {
         name: "MIDAS - Nuclear Safety Plume Monitoring System",
         shortTitle: "MIDAS",
@@ -664,8 +736,8 @@ export function getShowcaseProjects(): ShowcaseProject[] {
         year: yearMatch?.[0] ?? "",
         company,
         role: p.role ?? "Software Engineer",
-        engagement: "Full-time company",
-        status: p.confidentialityNote ? "Confidential" : "Delivered",
+        engagement: p.engagement ?? "Full-time company",
+        status: p.status ?? (p.confidentialityNote ? "Confidential" : "Delivered"),
         overview: p.summary,
         challenge: p.challenge ?? p.summary,
         contributions: p.highlights,
