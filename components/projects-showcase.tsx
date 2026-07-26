@@ -42,7 +42,8 @@ const filterLabels: { key: ProjectFilter; label: string }[] = [
 ];
 
 const featuredProjectIds = [
-  "midas-nuclear-safety-plume-monitoring-system",
+  "multi-cloud-draas-platform-for-airtel",
+  "trade-automation-portal",
   "zenought-renewables",
   "syncdev"
 ];
