@@ -22,6 +22,7 @@ import { trackEvent } from "@/lib/analytics";
 
 type ProjectsShowcaseProps = {
   projects: ShowcaseProject[];
+  featuredProjectIds: string[];
   isDark: boolean;
   requestedProjectId?: string | null;
 };
@@ -41,13 +42,6 @@ const filterLabels: { key: ProjectFilter; label: string }[] = [
   { key: "personal", label: "Personal" }
 ];
 
-const featuredProjectIds = [
-  "multi-cloud-draas-platform-for-airtel",
-  "trade-automation-portal",
-  "zenought-renewables",
-  "syncdev"
-];
-
 function projectsForFilter(
   projects: ShowcaseProject[],
   filter: ProjectFilter
@@ -58,7 +52,8 @@ function projectsForFilter(
 
 function projectGroups(
   projects: ShowcaseProject[],
-  filter: ProjectFilter
+  filter: ProjectFilter,
+  featuredProjectIds: string[]
 ): ProjectGroup[] {
   if (filter === "company") {
     return [
@@ -127,6 +122,7 @@ function projectGroups(
 
 function ProjectsShowcase({
   projects,
+  featuredProjectIds,
   isDark,
   requestedProjectId = null
 }: ProjectsShowcaseProps) {
@@ -146,7 +142,10 @@ function ProjectsShowcase({
     () => projectsForFilter(projects, filter),
     [filter, projects]
   );
-  const groups = useMemo(() => projectGroups(projects, filter), [filter, projects]);
+  const groups = useMemo(
+    () => projectGroups(projects, filter, featuredProjectIds),
+    [featuredProjectIds, filter, projects]
+  );
   const activeProject =
     filteredProjects.find((project) => project.id === activeId) ??
     filteredProjects[0] ??
